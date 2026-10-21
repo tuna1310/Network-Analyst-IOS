@@ -1,0 +1,542 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		BA0100012A00000100000001 /* NetworkAnalystApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0100012A00000100000001 /* NetworkAnalystApp.swift */; };
+		BA0100022A00000100000001 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0100022A00000100000001 /* MainTabView.swift */; };
+		BA0100032A00000100000001 /* NetworkInterfaceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0100032A00000100000001 /* NetworkInterfaceInfo.swift */; };
+		BA0100042A00000100000001 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0100042A00000100000001 /* NetworkMonitor.swift */; };
+		BA0100052A00000100000001 /* LocationAndWiFiManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0100052A00000100000001 /* LocationAndWiFiManager.swift */; };
+		BA0100062A00000100000001 /* LocalNetworkPermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0100062A00000100000001 /* LocalNetworkPermissionManager.swift */; };
+		BA0100072A00000100000001 /* DiscoveredDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0100072A00000100000001 /* DiscoveredDevice.swift */; };
+		BA0100082A00000100000001 /* BonjourBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0100082A00000100000001 /* BonjourBrowser.swift */; };
+		BA0100092A00000100000001 /* UnicastProber.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0100092A00000100000001 /* UnicastProber.swift */; };
+		BA01000A2A00000100000001 /* LanScannerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA01000A2A00000100000001 /* LanScannerEngine.swift */; };
+		BA01000B2A00000100000001 /* PortScannerModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA01000B2A00000100000001 /* PortScannerModels.swift */; };
+		BA01000C2A00000100000001 /* PortScannerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA01000C2A00000100000001 /* PortScannerEngine.swift */; };
+		BA01000D2A00000100000001 /* PingModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA01000D2A00000100000001 /* PingModels.swift */; };
+		BA01000E2A00000100000001 /* ICMPEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA01000E2A00000100000001 /* ICMPEngine.swift */; };
+		BA01000F2A00000100000001 /* PingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA01000F2A00000100000001 /* PingService.swift */; };
+		BA0100102A00000100000001 /* PublicIPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0100102A00000100000001 /* PublicIPService.swift */; };
+		BA0100112A00000100000001 /* RDAPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0100112A00000100000001 /* RDAPClient.swift */; };
+		BA0100122A00000100000001 /* DNSRecordTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0100122A00000100000001 /* DNSRecordTypes.swift */; };
+		BA0100132A00000100000001 /* DNSClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0100132A00000100000001 /* DNSClient.swift */; };
+		BA0100142A00000100000001 /* AdServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0100142A00000100000001 /* AdServiceProtocol.swift */; };
+		BA0100152A00000100000001 /* AdViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0100152A00000100000001 /* AdViews.swift */; };
+		BA0100162A00000100000001 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0100162A00000100000001 /* DashboardViewModel.swift */; };
+		BA0100172A00000100000001 /* LanScannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0100172A00000100000001 /* LanScannerViewModel.swift */; };
+		BA0100182A00000100000001 /* PortScannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0100182A00000100000001 /* PortScannerViewModel.swift */; };
+		BA0100192A00000100000001 /* PingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0100192A00000100000001 /* PingViewModel.swift */; };
+		BA01001A2A00000100000001 /* DNSLookupViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA01001A2A00000100000001 /* DNSLookupViewModel.swift */; };
+		BA01001B2A00000100000001 /* UIComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA01001B2A00000100000001 /* UIComponents.swift */; };
+		BA01001C2A00000100000001 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA01001C2A00000100000001 /* DashboardView.swift */; };
+		BA01001D2A00000100000001 /* DeviceDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA01001D2A00000100000001 /* DeviceDetailSheet.swift */; };
+		BA01001E2A00000100000001 /* LanScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA01001E2A00000100000001 /* LanScannerView.swift */; };
+		BA01001F2A00000100000001 /* PortScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA01001F2A00000100000001 /* PortScannerView.swift */; };
+		BA0100202A00000100000001 /* PingTracerouteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0100202A00000100000001 /* PingTracerouteView.swift */; };
+		BA0100212A00000100000001 /* DNSLookupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0100212A00000100000001 /* DNSLookupView.swift */; };
+		BA0100222A00000100000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA0100222A00000100000001 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		EA0100012A00000100000001 /* NetworkAnalyst.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NetworkAnalyst.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA0100012A00000100000001 /* NetworkAnalystApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkAnalystApp.swift; sourceTree = "<group>"; };
+		FA0100022A00000100000001 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		FA0100032A00000100000001 /* NetworkInterfaceInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkInterfaceInfo.swift; sourceTree = "<group>"; };
+		FA0100042A00000100000001 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
+		FA0100052A00000100000001 /* LocationAndWiFiManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationAndWiFiManager.swift; sourceTree = "<group>"; };
+		FA0100062A00000100000001 /* LocalNetworkPermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalNetworkPermissionManager.swift; sourceTree = "<group>"; };
+		FA0100072A00000100000001 /* DiscoveredDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveredDevice.swift; sourceTree = "<group>"; };
+		FA0100082A00000100000001 /* BonjourBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BonjourBrowser.swift; sourceTree = "<group>"; };
+		FA0100092A00000100000001 /* UnicastProber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnicastProber.swift; sourceTree = "<group>"; };
+		FA01000A2A00000100000001 /* LanScannerEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanScannerEngine.swift; sourceTree = "<group>"; };
+		FA01000B2A00000100000001 /* PortScannerModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortScannerModels.swift; sourceTree = "<group>"; };
+		FA01000C2A00000100000001 /* PortScannerEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortScannerEngine.swift; sourceTree = "<group>"; };
+		FA01000D2A00000100000001 /* PingModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingModels.swift; sourceTree = "<group>"; };
+		FA01000E2A00000100000001 /* ICMPEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMPEngine.swift; sourceTree = "<group>"; };
+		FA01000F2A00000100000001 /* PingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingService.swift; sourceTree = "<group>"; };
+		FA0100102A00000100000001 /* PublicIPService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicIPService.swift; sourceTree = "<group>"; };
+		FA0100112A00000100000001 /* RDAPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDAPClient.swift; sourceTree = "<group>"; };
+		FA0100122A00000100000001 /* DNSRecordTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DNSRecordTypes.swift; sourceTree = "<group>"; };
+		FA0100132A00000100000001 /* DNSClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DNSClient.swift; sourceTree = "<group>"; };
+		FA0100142A00000100000001 /* AdServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdServiceProtocol.swift; sourceTree = "<group>"; };
+		FA0100152A00000100000001 /* AdViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdViews.swift; sourceTree = "<group>"; };
+		FA0100162A00000100000001 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
+		FA0100172A00000100000001 /* LanScannerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanScannerViewModel.swift; sourceTree = "<group>"; };
+		FA0100182A00000100000001 /* PortScannerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortScannerViewModel.swift; sourceTree = "<group>"; };
+		FA0100192A00000100000001 /* PingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingViewModel.swift; sourceTree = "<group>"; };
+		FA01001A2A00000100000001 /* DNSLookupViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DNSLookupViewModel.swift; sourceTree = "<group>"; };
+		FA01001B2A00000100000001 /* UIComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIComponents.swift; sourceTree = "<group>"; };
+		FA01001C2A00000100000001 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		FA01001D2A00000100000001 /* DeviceDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceDetailSheet.swift; sourceTree = "<group>"; };
+		FA01001E2A00000100000001 /* LanScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanScannerView.swift; sourceTree = "<group>"; };
+		FA01001F2A00000100000001 /* PortScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortScannerView.swift; sourceTree = "<group>"; };
+		FA0100202A00000100000001 /* PingTracerouteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingTracerouteView.swift; sourceTree = "<group>"; };
+		FA0100212A00000100000001 /* DNSLookupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DNSLookupView.swift; sourceTree = "<group>"; };
+		FA0100222A00000100000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		FA0100232A00000100000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FA0100242A00000100000001 /* NetworkAnalyst.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NetworkAnalyst.entitlements; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		CA0100012A00000100000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		DA0100012A00000100000001 = {
+			isa = PBXGroup;
+			children = (
+				DA0100022A00000100000001 /* NetworkAnalyst */,
+				DA01000A2A00000100000001 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		DA0100022A00000100000001 /* NetworkAnalyst */ = {
+			isa = PBXGroup;
+			children = (
+				DA0100032A00000100000001 /* App */,
+				DA0100042A00000100000001 /* Core */,
+				DA0100052A00000100000001 /* Services */,
+				DA0100062A00000100000001 /* ViewModels */,
+				DA0100072A00000100000001 /* Views */,
+				DA0100082A00000100000001 /* Resources */,
+			);
+			path = NetworkAnalyst;
+			sourceTree = "<group>";
+		};
+		DA0100032A00000100000001 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				FA0100012A00000100000001 /* NetworkAnalystApp.swift */,
+				FA0100022A00000100000001 /* MainTabView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		DA0100042A00000100000001 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				FA0100032A00000100000001 /* NetworkInterfaceInfo.swift */,
+				FA0100042A00000100000001 /* NetworkMonitor.swift */,
+				FA0100052A00000100000001 /* LocationAndWiFiManager.swift */,
+				FA0100062A00000100000001 /* LocalNetworkPermissionManager.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		DA0100052A00000100000001 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				DA0100112A00000100000001 /* DeviceScanner */,
+				DA0100122A00000100000001 /* PortScanner */,
+				DA0100132A00000100000001 /* Ping */,
+				DA0100142A00000100000001 /* DNS */,
+				DA0100152A00000100000001 /* Ads */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		DA0100112A00000100000001 /* DeviceScanner */ = {
+			isa = PBXGroup;
+			children = (
+				FA0100072A00000100000001 /* DiscoveredDevice.swift */,
+				FA0100082A00000100000001 /* BonjourBrowser.swift */,
+				FA0100092A00000100000001 /* UnicastProber.swift */,
+				FA01000A2A00000100000001 /* LanScannerEngine.swift */,
+			);
+			path = DeviceScanner;
+			sourceTree = "<group>";
+		};
+		DA0100122A00000100000001 /* PortScanner */ = {
+			isa = PBXGroup;
+			children = (
+				FA01000B2A00000100000001 /* PortScannerModels.swift */,
+				FA01000C2A00000100000001 /* PortScannerEngine.swift */,
+			);
+			path = PortScanner;
+			sourceTree = "<group>";
+		};
+		DA0100132A00000100000001 /* Ping */ = {
+			isa = PBXGroup;
+			children = (
+				FA01000D2A00000100000001 /* PingModels.swift */,
+				FA01000E2A00000100000001 /* ICMPEngine.swift */,
+				FA01000F2A00000100000001 /* PingService.swift */,
+			);
+			path = Ping;
+			sourceTree = "<group>";
+		};
+		DA0100142A00000100000001 /* DNS */ = {
+			isa = PBXGroup;
+			children = (
+				FA0100102A00000100000001 /* PublicIPService.swift */,
+				FA0100112A00000100000001 /* RDAPClient.swift */,
+				FA0100122A00000100000001 /* DNSRecordTypes.swift */,
+				FA0100132A00000100000001 /* DNSClient.swift */,
+			);
+			path = DNS;
+			sourceTree = "<group>";
+		};
+		DA0100152A00000100000001 /* Ads */ = {
+			isa = PBXGroup;
+			children = (
+				FA0100142A00000100000001 /* AdServiceProtocol.swift */,
+				FA0100152A00000100000001 /* AdViews.swift */,
+			);
+			path = Ads;
+			sourceTree = "<group>";
+		};
+		DA0100062A00000100000001 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				FA0100162A00000100000001 /* DashboardViewModel.swift */,
+				FA0100172A00000100000001 /* LanScannerViewModel.swift */,
+				FA0100182A00000100000001 /* PortScannerViewModel.swift */,
+				FA0100192A00000100000001 /* PingViewModel.swift */,
+				FA01001A2A00000100000001 /* DNSLookupViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		DA0100072A00000100000001 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				FA01001B2A00000100000001 /* UIComponents.swift */,
+				FA01001C2A00000100000001 /* DashboardView.swift */,
+				FA01001D2A00000100000001 /* DeviceDetailSheet.swift */,
+				FA01001E2A00000100000001 /* LanScannerView.swift */,
+				FA01001F2A00000100000001 /* PortScannerView.swift */,
+				FA0100202A00000100000001 /* PingTracerouteView.swift */,
+				FA0100212A00000100000001 /* DNSLookupView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		DA0100082A00000100000001 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				FA0100222A00000100000001 /* Assets.xcassets */,
+				FA0100232A00000100000001 /* Info.plist */,
+				FA0100242A00000100000001 /* NetworkAnalyst.entitlements */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		DA01000A2A00000100000001 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EA0100012A00000100000001 /* NetworkAnalyst.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AA0100012A00000100000001 /* NetworkAnalyst */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CA0100032A00000100000001 /* Build configuration list for PBXNativeTarget "NetworkAnalyst" */;
+			buildPhases = (
+				CA0100042A00000100000001 /* Sources */,
+				CA0100012A00000100000001 /* Frameworks */,
+				CA0100052A00000100000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NetworkAnalyst;
+			productName = NetworkAnalyst;
+			productReference = EA0100012A00000100000001 /* NetworkAnalyst.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1A0100012A00000100000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					AA0100012A00000100000001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = CA0100022A00000100000001 /* Build configuration list for PBXProject "NetworkAnalyst" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = DA0100012A00000100000001;
+			productRefGroup = DA01000A2A00000100000001 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AA0100012A00000100000001 /* NetworkAnalyst */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		CA0100052A00000100000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BA0100222A00000100000001 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		CA0100042A00000100000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BA0100012A00000100000001 /* NetworkAnalystApp.swift in Sources */,
+				BA0100022A00000100000001 /* MainTabView.swift in Sources */,
+				BA0100032A00000100000001 /* NetworkInterfaceInfo.swift in Sources */,
+				BA0100042A00000100000001 /* NetworkMonitor.swift in Sources */,
+				BA0100052A00000100000001 /* LocationAndWiFiManager.swift in Sources */,
+				BA0100062A00000100000001 /* LocalNetworkPermissionManager.swift in Sources */,
+				BA0100072A00000100000001 /* DiscoveredDevice.swift in Sources */,
+				BA0100082A00000100000001 /* BonjourBrowser.swift in Sources */,
+				BA0100092A00000100000001 /* UnicastProber.swift in Sources */,
+				BA01000A2A00000100000001 /* LanScannerEngine.swift in Sources */,
+				BA01000B2A00000100000001 /* PortScannerModels.swift in Sources */,
+				BA01000C2A00000100000001 /* PortScannerEngine.swift in Sources */,
+				BA01000D2A00000100000001 /* PingModels.swift in Sources */,
+				BA01000E2A00000100000001 /* ICMPEngine.swift in Sources */,
+				BA01000F2A00000100000001 /* PingService.swift in Sources */,
+				BA0100102A00000100000001 /* PublicIPService.swift in Sources */,
+				BA0100112A00000100000001 /* RDAPClient.swift in Sources */,
+				BA0100122A00000100000001 /* DNSRecordTypes.swift in Sources */,
+				BA0100132A00000100000001 /* DNSClient.swift in Sources */,
+				BA0100142A00000100000001 /* AdServiceProtocol.swift in Sources */,
+				BA0100152A00000100000001 /* AdViews.swift in Sources */,
+				BA0100162A00000100000001 /* DashboardViewModel.swift in Sources */,
+				BA0100172A00000100000001 /* LanScannerViewModel.swift in Sources */,
+				BA0100182A00000100000001 /* PortScannerViewModel.swift in Sources */,
+				BA0100192A00000100000001 /* PingViewModel.swift in Sources */,
+				BA01001A2A00000100000001 /* DNSLookupViewModel.swift in Sources */,
+				BA01001B2A00000100000001 /* UIComponents.swift in Sources */,
+				BA01001C2A00000100000001 /* DashboardView.swift in Sources */,
+				BA01001D2A00000100000001 /* DeviceDetailSheet.swift in Sources */,
+				BA01001E2A00000100000001 /* LanScannerView.swift in Sources */,
+				BA01001F2A00000100000001 /* PortScannerView.swift in Sources */,
+				BA0100202A00000100000001 /* PingTracerouteView.swift in Sources */,
+				BA0100212A00000100000001 /* DNSLookupView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		CC0100012A00000100000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDEFINED_VARIABLES = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		CC0100022A00000100000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDEFINED_VARIABLES = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = "wholemodule";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		CC0100032A00000100000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = NetworkAnalyst/Resources/NetworkAnalyst.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = NetworkAnalyst/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.developer.NetworkAnalyst;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		CC0100042A00000100000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = NetworkAnalyst/Resources/NetworkAnalyst.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = NetworkAnalyst/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.developer.NetworkAnalyst;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		CA0100022A00000100000001 /* Build configuration list for PBXProject "NetworkAnalyst" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CC0100012A00000100000001 /* Debug */,
+				CC0100022A00000100000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CA0100032A00000100000001 /* Build configuration list for PBXNativeTarget "NetworkAnalyst" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CC0100032A00000100000001 /* Debug */,
+				CC0100042A00000100000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1A0100012A00000100000001 /* Project object */;
+}

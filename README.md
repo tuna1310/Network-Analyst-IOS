@@ -74,12 +74,12 @@
 
 ### 3. Tra cứu OUI & Phát hiện MAC Ngẫu Nhiên
 > [!WARNING]
-> **Cơ sở dữ liệu OUI hiện tại là DỮ LIỆU MẪU (23 vendor)** để phục vụ kiểm thử và chạy script trên môi trường phát triển ban đầu. Khi triển khai chính thức, hãy đặt file `oui.csv` chính thức của IEEE (hàng chục nghìn dòng) vào `Scripts/data/oui.csv` và chạy `python3 Scripts/build_oui.py` để sinh file `oui.json` đầy đủ (hỗ trợ MA-L, MA-M, MA-S).
+> **Cơ sở dữ liệu OUI hiện tại là DỮ LIỆU MẪU (24 vendor)** để phục vụ kiểm thử và chạy script trên môi trường phát triển ban đầu. Khi triển khai chính thức, hãy đặt file `oui.csv` chính thức của IEEE (hàng chục nghìn dòng) vào `Scripts/data/oui.csv` và chạy `python3 Scripts/build_oui.py` để sinh file `oui.json` đầy đủ (hỗ trợ MA-L, MA-M, MA-S).
 - **Phát hiện MAC Ngẫu nhiên (Private / Randomized MAC)**:
   - Theo chuẩn IEEE 802, bit 1 của byte đầu tiên là bit U/L (Universal/Local).
   - Nếu `(byte0 & 0x02) != 0` (ví dụ `x2`, `x6`, `xA`, `xE` như `DA:A1:19...`), địa chỉ MAC là do hệ điều hành sinh ngẫu nhiên để bảo mật Wi-Fi. Ứng dụng lập tức gắn nhãn `"Private/Random MAC"` thay vì đoán sai hãng sản xuất.
 
-### 3. Đọc SSID và BSSID trên iOS 14+
+### 4. Đọc SSID và BSSID trên iOS 14+
 - **Vấn đề**: Apple giấu SSID/BSSID nếu thiếu quyền vị trí hoặc thiếu entitlement.
 - **Giải pháp trong dự án**:
   - Khai báo entitlement `com.apple.developer.networking.wifi-info`.
@@ -90,14 +90,49 @@
     - Nếu thiếu Entitlement trong Provisioning Profile: Giải thích rõ ràng nguyên nhân.
     - Nếu không kết nối Wi-Fi: Thông báo đang sử dụng mạng di động.
 
-### 4. Quét cổng giới hạn đồng thời bằng Concurrency
-- Sử dụng `TaskGroup` với cửa sổ trượt (Sliding Window Concurrency) duy trì tối đa ~180-200 tasks kết nối `NWConnection` cùng lúc.
-- Mỗi cổng được gắn một `DispatchSourceTimer` độc lập để ngắt kết nối sau 1.2s, tránh cạn kiệt File Descriptor (FD) hoặc rò rỉ bộ nhớ.
+### 5. Quét cổng TCP với 3 Chế Độ & Phân Loại 4 Trạng Thái
+- **3 Chế độ quét**:
+  1. **Phổ biến**: Top 20 cổng thường dùng hoặc Top 100 dịch vụ mạng.
+  2. **Tùy chọn**: Cú pháp linh hoạt `80, 443, 8000-8100` phân tích qua `PortRangeParser` (tự động loại trùng, kiểm tra biên `1-65535`).
+  3. **Toàn dải (1 - 65535)**: Tính toán thời gian ước tính và hiển thị hộp thoại cảnh báo người dùng xác nhận trước khi bắt đầu.
+- **Phân loại 4 trạng thái**:
+  - `Open`: Bắt tay TCP 3-bước hoàn tất thành công.
+  - `Closed`: Nhận cờ RST từ host (`ECONNREFUSED` = 61).
+  - `Filtered`: Hết thời gian chờ phản hồi (Timeout).
+  - `Error`: Các lỗi kết nối hệ thống khác (`ENETUNREACH`, `EHOSTUNREACH`). **Đặc biệt: nếu gặp lỗi quyền Mạng cục bộ (`kDNSServiceErr_PolicyDenied` / `EPERM`), hệ thống đánh dấu trạng thái Lỗi Quyền Riêng Tư và hiển thị thông báo, tuyệt đối không gộp nhầm thành Closed**.
+- **Điều phối tài nguyên & Quản lý tác vụ**:
+  - `TaskGroup` có giới hạn trần cứng (mặc định 200 tasks đồng thời, tối đa 250).
+  - Timeout thích ứng: 0.8s cho mạng LAN nội bộ, 1.8s cho mạng Internet công cộng.
+  - Hỗ trợ nút **Tạm dừng**, **Tiếp tục**, và **Hủy**: Hủy sạch các đối tượng `NWConnection` đang chờ để tránh rò rỉ File Descriptor (FD).
+  - Thăm dò Banner dịch vụ (Banner Grabbing): Mặc định tắt, khi bật sẽ gửi probe ngắn và đọc tối đa 512 bytes trong 1.0s.
 
-### 5. Bản ghi DNS ngoài A/AAAA
-- System resolver (`getaddrinfo`) của iOS chỉ hỗ trợ A (IPv4) và AAAA (IPv6).
-- Dự án tự hiện thực **DNSClient** tích hợp:
-  - DoH (DNS-over-HTTPS) theo RFC 8484 và RFC 8427 JSON qua `URLSession` (truy vấn tới Cloudflare `1.1.1.1`, Google `8.8.8.8`, Quad9 `9.9.9.9`).
+### 6. Bản ghi DNS Mở Rộng (HTTPS / SVCB), EDNS0 & Chống Lặp Con Trỏ Nén
+- **Bản ghi hiện đại (RFC 9460)**: Tự giải mã cấu trúc phức tạp của `HTTPS` (type 65) và `SVCB` (type 64) bao gồm `SvcPriority`, `TargetName`, và các tham số `SvcParams` (`alpn`, `port`, `ipv4hint`, `ipv6hint`, `ech`, `no-default-alpn`).
+- **Hỗ trợ EDNS0 (RFC 6891)**: Gói tin truy vấn được gắn thêm `OPT RR` với kích thước bộ đệm UDP 4096 bytes để tiếp nhận các phản hồi DNS lớn có chữ ký số DNSSEC hoặc danh sách IP dài.
+- **Tự động thử lại qua TCP (RFC 7766)**: Khi nhận phản hồi UDP có cờ Truncated (`TC = 1`), hệ thống tự động khởi tạo kết nối TCP tới cổng 53, gắn tiền tố 2-byte độ dài và giải mã lại dữ liệu hoàn chỉnh.
+- **Giải mã con trỏ nén an toàn (Safe Pointer Decompression)**:
+  - Kiểm tra biên gói tin (chống đọc tràn bộ nhớ).
+  - Kiểm tra độ sâu nhảy tối đa (ngăn đệ quy sâu).
+  - Thuật toán phát hiện chu trình (Cycle Detection / Visited Offsets) ngăn chặn hoàn toàn nguy cơ treo máy hoặc tràn stack khi gặp gói tin cố tình tạo vòng lặp lồng nhau `0xC0`.
+
+---
+
+## 🗺️ Kế Hoạch Các Mốc Tiếp Theo (Roadmap)
+
+### Mốc 4: Mở Rộng Quét LAN, IPv6 & Lưu Trữ Lịch Sử
+- **Quét LAN nâng cao**: Thăm dò danh sách thiết bị IPv6 trong mạng cục bộ và truy vấn DNS ngược (`PTR`) làm nguồn hostname chính xác.
+- **Ping / Traceroute IPv6**: Mở rộng socket datagram hỗ trợ `AF_INET6` và `IPPROTO_ICMPV6`.
+- **Lưu trữ lịch sử quét**:
+  - Sử dụng định dạng file JSON thuần (Codable) lưu trong thư mục `Application Support` (tương thích iOS 16+, không dùng UserDefaults hoặc SwiftData iOS 17).
+  - Giới hạn tối đa 100 bản ghi mỗi phân hệ, thực hiện tác vụ đọc/ghi bất đồng bộ tại background thread.
+  - Cung cấp nút xóa toàn bộ lịch sử trong giao diện.
+- **Cảnh báo bảo mật**: Hộp thoại cảnh báo pháp lý "Chỉ quét mạng mà bạn được ủy quyền sở hữu hoặc quản trị", hiển thị một lần duy nhất và bắt buộc người dùng đồng ý trước khi thực hiện lượt quét đầu tiên.
+
+### Mốc 5: Hoàn Thiện Bản Phát Hành & Rà Soát Bảo Mật
+- **Rà soát Localization**: Quét toàn bộ project đảm bảo 100% chuỗi UI nằm trong `Localizable.xcstrings`, không sót chuỗi hardcode.
+- **Báo cáo Quyền riêng tư (Privacy Audit)**: Liệt kê chi tiết mọi domain/endpoint kết nối bên ngoài (`api.ipify.org`, `v6.ident.me`, `ipwho.is`, `data.iana.org`, `rdap.org`, các DNS resolver Cloudflare/Google/Quad9).
+- **Entitlements & Capabilities**: Hoàn thiện danh sách cấu hình trên Apple Developer Portal và Provisioning Profiles.
+- **Bảng kiểm thử trên iPhone thật**: Danh mục chi tiết các chức năng bắt buộc phải chạy trên thiết bị thật trước khi xuất bản App Store.
   - Raw UDP DNS Client qua `NWConnection` tới cổng 53.
   - Tự giải mã gói tin nhị phân RFC 1035 với giải thuật giải nén con trỏ (Pointers `0xC0`).
 
@@ -356,9 +391,13 @@ Dự án được định nghĩa chính thức qua file `project.yml` để trá
 
 ## 🔍 Bảng Trạng Thái Kiểm Chứng (Verification Matrix)
 
+> [!NOTE]
+> Môi trường phát triển hiện tại là Windows, không cài đặt Swift toolchain (`swift --version` không khả dụng). Do đó, toàn bộ mã nguồn Swift và các bộ Unit Test mới chỉ được **rà soát bằng mắt (code review), chưa biên dịch và chưa chạy test tự động**.
+
 | Đã kiểm chứng thực tế (chạy thật trên Windows) | Rà soát bằng mắt, chưa biên dịch (cần Mac) | Bắt buộc kiểm chứng trên thiết bị thật (iPhone) |
 |---|---|---|
-| - Script Python `build_oui.py` đọc CSV và xuất JSON hợp lệ. | - Mã nguồn Swift 5.9, `actor`, `@MainActor`, `Sendable`, protocol. | - Socket ICMP unprivileged nhận ICMP Type 11 (Time Exceeded) từ router mạng viễn thông. |
-| - Tính hợp lệ của cấu trúc `oui.json` và `Localizable.xcstrings`. | - Lệnh `xcodegen generate` sinh project Xcode từ `project.yml`. | - Quyền Wi-Fi SSID / BSSID (`NEHotspotNetwork.fetchCurrent`) trên router thật. |
-| - Cấu trúc cú pháp `project.yml` và `Package.swift`. | - Chạy `xcodebuild test` cho target `NetworkAnalystTests` và `NetworkCoreTests`. | - Nhận diện VPN qua `utun*` active + có IP gán thực tế. |
-| | - Biên dịch và link các resource bundle (`Localizable.xcstrings`, `oui.json`). | - Phản hồi TCP Port 43 từ WHOIS server của các registrar khác nhau. |
+| - Script Python `build_oui.py` đọc CSV và sinh `oui.json` (24 vendors). | - Toàn bộ mã nguồn Swift 5.9, `actor`, `@MainActor`, `Sendable`, SwiftUI Views (`PortScannerView`, `DNSLookupView`). | - Socket ICMP unprivileged nhận ICMP Type 11 (Time Exceeded) từ router mạng viễn thông. |
+| - Tính hợp lệ cú pháp JSON của `Localizable.xcstrings` (98 keys) và `oui.json`. | - Toàn bộ Unit Tests trong `NetworkCoreTests` (`DNSCodecTests`, `PortRangeParserTests`, `PortScanStatusTests`, `RDAPParserTests`, `WhoisReferralParserTests`, `InterfaceClassifierTests`, `OUILookupTests`, `ICMPChecksumTests`). | - Quyền Wi-Fi SSID / BSSID (`NEHotspotNetwork.fetchCurrent`) trên router thật. |
+| - Cấu trúc cú pháp `project.yml` và `Package.swift`. | - Lệnh `xcodegen generate` sinh project Xcode từ `project.yml`. | - Nhận diện VPN qua `utun*` active + có IP gán thực tế. |
+| | - Biên dịch và link các resource bundle (`Localizable.xcstrings`, `oui.json`). | - Phản hồi TCP Port 43 từ WHOIS server của các registrar khác nhau qua mạng 4G/5G. |
+| | - Hành vi socket TCP khi thử lại (Fallback) gói tin DNS bị cắt ngắn (`TC=1`). | - Quét cổng 65,535 cổng có bị hệ điều hành iOS đưa vào trạng thái suspend/ngắt background hay không. |

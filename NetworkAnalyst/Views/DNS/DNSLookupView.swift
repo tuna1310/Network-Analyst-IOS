@@ -113,19 +113,37 @@ public struct DNSLookupView: View {
             
             // Picker chọn DNS Resolver Upstream (khi ở chế độ DNS)
             if viewModel.lookupMode == .dns {
-                HStack {
-                    Text("Máy chủ DNS:")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    
-                    Spacer()
-                    
-                    Picker("DNS Provider", selection: $viewModel.selectedProvider) {
-                        ForEach(DNSProvider.allCases) { p in
-                            Text(p.rawValue).tag(p)
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
+                        Text("Máy chủ DNS Resolver:")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        Spacer()
+                        
+                        Picker("DNS Provider", selection: $viewModel.selectedProviderOption) {
+                            Text("Cloudflare (1.1.1.1 / DoH)").tag(0)
+                            Text("Google (8.8.8.8 / DoH)").tag(1)
+                            Text("Quad9 (9.9.9.9 / DoH)").tag(2)
+                            Text("Tùy chỉnh IP").tag(3)
+                            Text("Mạng hiện tại (Gateway)").tag(4)
                         }
+                        .pickerStyle(.menu)
                     }
-                    .pickerStyle(.menu)
+                    
+                    if viewModel.selectedProviderOption == 3 {
+                        HStack {
+                            Image(systemName: "server.rack")
+                                .foregroundColor(.secondary)
+                            TextField("Nhập IP máy chủ DNS (vd: 208.67.222.222)", text: $viewModel.customResolverIP)
+                                .font(.caption.monospaced())
+                                .textFieldStyle(.roundedBorder)
+                        }
+                    } else if viewModel.selectedProviderOption == 4 {
+                        Text("Lưu ý: Mạng hiện tại truy vấn DNS của router gateway nội bộ. Do hệ thống iOS chỉ hỗ trợ giải quyết A/AAAA, các bản ghi mở rộng (HTTPS, CAA, SRV) có thể cần chọn Cloudflare/Google.")
+                            .font(.system(size: 9))
+                            .foregroundColor(.secondary)
+                    }
                 }
             }
             
@@ -186,9 +204,21 @@ public struct DNSLookupView: View {
                             .font(.headline)
                     }
                     Spacer()
-                    Text(String(format: "%.0f ms", result.responseTimeMs))
-                        .font(.caption.monospaced())
-                        .foregroundColor(.secondary)
+                    HStack(spacing: 6) {
+                        if result.retriedOverTCP {
+                            Text("TCP Retry (TC=1)")
+                                .font(.system(size: 9, weight: .bold))
+                                .padding(.horizontal, 5)
+                                .padding(.vertical, 2)
+                                .background(Color.orange.opacity(0.15))
+                                .foregroundColor(.orange)
+                                .cornerRadius(4)
+                        }
+                        
+                        Text(String(format: "%.0f ms", result.responseTimeMs))
+                            .font(.caption.monospaced().bold())
+                            .foregroundColor(.secondary)
+                    }
                 }
                 
                 if let err = result.error {

@@ -7,17 +7,32 @@
 
 import Foundation
 import Combine
+import NetworkCore
 
-/// ViewModel điều khiển màn hình Quét cổng Port Scanner
+/// Bộ lọc trạng thái hiển thị danh sách cổng
+public enum PortFilterOption: String, CaseIterable, Identifiable {
+    case openOnly = "Chỉ cổng mở"
+    case all = "Tất cả"
+    case closed = "Đóng"
+    case filtered = "Bị chặn"
+    
+    public var id: String { rawValue }
+}
+
+/// ViewModel điều khiển màn hình Quét cổng Port Scanner với 3 chế độ (Phổ biến, Tùy chọn, Toàn dải)
 @MainActor
 public final class PortScannerViewModel: ObservableObject {
     public let engine = PortScannerEngine()
     
     @Published public var targetHost: String = ""
+    @Published public var scanMode: PortScanMode = .popular
     @Published public var selectedPreset: PortScanPreset = .top20
-    @Published public var customStartPort: String = "1"
-    @Published public var customEndPort: String = "1024"
-    @Published public var onlyShowOpenPorts: Bool = true
+    @Published public var customRangeInput: String = "80, 443, 8000-8100"
+    @Published public var customRangeError: String? = nil
+    
+    @Published public var showFullScanAlert: Bool = false
+    @Published public var estimatedDurationText: String = ""
+    @Published public var filterOption: PortFilterOption = .openOnly
     @Published public var shareSheetPresented: Bool = false
     
     private var cancellables = Set<AnyCancellable>()
@@ -25,8 +40,8 @@ public final class PortScannerViewModel: ObservableObject {
     public init(initialHost: String = "") {
         if !initialHost.isEmpty {
             self.targetHost = initialHost
-        } else if let wifi = NetworkInterfaceProvider.getPrimaryWiFiInterface(),
-                  let gw = wifi.gateway ?? NetworkInterfaceProvider.getDefaultGateway() {
+        } else if let wifi = NetworkInterfaceInfo.getPrimaryWiFiInterface(),
+                  let gw = wifi.gateway ?? NetworkInterfaceInfo.getDefaultGateway() {
             self.targetHost = gw
         } else {
             self.targetHost = "127.0.0.1"
@@ -40,25 +55,60 @@ public final class PortScannerViewModel: ObservableObject {
     }
     
     public var displayedPorts: [ScannedPort] {
-        if onlyShowOpenPorts {
+        switch filterOption {
+        case .openOnly:
             return engine.openPorts
-        } else {
+        case .all:
             return engine.allScannedResults
+        case .closed:
+            return engine.allScannedResults.filter { $0.status == .closed }
+        case .filtered:
+            return engine.allScannedResults.filter { $0.status == .filtered }
         }
     }
     
+    /// Bắt đầu quét dựa trên chế độ hiện tại
     public func startScan() {
-        let ports: [Int]
-        switch selectedPreset {
-        case .top20, .top100:
-            ports = selectedPreset.ports
-        case .custom:
-            let start = Int(customStartPort) ?? 1
-            let end = Int(customEndPort) ?? 1024
-            ports = PortScanPreset.custom(start: start, end: end).ports
-        }
+        customRangeError = nil
         
-        engine.startScan(host: targetHost, ports: ports)
+        switch scanMode {
+        case .popular:
+            let ports = selectedPreset.ports
+            engine.startScan(host: targetHost, ports: ports)
+            
+        case .custom:
+            let parseResult = PortRangeParser.parse(customRangeInput)
+            switch parseResult {
+            case .success(let ports):
+                engine.startScan(host: targetHost, ports: ports)
+            case .failure(let err):
+                customRangeError = err.localizedDescription
+            }
+            
+        case .full:
+            // Tính toán thời gian ước tính và hiển thị hộp thoại xác nhận
+            let (_, estString) = PortRangeParser.estimateScanDuration(
+                portCount: 65535,
+                concurrency: engine.maxConcurrency,
+                averageTimeoutSeconds: 0.8
+            )
+            estimatedDurationText = estString
+            showFullScanAlert = true
+        }
+    }
+    
+    /// Xác nhận thực hiện quét toàn bộ 65,535 cổng
+    public func confirmAndStartFullScan() {
+        let allPorts = Array(1...65535)
+        engine.startScan(host: targetHost, ports: allPorts)
+    }
+    
+    public func pauseScan() {
+        engine.pauseScan()
+    }
+    
+    public func resumeScan() {
+        engine.resumeScan()
     }
     
     public func stopScan() {
@@ -68,13 +118,15 @@ public final class PortScannerViewModel: ObservableObject {
     public func exportSummary() -> String {
         var text = "=== BÁO CÁO QUÉT CỔNG MẠNG (NETWORK ANALYST) ===\n"
         text += "Mục tiêu: \(targetHost)\n"
+        text += "Chế độ: \(scanMode.title)\n"
         text += "Thời gian: \(Date())\n"
-        text += "Tổng số cổng quét: \(engine.scannedCount)\n"
-        text += "Số cổng mở phát hiện: \(engine.openPorts.count)\n\n"
+        text += "Tổng số cổng đã quét: \(engine.scannedCount)/\(engine.totalCount)\n"
+        text += "Số cổng mở: \(engine.openPorts.count)\n\n"
         text += "DANH SÁCH CỔNG MỞ:\n"
         for p in engine.openPorts {
             let rttStr = p.rttMs != nil ? String(format: "%.1f ms", p.rttMs!) : "--"
-            text += "- Cổng \(p.port) [\(p.serviceName)]: \(p.serviceDescription) (RTT: \(rttStr))\n"
+            let bannerStr = p.banner != nil ? " | Banner: \(p.banner!)" : ""
+            text += "- Cổng \(p.port) [\(p.serviceName)]: \(p.serviceDescription) (RTT: \(rttStr))\(bannerStr)\n"
         }
         return text
     }

@@ -16,12 +16,13 @@ public enum LookupMode: String, CaseIterable, Identifiable {
     public var id: String { rawValue }
 }
 
-/// ViewModel điều khiển màn hình Tra cứu DNS và RDAP
+/// ViewModel điều khiển màn hình Tra cứu DNS đa bản ghi (kèm HTTPS/SVCB) và RDAP
 @MainActor
 public final class DNSLookupViewModel: ObservableObject {
     @Published public var domainInput: String = "apple.com"
     @Published public var selectedRecordType: DNSRecordType = .ANY
-    @Published public var selectedProvider: DNSProvider = .cloudflare
+    @Published public var selectedProviderOption: Int = 0 // 0: Cloudflare, 1: Google, 2: Quad9, 3: Custom, 4: System Gateway
+    @Published public var customResolverIP: String = "1.1.1.1"
     @Published public var lookupMode: LookupMode = .dns
     
     @Published public var isQuerying: Bool = false
@@ -31,6 +32,22 @@ public final class DNSLookupViewModel: ObservableObject {
     
     public let sampleDomains = ["apple.com", "google.com", "cloudflare.com", "microsoft.com", "github.com"]
     
+    public var currentProvider: DNSProvider {
+        switch selectedProviderOption {
+        case 0: return .cloudflare
+        case 1: return .google
+        case 2: return .quad9
+        case 3:
+            let ip = customResolverIP.trimmingCharacters(in: .whitespacesAndNewlines)
+            return .custom(ip: ip.isEmpty ? "1.1.1.1" : ip)
+        case 4:
+            let gw = NetworkInterfaceInfo.getDefaultGateway()
+            return .system(gatewayIP: gw)
+        default:
+            return .cloudflare
+        }
+    }
+    
     public init() {}
     
     /// Thực hiện tra cứu tùy theo tab hiện tại (DNS hoặc RDAP)
@@ -39,30 +56,55 @@ public final class DNSLookupViewModel: ObservableObject {
         guard !clean.isEmpty else { return }
         
         isQuerying = true
+        let provider = currentProvider
         
         if lookupMode == .dns {
             if selectedRecordType == .ANY {
-                // Truy vấn song song các bản ghi phổ biến: A, AAAA, MX, TXT, NS, CNAME, SOA
-                let types: [DNSRecordType] = [.A, .AAAA, .MX, .TXT, .NS, .CNAME, .SOA]
-                var aggregatedRecords: [DNSRecordItem] = []
-                var totalTime = 0.0
+                // Truy vấn song song tất cả các bản ghi phổ biến kể cả HTTPS và SVCB
+                let allTypes: [DNSRecordType] = [
+                    .A, .AAAA, .HTTPS, .SVCB, .CNAME, .MX, .TXT, .NS, .SOA, .SRV, .CAA
+                ]
                 
-                for t in types {
-                    let res = await DNSClient.shared.resolve(domain: clean, type: t, provider: selectedProvider)
-                    aggregatedRecords.append(contentsOf: res.records)
-                    totalTime = max(totalTime, res.responseTimeMs)
+                var aggregatedRecords: [DNSRecordItem] = []
+                var maxResponseTime = 0.0
+                var anyTruncated = false
+                var anyRetriedTCP = false
+                
+                await withTaskGroup(of: DNSQueryResult.self) { group in
+                    for t in allTypes {
+                        group.addTask {
+                            return await DNSClient.shared.resolve(domain: clean, type: t, provider: provider)
+                        }
+                    }
+                    
+                    for await res in group {
+                        aggregatedRecords.append(contentsOf: res.records)
+                        maxResponseTime = max(maxResponseTime, res.responseTimeMs)
+                        if res.isTruncated { anyTruncated = true }
+                        if res.retriedOverTCP { anyRetriedTCP = true }
+                    }
+                }
+                
+                // Sắp xếp: A, AAAA, HTTPS, CNAME trước, rồi theo tên
+                aggregatedRecords.sort { a, b in
+                    if a.type != b.type {
+                        return a.type.code < b.type.code
+                    }
+                    return a.name < b.name
                 }
                 
                 self.dnsResult = DNSQueryResult(
                     domain: clean,
                     recordType: .ANY,
-                    provider: selectedProvider,
+                    provider: provider,
                     records: aggregatedRecords,
-                    responseTimeMs: totalTime,
+                    responseTimeMs: maxResponseTime,
+                    isTruncated: anyTruncated,
+                    retriedOverTCP: anyRetriedTCP,
                     error: aggregatedRecords.isEmpty ? "Không tìm thấy bản ghi DNS nào cho \(clean)" : nil
                 )
             } else {
-                let res = await DNSClient.shared.resolve(domain: clean, type: selectedRecordType, provider: selectedProvider)
+                let res = await DNSClient.shared.resolve(domain: clean, type: selectedRecordType, provider: provider)
                 self.dnsResult = res
             }
         } else {

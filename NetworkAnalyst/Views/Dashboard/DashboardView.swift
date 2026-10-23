@@ -100,9 +100,11 @@ public struct DashboardView: View {
                         Spacer()
                         if let bssid = viewModel.wifiBSSID {
                             VStack(alignment: .trailing, spacing: 4) {
-                                Text("BSSID (MAC Router)")
+                                let vendor = OUIDatabase.shared.lookup(mac: bssid)
+                                Text(vendor != nil ? "\(vendor!) (BSSID)" : "BSSID (MAC Router)")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
+                                    .lineLimit(1)
                                 Text(bssid)
                                     .font(.caption.monospaced())
                             }

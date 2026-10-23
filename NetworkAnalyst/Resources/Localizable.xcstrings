@@ -1,0 +1,181 @@
+{
+  "sourceLanguage" : "vi",
+  "strings" : {
+    "tab.dashboard" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Dashboard" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Tổng quan" } }
+      }
+    },
+    "tab.lan_scanner" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "LAN Scan" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Quét LAN" } }
+      }
+    },
+    "tab.port_scanner" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Port Scan" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Quét cổng" } }
+      }
+    },
+    "tab.ping_traceroute" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Ping & Trace" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ping & Trace" } }
+      }
+    },
+    "tab.dns_rdap" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "DNS & WHOIS" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "DNS & WHOIS" } }
+      }
+    },
+    "common.cancel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cancel" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Hủy" } }
+      }
+    },
+    "common.done" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Done" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Xong" } }
+      }
+    },
+    "common.copied" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Copied to clipboard" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Đã sao chép vào bộ nhớ tạm" } }
+      }
+    },
+    "common.unknown" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unknown" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Không rõ" } }
+      }
+    },
+    "oui.random_mac" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Private / Randomized MAC" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "MAC Ngẫu nhiên / Riêng tư" } }
+      }
+    },
+    "oui.unknown_vendor" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unknown Vendor" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Không rõ nhà sản xuất" } }
+      }
+    },
+    "traceroute.mode_ping" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "ICMP Ping" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Kiểm tra Ping" } }
+      }
+    },
+    "traceroute.mode_traceroute" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Traceroute (IP_TTL)" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Dò tuyến Traceroute" } }
+      }
+    },
+    "traceroute.target_placeholder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Enter host or IP (e.g. 1.1.1.1, google.com)" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Nhập IP hoặc domain (vd: 1.1.1.1, google.com)" } }
+      }
+    },
+    "traceroute.max_hops" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Max Hops:" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Số chặng tối đa:" } }
+      }
+    },
+    "traceroute.geoip_toggle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Lookup country for each hop" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Tra cứu quốc gia từng hop" } }
+      }
+    },
+    "traceroute.geoip_disclaimer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "When enabled, router IP addresses will be queried via an external HTTPS GeoIP API (ipinfo.io). Disabled by default for privacy." } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Khi bật, địa chỉ IP của mỗi hop sẽ được gửi qua HTTPS tới dịch vụ ngoài (ipinfo.io) để lấy vị trí. Mặc định tắt nhằm bảo vệ quyền riêng tư." } }
+      }
+    },
+    "traceroute.start" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Start Traceroute" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Bắt đầu Traceroute" } }
+      }
+    },
+    "traceroute.stop" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Stop Traceroute" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Dừng dò tuyến" } }
+      }
+    },
+    "traceroute.hops_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "HOPS ROUTE PATH" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "ĐƯỜNG ĐI CÁC CHẶNG (HOPS)" } }
+      }
+    },
+    "traceroute.reached_destination" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reached destination at hop #%lld!" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Đã tới đích tại chặng #%lld!" } }
+      }
+    },
+    "traceroute.timeout" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Request timed out" } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Hết thời gian chờ" } }
+      }
+    },
+    "traceroute.probing" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Probing route to %@ (%@)..." } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Đang dò tuyến tới %@ (%@)..." } }
+      }
+    },
+    "traceroute.stopped" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Traceroute stopped." } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Đã dừng dò tuyến." } }
+      }
+    },
+    "traceroute.completed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Traceroute completed (%lld hops)." } },
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Đã hoàn tất dò tuyến (%lld chặng)." } }
+      }
+    }
+  },
+  "version" : "1.0"
+}

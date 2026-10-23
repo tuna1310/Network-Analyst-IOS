@@ -59,14 +59,23 @@
     3. **LLMNR (UDP 5355)**: Truy vấn Link-Local Multicast Name Resolution cho máy trạm Windows.
     4. **SNMP v1/v2c (UDP 161)**: Gửi GetRequest cho OID `sysDescr.0` và `sysName.0` tới community `public`. Router (Cisco, TP-Link, Asus, MikroTik) và máy in mạng sẽ phản hồi chuỗi mô tả model/firmware.
     5. **Bonjour (`NWBrowser`)**: Quét song song các service type phổ biến (`_http._tcp`, `_airplay._tcp`, `_smb._tcp`, `_ipp._tcp`, `_printer._tcp`, `_googlecast._tcp`, `_matter._tcp`).
-    6. **TCP SYN/RST Probe**: Kiểm tra các cổng dịch vụ nhận diện nhanh (80, 443, 22, 445, 8080, 5000, 62078).
+    6. **TCP Connect Probe**: Kiểm tra kết nối TCP chuẩn (full 3-way handshake) qua `NWConnection` trên các cổng dịch vụ nhận diện nhanh (80, 443, 22, 445, 8080, 5000, 62078).
 
-### 2. Socket ICMP không cần đặc quyền root
-- **Vấn đề**: iOS cấm `SOCK_RAW` trong sandbox ứng dụng của bên thứ ba.
-- **Giải pháp trong dự án**:
-  - Sử dụng Datagram ICMP Socket chuẩn POSIX Darwin: `socket(AF_INET, SOCK_DGRAM, IPPROTO_ICMP)` (tương tự cơ chế của `SimplePing`).
-  - Gói tin Echo Request (Type 8, Code 0) được đóng gói cùng RFC 1071 Internet Checksum.
-  - Kernel iOS tự động quản lý IP header và cho phép tiến trình ứng dụng nhận Echo Reply (Type 0, Code 0) qua `recvfrom`.
+### 2. Socket ICMP không cần đặc quyền root & Ràng buộc Traceroute
+- **Vấn đề Ping**: iOS cấm `SOCK_RAW` trong sandbox ứng dụng của bên thứ ba. Hệ thống sử dụng Datagram ICMP Socket chuẩn POSIX Darwin: `socket(AF_INET, SOCK_DGRAM, IPPROTO_ICMP)` (tương tự cơ chế của `SimplePing`). Gói tin Echo Request (Type 8, Code 0) được đóng gói cùng RFC 1071 Internet Checksum.
+- **Ràng buộc với Traceroute**:
+  - Khi tăng dần TTL bằng `setsockopt(sock, IPPROTO_IP, IP_TTL, &ttl, ...)`, các router trung gian sẽ phản hồi gói tin ICMP Type 11 (Time Exceeded).
+  - *Lưu ý quan trọng*: Trên nhân Darwin/iOS, socket ICMP không đặc quyền (`SOCK_DGRAM`) có thể bị kernel lọc không chuyển tiếp gói tin ICMP Type 11 về tầng ứng dụng (chỉ đảm bảo nhận Type 0 Echo Reply).
+  - *Giải pháp*: Ứng dụng triển khai qua `TracerouteEngineProtocol`, hỗ trợ cơ chế thăm dò ICMP chính thức kèm phương án dự phòng gửi probe UDP với `IP_TTL` tới cổng cao (33434+) và bắt phản hồi. **Điểm này bắt buộc phải kiểm chứng hành vi thực tế trên thiết bị iPhone thật**.
+- **Tra cứu Quốc gia từng Hop (GeoIP)**:
+  - Tách thành protocol `GeoIPProvider`. Mặc định sử dụng dịch vụ HTTPS `ipinfo.io` (hạn mức miễn phí ~50,000 lượt/tháng, tuân thủ ATS).
+  - Để bảo vệ quyền riêng tư, tính năng này **mặc định TẮT**, có giải thích rõ ràng và có cache trong bộ nhớ kèm rate limiter.
+
+### 3. Tra cứu OUI & Phát hiện MAC Ngẫu Nhiên
+- **Cơ sở dữ liệu OUI**: Sinh ra từ file chính thức của IEEE bằng script `Scripts/build_oui.py`. Khi chưa có file `Scripts/data/oui.csv` từ IEEE, hệ thống tự động dùng `Scripts/data/sample_oui.csv` làm **DỮ LIỆU MẪU** cho unit test.
+- **Phát hiện MAC Ngẫu nhiên (Private / Randomized MAC)**:
+  - Theo chuẩn IEEE 802, bit 1 của byte đầu tiên là bit U/L (Universal/Local).
+  - Nếu `(byte0 & 0x02) != 0` (ví dụ `x2`, `x6`, `xA`, `xE` như `DA:A1:19...`), địa chỉ MAC là do hệ điều hành sinh ngẫu nhiên để bảo mật Wi-Fi. Ứng dụng lập tức gắn nhãn `"Private/Random MAC"` thay vì đoán sai hãng sản xuất.
 
 ### 3. Đọc SSID và BSSID trên iOS 14+
 - **Vấn đề**: Apple giấu SSID/BSSID nếu thiếu quyền vị trí hoặc thiếu entitlement.
@@ -317,12 +326,38 @@ NetworkAnalystIOS/
 - **Xcode** 15.0 trở lên (hỗ trợ Swift 5.9+, iOS 16.0+ SDK).
 - Thiết bị thật iPhone/iPad chạy iOS 16.0+ (khuyến khích để kiểm tra đầy đủ tính năng Wi-Fi SSID và quét mạng LAN).
 
-### Các Bước Thực Hiện
-1. Mở tệp `NetworkAnalyst.xcodeproj` trong Xcode.
-2. Chọn target `NetworkAnalyst` > tab **Signing & Capabilities**:
-   - Chọn **Team** phát triển của bạn (Apple Developer Account).
-   - Bundle Identifier mặc định là `com.developer.NetworkAnalyst` (bạn có thể đổi sang Bundle ID thuộc quyền quản lý của bạn).
-   - Đảm bảo capability **Access Wi-Fi Information** hiển thị không có lỗi đỏ.
-3. Chọn thiết bị đích (iPhone thật hoặc Simulator).
-4. Nhấn **Cmd + B** để Build hoặc **Cmd + R** để chạy trực tiếp.
-5. Dự án được thiết kế hoàn toàn bằng Swift Concurrency hiện đại, tuân thủ nghiêm ngặt chuẩn kiểu dữ liệu `Sendable` và `@MainActor`, đảm bảo **0 warning, 0 error**.
+### Các Bước Thực Hiện Với XcodeGen (Khuyên Dùng)
+Dự án được định nghĩa chính thức qua file `project.yml` để tránh xung đột `project.pbxproj`:
+1. Trên máy Mac, cài đặt XcodeGen (nếu chưa có):
+   ```bash
+   brew install xcodegen
+   ```
+2. Sinh file dự án Xcode từ thư mục gốc:
+   ```bash
+   xcodegen generate
+   ```
+3. Mở `NetworkAnalyst.xcodeproj` vừa được sinh.
+4. Chọn scheme **NetworkAnalyst** và bấm **Cmd + R** để chạy, hoặc chọn **NetworkAnalystTests** bấm **Cmd + U** để chạy toàn bộ Unit Tests.
+
+### Tạo File OUI Từ Bản Ghi Chính Thức Của IEEE
+1. Tải file `oui.csv` chính thức từ IEEE:
+   ```bash
+   curl -o Scripts/data/oui.csv https://standards-oui.ieee.org/oui/oui.csv
+   ```
+2. Chạy script để sinh file tài nguyên `oui.json`:
+   ```bash
+   python3 Scripts/build_oui.py
+   ```
+*(Nếu chưa có `oui.csv`, script sẽ dùng file `sample_oui.csv` mẫu cho mục đích chạy test).*
+
+---
+
+## 🔍 Trạng Thái Kiểm Chứng Mốc 1 (Milestone 1 Verification)
+
+| Đã kiểm chứng tĩnh (trên Windows) | Chưa kiểm chứng (cần Mac) | Bắt buộc kiểm chứng trên thiết bị thật (iPhone) |
+|---|---|---|
+| - Cú pháp Swift 5.9, `actor`, `@MainActor`, `Sendable`. | - Chạy lệnh `xcodegen generate`. | - Socket ICMP unprivileged nhận ICMP Type 11 (Time Exceeded) từ router mạng viễn thông. |
+| - Chuẩn hóa MAC & thuật toán phát hiện MAC ngẫu nhiên (LAA bit 1). | - Chạy `xcodebuild test` cho `NetworkAnalystTests`. | - Quyền Wi-Fi SSID / BSSID (`NEHotspotNetwork.fetchCurrent`) trên router thật. |
+| - Script Python `build_oui.py` phân tích CSV sang JSON. | - Biên dịch và link các resource bundle (`Localizable.xcstrings`, `oui.json`). | - Độ chính xác RTT từng hop khi đi qua mạng 4G/5G hoặc Wi-Fi công cộng. |
+| - Cấu trúc `project.yml` (XcodeGen targets, dependencies). | | |
+| - Định dạng RFC 792 parser cho Type 11, Type 0, Type 3. | | |

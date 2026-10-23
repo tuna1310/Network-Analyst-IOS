@@ -118,8 +118,9 @@ public final class PortScannerEngine: ObservableObject {
         
         let endpoint = NWEndpoint.hostPort(host: NWEndpoint.Host(host), port: nwPort)
         let tcpOptions = NWProtocolTCP.Options()
-        tcpOptions.connectionTimeout = Int(timeout)
-        tcpOptions.enableFastOpen = true
+        tcpOptions.connectionTimeout = max(1, Int(timeout))
+        // Lưu ý: NWConnection thực hiện bắt tay 3 bước TCP đầy đủ (full connect handshake)
+        // tuân thủ sandbox iOS, không dùng raw SYN packet và không bật TFO.
         
         let params = NWParameters(tls: nil, tcp: tcpOptions)
         let connection = NWConnection(to: endpoint, using: params)

@@ -48,16 +48,22 @@ public final class LocalNetworkPermissionManager: ObservableObject {
                     self.status = .granted
                     self.browser?.cancel()
                     self.browser = nil
+                case .waiting(let error):
+                    // Trên iOS 14+, khi người dùng chưa cấp quyền hoặc từ chối,
+                    // NWBrowser thường chuyển sang trạng thái .waiting kèm lỗi chính sách (policy denied / EPERM).
+                    if self.isPolicyDenied(error: error) {
+                        self.status = .denied
+                    }
                 case .failed(let error):
-                    // Mã lỗi -65565 là kDNSServiceErr_PolicyDenied khi người dùng từ chối quyền Local Network
-                    if error.errorCode == -65565 || error.errorCode == 1 {
+                    // kDNSServiceErr_PolicyDenied (-65570) hoặc POSIX EPERM (1) khi từ chối quyền Local Network
+                    if self.isPolicyDenied(error: error) {
                         self.status = .denied
                     }
                     self.browser?.cancel()
                     self.browser = nil
                 case .cancelled:
                     break
-                default:
+                @unknown default:
                     break
                 }
             }
@@ -82,5 +88,22 @@ public final class LocalNetworkPermissionManager: ObservableObject {
     public func markAsGranted() {
         self.status = .granted
         self.showPermissionAlert = false
+    }
+    
+    /// Kiểm tra xem lỗi trả về từ Network.framework có phải do chính sách Local Network bị từ chối hay không
+    private func isPolicyDenied(error: NWError) -> Bool {
+        switch error {
+        case .posix(let posixCode):
+            // POSIX EPERM (1): Operation not permitted
+            return posixCode == .EPERM
+        case .dns(let dnsCode):
+            // kDNSServiceErr_PolicyDenied = -65570
+            // kDNSServiceErr_DefunctConnection = -65565
+            return dnsCode == -65570 || dnsCode == -65565
+        case .tls:
+            return false
+        @unknown default:
+            return error.errorCode == -65570 || error.errorCode == 1
+        }
     }
 }

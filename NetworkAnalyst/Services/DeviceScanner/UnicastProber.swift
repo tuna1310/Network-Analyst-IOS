@@ -233,7 +233,12 @@ public actor UnicastProber {
             macStr = macBytes.map { String(format: "%02X", $0) }.joined(separator: ":")
         }
         
-        return (name: computerName, mac: macStr, vendor: isNas ? "NAS Device" : "Windows/Samba", isNas: isNas)
+        var determinedVendor = isNas ? "NAS Device" : "Windows/Samba"
+        if let mac = macStr, let ouiVendor = OUIDatabase.shared.lookup(mac: mac) {
+            determinedVendor = ouiVendor
+        }
+        
+        return (name: computerName, mac: macStr, vendor: determinedVendor, isNas: isNas)
     }
     
     // MARK: - mDNS Unicast Probe (UDP 5353)

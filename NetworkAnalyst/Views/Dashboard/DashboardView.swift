@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import NetworkCore
 
 /// Màn hình Tổng quan mạng (Dashboard)
 public struct DashboardView: View {

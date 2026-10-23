@@ -81,17 +81,21 @@ final class OUILookupTests: XCTestCase {
             "F01898": "Apple, Inc.",
             "005056": "VMware, Inc.",
             "001A11": "Google, Inc.",
+            "70B3D5E": "Test Organization MA-M, Ltd.", // 28-bit OUI MA-M
             "70B3D5000": "IEEE Registration Authority" // 36-bit OUI MA-S
         ]
         
         let db = OUIDatabase(customDictionary: testData)
-        XCTAssertEqual(db.entryCount, 4)
+        XCTAssertEqual(db.entryCount, 5)
         
         XCTAssertEqual(db.lookup(mac: "f0:18:98:aa:bb:cc"), "Apple, Inc.")
         XCTAssertEqual(db.lookup(mac: "00-50-56-11-22-33"), "VMware, Inc.")
         XCTAssertEqual(db.lookup(mac: "001a.1100.2244"), "Google, Inc.")
         
-        // 36-bit lookup
+        // 28-bit lookup (MA-M)
+        XCTAssertEqual(db.lookup(mac: "70:B3:D5:E1:23:45"), "Test Organization MA-M, Ltd.")
+        
+        // 36-bit lookup (MA-S)
         XCTAssertEqual(db.lookup(mac: "70:B3:D5:00:01:23"), "IEEE Registration Authority")
         
         // MAC hợp lệ nhưng không có trong database

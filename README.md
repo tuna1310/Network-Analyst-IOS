@@ -68,11 +68,13 @@
   - *Lưu ý quan trọng*: Trên nhân Darwin/iOS, socket ICMP không đặc quyền (`SOCK_DGRAM`) có thể bị kernel lọc không chuyển tiếp gói tin ICMP Type 11 về tầng ứng dụng (chỉ đảm bảo nhận Type 0 Echo Reply).
   - *Giải pháp*: Ứng dụng triển khai qua `TracerouteEngineProtocol`, hỗ trợ cơ chế thăm dò ICMP chính thức kèm phương án dự phòng gửi probe UDP với `IP_TTL` tới cổng cao (33434+) và bắt phản hồi. **Điểm này bắt buộc phải kiểm chứng hành vi thực tế trên thiết bị iPhone thật**.
 - **Tra cứu Quốc gia từng Hop (GeoIP)**:
-  - Tách thành protocol `GeoIPProvider`. Mặc định sử dụng dịch vụ HTTPS `ipinfo.io` (hạn mức miễn phí ~50,000 lượt/tháng, tuân thủ ATS).
-  - Để bảo vệ quyền riêng tư, tính năng này **mặc định TẮT**, có giải thích rõ ràng và có cache trong bộ nhớ kèm rate limiter.
+  - Tách thành protocol `GeoIPProvider`. Mặc định sử dụng dịch vụ HTTPS không cần API Key `ipwho.is` (đồng nhất với bản Android, miễn phí ~10,000 lượt/tháng, tuân thủ ATS).
+  - Để bảo vệ quyền riêng tư, tính năng này **mặc định TẮT**, có giải thích rõ ràng người dùng cần chủ động bật, có cache trong bộ nhớ kèm rate limiter.
+  - Không nhúng bất kỳ token hoặc API Key bí mật nào trong mã nguồn ứng dụng.
 
 ### 3. Tra cứu OUI & Phát hiện MAC Ngẫu Nhiên
-- **Cơ sở dữ liệu OUI**: Sinh ra từ file chính thức của IEEE bằng script `Scripts/build_oui.py`. Khi chưa có file `Scripts/data/oui.csv` từ IEEE, hệ thống tự động dùng `Scripts/data/sample_oui.csv` làm **DỮ LIỆU MẪU** cho unit test.
+> [!WARNING]
+> **Cơ sở dữ liệu OUI hiện tại là DỮ LIỆU MẪU (23 vendor)** để phục vụ kiểm thử và chạy script trên môi trường phát triển ban đầu. Khi triển khai chính thức, hãy đặt file `oui.csv` chính thức của IEEE (hàng chục nghìn dòng) vào `Scripts/data/oui.csv` và chạy `python3 Scripts/build_oui.py` để sinh file `oui.json` đầy đủ (hỗ trợ MA-L, MA-M, MA-S).
 - **Phát hiện MAC Ngẫu nhiên (Private / Randomized MAC)**:
   - Theo chuẩn IEEE 802, bit 1 của byte đầu tiên là bit U/L (Universal/Local).
   - Nếu `(byte0 & 0x02) != 0` (ví dụ `x2`, `x6`, `xA`, `xE` như `DA:A1:19...`), địa chỉ MAC là do hệ điều hành sinh ngẫu nhiên để bảo mật Wi-Fi. Ứng dụng lập tức gắn nhãn `"Private/Random MAC"` thay vì đoán sai hãng sản xuất.
@@ -352,12 +354,11 @@ Dự án được định nghĩa chính thức qua file `project.yml` để trá
 
 ---
 
-## 🔍 Trạng Thái Kiểm Chứng Mốc 1 (Milestone 1 Verification)
+## 🔍 Bảng Trạng Thái Kiểm Chứng (Verification Matrix)
 
-| Đã kiểm chứng tĩnh (trên Windows) | Chưa kiểm chứng (cần Mac) | Bắt buộc kiểm chứng trên thiết bị thật (iPhone) |
+| Đã kiểm chứng thực tế (chạy thật trên Windows) | Rà soát bằng mắt, chưa biên dịch (cần Mac) | Bắt buộc kiểm chứng trên thiết bị thật (iPhone) |
 |---|---|---|
-| - Cú pháp Swift 5.9, `actor`, `@MainActor`, `Sendable`. | - Chạy lệnh `xcodegen generate`. | - Socket ICMP unprivileged nhận ICMP Type 11 (Time Exceeded) từ router mạng viễn thông. |
-| - Chuẩn hóa MAC & thuật toán phát hiện MAC ngẫu nhiên (LAA bit 1). | - Chạy `xcodebuild test` cho `NetworkAnalystTests`. | - Quyền Wi-Fi SSID / BSSID (`NEHotspotNetwork.fetchCurrent`) trên router thật. |
-| - Script Python `build_oui.py` phân tích CSV sang JSON. | - Biên dịch và link các resource bundle (`Localizable.xcstrings`, `oui.json`). | - Độ chính xác RTT từng hop khi đi qua mạng 4G/5G hoặc Wi-Fi công cộng. |
-| - Cấu trúc `project.yml` (XcodeGen targets, dependencies). | | |
-| - Định dạng RFC 792 parser cho Type 11, Type 0, Type 3. | | |
+| - Script Python `build_oui.py` đọc CSV và xuất JSON hợp lệ. | - Mã nguồn Swift 5.9, `actor`, `@MainActor`, `Sendable`, protocol. | - Socket ICMP unprivileged nhận ICMP Type 11 (Time Exceeded) từ router mạng viễn thông. |
+| - Tính hợp lệ của cấu trúc `oui.json` và `Localizable.xcstrings`. | - Lệnh `xcodegen generate` sinh project Xcode từ `project.yml`. | - Quyền Wi-Fi SSID / BSSID (`NEHotspotNetwork.fetchCurrent`) trên router thật. |
+| - Cấu trúc cú pháp `project.yml` và `Package.swift`. | - Chạy `xcodebuild test` cho target `NetworkAnalystTests` và `NetworkCoreTests`. | - Nhận diện VPN qua `utun*` active + có IP gán thực tế. |
+| | - Biên dịch và link các resource bundle (`Localizable.xcstrings`, `oui.json`). | - Phản hồi TCP Port 43 từ WHOIS server của các registrar khác nhau. |

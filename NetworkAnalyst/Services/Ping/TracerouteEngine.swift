@@ -8,13 +8,16 @@
 import Foundation
 import Network
 import Darwin
-#if SWIFT_PACKAGE
 import NetworkCore
-#endif
 
-/// Engine thực hiện Traceroute tăng dần TTL (IP_TTL) với nhiều lần probe mỗi hop (3 probes)
-/// Tuân thủ TracerouteEngineProtocol, hỗ trợ dự phòng UDP nếu socket ICMP không đặc quyền
-/// bị kernel iOS hạn chế không chuyển giao gói tin ICMP Type 11 (Time Exceeded).
+/// Engine thực hiện Traceroute tăng dần TTL (IP_TTL) với 3 lần probe mỗi hop.
+/// Tuân thủ TracerouteEngineProtocol, hỗ trợ thử nghiệm socket ICMP datagram và dự phòng UDP probe.
+/// CẢNH BÁO DARWIN / IOS KERNEL:
+/// Trên iOS/Darwin, socket UDP không có cờ IP_RECVERR (như trên Linux), và socket ICMP không đặc quyền
+/// (SOCK_DGRAM) thường KHÔNG nhận được gói ICMP Time Exceeded (Type 11) do kernel lọc bỏ.
+/// Vì vậy cả hai cơ chế này là thử nghiệm, chưa chắc chắn hoạt động được trên thiết bị thương mại
+/// và bắt buộc phải kiểm chứng trên iPhone thật. Nếu cả hai cách đều không nhận được phản hồi từ
+/// router trung gian, các hop sẽ timeout (* * *), UI sẽ hiển thị giải thích rõ cho người dùng.
 public actor TracerouteEngine: TracerouteEngineProtocol {
     private var isCancelled = false
     private let identifier: UInt16
@@ -236,28 +239,10 @@ public actor TracerouteEngine: TracerouteEngineProtocol {
             packet.append(UInt8(65 + (i % 26)))
         }
         
-        let checksum = calculateChecksum(packet)
+        let checksum = InternetChecksum.compute(packet)
         packet[2] = UInt8((checksum >> 8) & 0xFF)
         packet[3] = UInt8(checksum & 0xFF)
         return packet
-    }
-    
-    private func calculateChecksum(_ data: [UInt8]) -> UInt16 {
-        var sum: UInt32 = 0
-        var i = 0
-        let count = data.count
-        while i < count - 1 {
-            let word = (UInt32(data[i]) << 8) | UInt32(data[i + 1])
-            sum += word
-            i += 2
-        }
-        if i < count {
-            sum += (UInt32(data[i]) << 8)
-        }
-        while (sum >> 16) > 0 {
-            sum = (sum & 0xFFFF) + (sum >> 16)
-        }
-        return ~UInt16(sum & 0xFFFF)
     }
     
     private func resolveHostname(ip: String) -> String? {

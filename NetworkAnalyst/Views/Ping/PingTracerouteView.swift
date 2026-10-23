@@ -407,6 +407,22 @@ public struct PingTracerouteView: View {
                     Divider()
                 }
             }
+            
+            if tracerouteService.hops.contains(where: { $0.status == .timeout }) {
+                HStack(alignment: .top, spacing: 8) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundColor(.orange)
+                        .font(.caption)
+                    Text(LocalizedStringKey("traceroute.darwin_limitation_notice"))
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(10)
+                .background(Color.orange.opacity(0.1))
+                .cornerRadius(8)
+                .padding(.top, 4)
+            }
         }
         .padding()
         .background(Color(uiColor: .secondarySystemGroupedBackground))

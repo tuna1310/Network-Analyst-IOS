@@ -8,6 +8,7 @@
 import Foundation
 import Network
 import Darwin
+import NetworkCore
 
 /// Engine thực hiện Ping bằng Datagram ICMP Socket không đặc quyền (SOCK_DGRAM, IPPROTO_ICMP)
 /// Tuân thủ sandbox iOS và không dùng raw socket.
@@ -232,33 +233,12 @@ public actor ICMPEngine {
             packet.append(UInt8(65 + (i % 26))) // 'A'...'Z'
         }
         
-        // Tính Internet Checksum RFC 1071
-        let checksum = calculateChecksum(packet)
+        // Tính Internet Checksum RFC 1071 qua NetworkCore
+        let checksum = InternetChecksum.compute(packet)
         packet[2] = UInt8((checksum >> 8) & 0xFF)
         packet[3] = UInt8(checksum & 0xFF)
         
         return packet
-    }
-    
-    private func calculateChecksum(_ data: [UInt8]) -> UInt16 {
-        var sum: UInt32 = 0
-        var i = 0
-        let count = data.count
-        
-        while i < count - 1 {
-            let word = (UInt32(data[i]) << 8) | UInt32(data[i + 1])
-            sum += word
-            i += 2
-        }
-        if i < count {
-            let word = UInt32(data[i]) << 8
-            sum += word
-        }
-        
-        while (sum >> 16) > 0 {
-            sum = (sum & 0xFFFF) + (sum >> 16)
-        }
-        return ~UInt16(sum & 0xFFFF)
     }
     
     /// Dự phòng đo độ trễ qua TCP connect nếu ICMP bị chặn hoàn toàn

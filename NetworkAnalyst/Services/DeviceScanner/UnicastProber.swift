@@ -7,6 +7,7 @@
 
 import Foundation
 import Network
+import NetworkCore
 
 /// Kết quả thăm dò Unicast một IP
 public struct HostProbeResult: Sendable {

@@ -12,23 +12,23 @@ public protocol GeoIPProvider: Sendable {
     func lookup(ip: String) async -> HopGeoIPInfo?
 }
 
-/// Triển khai mặc định qua HTTPS API công cộng (ipinfo.io)
-/// Giới hạn: API miễn phí có hạn mức ~50,000 lượt/tháng, tuân thủ ATS (HTTPS thuần túy).
+/// Triển khai mặc định qua HTTPS API công cộng không cần khóa (ipwho.is - đồng nhất với bản Android)
+/// Giới hạn: API miễn phí có hạn mức ~10,000 lượt/tháng, không yêu cầu API key bí mật, tuân thủ ATS (HTTPS thuần túy).
 public actor HTTPSGeoIPProvider: GeoIPProvider {
     public static let shared = HTTPSGeoIPProvider()
     
-    public static let sourceName = "ipinfo.io (HTTPS API)"
+    public static let sourceName = "ipwho.is (HTTPS, miễn phí ~10,000 lượt/tháng, không cần API Key)"
     
     private var cache: [String: HopGeoIPInfo] = [:]
     private let urlSession: URLSession
     private var requestCountThisSession: Int = 0
-    private let maxRequestsPerSession: Int = 40
+    private let maxRequestsPerSession: Int = 30
     private var lastRequestTime: CFAbsoluteTime = 0
     
     public init() {
         let config = URLSessionConfiguration.ephemeral
-        config.timeoutIntervalForRequest = 3.5
-        config.timeoutIntervalForResource = 5.0
+        config.timeoutIntervalForRequest = 4.0
+        config.timeoutIntervalForResource = 6.0
         self.urlSession = URLSession(configuration: config)
     }
     
@@ -51,22 +51,22 @@ public actor HTTPSGeoIPProvider: GeoIPProvider {
             return localInfo
         }
         
-        // 3. Giới hạn tần suất và số lượng gọi trong phiên (Rate Limiting)
+        // 3. Giới hạn tần suất và số lượng gọi trong phiên (Rate Limiting phòng ngừa lạm dụng)
         guard requestCountThisSession < maxRequestsPerSession else {
             return nil
         }
         
-        // Đảm bảo giãn cách tối thiểu 200ms giữa các request để tránh bị 429
+        // Đảm bảo giãn cách tối thiểu 250ms giữa các request để bảo vệ quota
         let now = CFAbsoluteTimeGetCurrent()
         let elapsed = now - lastRequestTime
-        if elapsed < 0.2 {
-            let waitNanos = UInt64((0.2 - elapsed) * 1_000_000_000)
+        if elapsed < 0.25 {
+            let waitNanos = UInt64((0.25 - elapsed) * 1_000_000_000)
             try? await Task.sleep(nanoseconds: waitNanos)
         }
         lastRequestTime = CFAbsoluteTimeGetCurrent()
         requestCountThisSession += 1
         
-        guard let url = URL(string: "https://ipinfo.io/\(cleanIP)/json") else { return nil }
+        guard let url = URL(string: "https://ipwho.is/\(cleanIP)") else { return nil }
         
         do {
             var request = URLRequest(url: url)
@@ -77,22 +77,28 @@ public actor HTTPSGeoIPProvider: GeoIPProvider {
                 return nil
             }
             
-            struct RawGeo: Decodable {
+            struct IPWhoIsResponse: Decodable {
+                let success: Bool
                 let country: String?
+                let country_code: String?
                 let city: String?
+                let message: String?
             }
             
-            let decoded = try JSONDecoder().decode(RawGeo.self, from: data)
+            let decoded = try JSONDecoder().decode(IPWhoIsResponse.self, from: data)
+            guard decoded.success else {
+                return nil
+            }
+            
             let result = HopGeoIPInfo(
                 ip: cleanIP,
                 country: decoded.country,
-                countryCode: decoded.country,
+                countryCode: decoded.country_code,
                 city: decoded.city
             )
             cache[cleanIP] = result
             return result
         } catch {
-            // Lỗi mạng hoặc rate limit -> trả về nil để UI hiện "không rõ"
             return nil
         }
     }

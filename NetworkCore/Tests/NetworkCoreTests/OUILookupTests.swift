@@ -101,4 +101,14 @@ final class OUILookupTests: XCTestCase {
         // MAC hợp lệ nhưng không có trong database
         XCTAssertNil(db.lookup(mac: "00:11:22:33:44:55"))
     }
+    
+    func testBundledResourceLoadingFromPackageModule() {
+        // Kiểm tra instance shared nạp oui.json từ Bundle.module thành công
+        let sharedDB = OUIDatabase.shared
+        XCTAssertGreaterThan(sharedDB.entryCount, 0, "Resource oui.json trong Bundle.module phải được nạp và có bản ghi")
+        
+        // Tra cứu địa chỉ MAC VMware 00:50:56 có sẵn trong file oui.json bundled
+        let vendor = sharedDB.lookup(mac: "00:50:56:11:22:33")
+        XCTAssertEqual(vendor, "VMware, Inc.", "Tra cứu địa chỉ MAC mẫu từ resource bundle phải trả về tên nhà sản xuất")
+    }
 }

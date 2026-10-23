@@ -46,8 +46,8 @@ public enum WhoisReferralParser {
                     // Loại bỏ dấu gạch chéo cuối
                     candidate = candidate.trimmingCharacters(in: CharacterSet(charactersIn: "/ \t\r\n"))
                     
-                    // Kiểm tra hostname hợp lệ (ít nhất chứa ký tự chữ và dấu chấm)
-                    if candidate.contains(".") && !candidate.contains(" ") && candidate.count >= 4 {
+                    // Kiểm tra hostname hợp lệ và không trỏ tới localhost/mạng riêng tư nội bộ (chống SSRF)
+                    if isValidPublicWhoisHost(candidate) {
                         return candidate
                     }
                 }
@@ -55,5 +55,33 @@ public enum WhoisReferralParser {
         }
         
         return nil
+    }
+    
+    /// Kiểm tra hostname có hợp lệ và thuộc dải công cộng hay không (chống SSRF / kết nối LAN vô ý)
+    public static func isValidPublicWhoisHost(_ candidate: String) -> Bool {
+        let clean = candidate.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        guard clean.contains(".") && !clean.contains(" ") && clean.count >= 4 else { return false }
+        
+        // Ngăn chặn localhost và địa chỉ IP loopback / private RFC 1918 / link-local
+        if clean == "localhost" ||
+           clean.hasPrefix("127.") ||
+           clean.hasPrefix("10.") ||
+           clean.hasPrefix("192.168.") ||
+           clean.hasPrefix("169.254.") ||
+           clean == "::1" ||
+           clean.hasPrefix("fe80:") ||
+           clean.hasPrefix("fc00:") {
+            return false
+        }
+        
+        // Kiểm tra 172.16.0.0 - 172.31.255.255
+        if clean.hasPrefix("172.") {
+            let parts = clean.split(separator: ".")
+            if parts.count >= 2, let second = Int(parts[1]), second >= 16 && second <= 31 {
+                return false
+            }
+        }
+        
+        return true
     }
 }

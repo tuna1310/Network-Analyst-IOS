@@ -64,22 +64,18 @@ public final class OUIDatabase: @unchecked Sendable {
         return String(normalized.prefix(6))
     }
     
-    /// Đảm bảo nạp dữ liệu lazy từ oui.json
+    /// Đảm bảo nạp dữ liệu lazy từ oui.json thông qua Bundle.module
     private func ensureLoaded() {
         lock.lock()
         defer { lock.unlock() }
         
         guard !isLoaded else { return }
         
-        var dataUrl: URL? = nil
-        
         #if SWIFT_PACKAGE
-        dataUrl = Bundle.module.url(forResource: "oui", withExtension: "json")
+        let dataUrl = Bundle.module.url(forResource: "oui", withExtension: "json")
+        #else
+        let dataUrl = Bundle(for: OUIDatabase.self).url(forResource: "oui", withExtension: "json") ?? Bundle.main.url(forResource: "oui", withExtension: "json")
         #endif
-        
-        if dataUrl == nil {
-            dataUrl = Bundle.main.url(forResource: "oui", withExtension: "json")
-        }
         
         if let url = dataUrl, let data = try? Data(contentsOf: url) {
             if let decoded = try? JSONDecoder().decode([String: String].self, from: data) {

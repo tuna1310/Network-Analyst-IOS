@@ -256,9 +256,13 @@ public actor NetworkDetailsService {
         }
         #endif
         
-        // Nếu không đọc được từ POSIX state, dùng gateway làm DNS dự phòng
-        if servers.isEmpty, let gw = defaultGateway, !gw.isEmpty {
-            servers.append("\(gw) (Router DNS)")
+        // Nếu không đọc được từ POSIX state, ghi rõ nhãn ước đoán hoặc không khả dụng
+        if servers.isEmpty {
+            if let gw = defaultGateway, !gw.isEmpty {
+                servers.append("Ước đoán: \(gw) (Router Gateway)")
+            } else {
+                servers.append("Không khả dụng trên iOS")
+            }
         }
         
         return servers
@@ -269,40 +273,51 @@ public actor NetworkDetailsService {
         #if canImport(CoreTelephony)
         let networkInfo = CTTelephonyNetworkInfo()
         
-        var carrierName: String? = nil
-        var radioTech: String? = nil
+        var validCarriers: [String] = []
+        var radioList: [String] = []
         
-        // Lưu ý: subscriberCellularProvider đã deprecate trên iOS 16, sử dụng serviceSubscriberCellularProviders
+        // serviceSubscriberCellularProviders trả về Dictionary [String: CTCarrier] theo từng SIM (SIM 1, eSIM)
+        // Lưu ý: Apple đã deprecate CTCarrier trên iOS 16.4+, carrierName có thể trả về nil, rỗng hoặc giá trị giả định "--"
         if let providers = networkInfo.serviceSubscriberCellularProviders {
-            for (_, provider) in providers {
-                if let name = provider.carrierName, !name.isEmpty {
-                    carrierName = name
-                    break
+            for (serviceId, carrier) in providers.sorted(by: { $0.key < $1.key }) {
+                if let name = carrier.carrierName?.trimmingCharacters(in: .whitespacesAndNewlines),
+                   !name.isEmpty, name != "--", name != "Carrier" {
+                    validCarriers.append("\(name) [\(serviceId)]")
                 }
             }
         }
         
+        // serviceCurrentRadioAccessTechnology trả về Dictionary [String: String] theo từng SIM
         if let radioDict = networkInfo.serviceCurrentRadioAccessTechnology {
-            for (_, tech) in radioDict {
+            for (serviceId, tech) in radioDict.sorted(by: { $0.key < $1.key }) {
+                var desc: String
                 switch tech {
                 case CTRadioAccessTechnologyNR, CTRadioAccessTechnologyNRNSA:
-                    radioTech = "5G (NR)"
+                    desc = "5G (NR)"
                 case CTRadioAccessTechnologyLTE:
-                    radioTech = "4G (LTE)"
+                    desc = "4G (LTE)"
                 case CTRadioAccessTechnologyHSDPA, CTRadioAccessTechnologyHSUPA, CTRadioAccessTechnologyWCDMA:
-                    radioTech = "3G (HSPA/WCDMA)"
+                    desc = "3G (HSPA/WCDMA)"
                 case CTRadioAccessTechnologyEdge, CTRadioAccessTechnologyGPRS:
-                    radioTech = "2G (EDGE/GPRS)"
+                    desc = "2G (EDGE/GPRS)"
                 default:
-                    radioTech = tech.replacingOccurrences(of: "CTRadioAccessTechnology", with: "")
+                    desc = tech.replacingOccurrences(of: "CTRadioAccessTechnology", with: "")
                 }
-                if radioTech != nil { break }
+                radioList.append("\(desc) [\(serviceId)]")
             }
         }
         
-        return (carrierName, radioTech)
+        let finalCarrier = validCarriers.isEmpty
+            ? "Không khả dụng (Không có SIM / Deprecated trên iOS 16.4+)"
+            : validCarriers.joined(separator: ", ")
+            
+        let finalRadio = radioList.isEmpty
+            ? "Không có kết nối mạng di động"
+            : radioList.joined(separator: ", ")
+            
+        return (finalCarrier, finalRadio)
         #else
-        return (nil, nil)
+        return ("Không hỗ trợ CoreTelephony", "Không hỗ trợ")
         #endif
     }
     

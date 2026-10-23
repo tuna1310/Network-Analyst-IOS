@@ -67,4 +67,17 @@ final class WhoisReferralParserTests: XCTestCase {
         let server = WhoisReferralParser.extractReferralServer(from: plainWhois)
         XCTAssertNil(server)
     }
+    
+    func testRejectPrivateAndLocalhostReferral() {
+        XCTAssertFalse(WhoisReferralParser.isValidPublicWhoisHost("localhost"))
+        XCTAssertFalse(WhoisReferralParser.isValidPublicWhoisHost("127.0.0.1"))
+        XCTAssertFalse(WhoisReferralParser.isValidPublicWhoisHost("192.168.1.1"))
+        XCTAssertFalse(WhoisReferralParser.isValidPublicWhoisHost("10.0.0.5"))
+        XCTAssertFalse(WhoisReferralParser.isValidPublicWhoisHost("172.16.0.1"))
+        XCTAssertFalse(WhoisReferralParser.isValidPublicWhoisHost("172.31.255.254"))
+        
+        XCTAssertTrue(WhoisReferralParser.isValidPublicWhoisHost("whois.verisign-grs.com"))
+        XCTAssertTrue(WhoisReferralParser.isValidPublicWhoisHost("whois.iana.org"))
+        XCTAssertTrue(WhoisReferralParser.isValidPublicWhoisHost("whois.nic.vn"))
+    }
 }

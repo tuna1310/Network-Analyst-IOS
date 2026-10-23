@@ -11,7 +11,8 @@ import XCTest
 final class RDAPParserTests: XCTestCase {
     
     func testParseDomainRDAP() throws {
-        let sampleDomainJSON = """
+        // Dữ liệu fixture mẫu tự soạn theo chuẩn RFC 7483 (không phải trích từ phản hồi thật từ mạng)
+        let domainFixtureSynthetic = """
         {
             "objectClassName": "domain",
             "handle": "2138514_DOMAIN_COM-VRSN",
@@ -55,7 +56,7 @@ final class RDAPParserTests: XCTestCase {
         }
         """
         
-        let data = Data(sampleDomainJSON.utf8)
+        let data = Data(domainFixtureSynthetic.utf8)
         let record = try RDAPParser.parse(data: data, query: "apple.com", queryType: .domain)
         
         XCTAssertEqual(record.query, "apple.com")
@@ -74,7 +75,8 @@ final class RDAPParserTests: XCTestCase {
     }
     
     func testParseIPNetworkRDAP() throws {
-        let sampleIPJSON = """
+        // Dữ liệu fixture mẫu tự soạn cho IP Network theo chuẩn RFC 7483 (không phải trích từ phản hồi thật từ mạng)
+        let ipFixtureSynthetic = """
         {
             "objectClassName": "ip network",
             "handle": "NET-8-8-8-0-1",
@@ -106,7 +108,7 @@ final class RDAPParserTests: XCTestCase {
         }
         """
         
-        let data = Data(sampleIPJSON.utf8)
+        let data = Data(ipFixtureSynthetic.utf8)
         let record = try RDAPParser.parse(data: data, query: "8.8.8.8", queryType: .ip)
         
         XCTAssertEqual(record.query, "8.8.8.8")
@@ -119,7 +121,8 @@ final class RDAPParserTests: XCTestCase {
     }
     
     func testParseASNRDAP() throws {
-        let sampleASNJSON = """
+        // Dữ liệu fixture mẫu tự soạn cho ASN theo chuẩn RFC 7483 (không phải trích từ phản hồi thật từ mạng)
+        let asnFixtureSynthetic = """
         {
             "objectClassName": "autnum",
             "handle": "AS15169",
@@ -145,7 +148,7 @@ final class RDAPParserTests: XCTestCase {
         }
         """
         
-        let data = Data(sampleASNJSON.utf8)
+        let data = Data(asnFixtureSynthetic.utf8)
         let record = try RDAPParser.parse(data: data, query: "AS15169", queryType: .asn)
         
         XCTAssertEqual(record.queryType, .asn)

@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import NetworkCore
 
 /// Tab lựa chọn giữa DNS Records và RDAP/Whois
 public enum LookupMode: String, CaseIterable, Identifiable {
@@ -25,7 +26,8 @@ public final class DNSLookupViewModel: ObservableObject {
     
     @Published public var isQuerying: Bool = false
     @Published public var dnsResult: DNSQueryResult?
-    @Published public var rdapResult: RDAPResult?
+    @Published public var rdapRecord: ParsedRDAPRecord?
+    @Published public var rdapError: String?
     
     public let sampleDomains = ["apple.com", "google.com", "cloudflare.com", "microsoft.com", "github.com"]
     
@@ -65,7 +67,14 @@ public final class DNSLookupViewModel: ObservableObject {
             }
         } else {
             let res = await RDAPClient.shared.lookup(query: clean)
-            self.rdapResult = res
+            switch res {
+            case .success(let rec):
+                self.rdapRecord = rec
+                self.rdapError = nil
+            case .failure(let err):
+                self.rdapRecord = nil
+                self.rdapError = err.localizedDescription
+            }
         }
         
         isQuerying = false

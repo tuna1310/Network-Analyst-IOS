@@ -42,9 +42,9 @@ targets:
     deploymentTarget: "16.0"
     sources:
       - path: NetworkCore/Tests/NetworkCoreTests
-      - path: NetworkCore/Sources/NetworkCore
     dependencies:
       - target: NetworkAnalyst
+      - package: NetworkCore
     settings:
       base:
         PRODUCT_NAME: NetworkAnalystTests

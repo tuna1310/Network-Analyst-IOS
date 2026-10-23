@@ -38,6 +38,28 @@ public struct DashboardView: View {
                     localNetworkCard
                         .padding(.horizontal)
                     
+                    // Nút chuyển tới Màn hình Chi tiết Toàn diện (Network Details)
+                    NavigationLink(destination: NetworkDetailsView()) {
+                        HStack {
+                            Image(systemName: "list.bullet.rectangle.portrait.fill")
+                                .foregroundColor(.blue)
+                            Text(LocalizedStringKey("details.title"))
+                                .font(.subheadline.bold())
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Text("Xem chi tiết")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Image(systemName: "chevron.right")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(12)
+                        .background(Color(uiColor: .secondarySystemGroupedBackground))
+                        .cornerRadius(12)
+                    }
+                    .padding(.horizontal)
+                    
                     // Card IP công khai & ISP
                     publicNetworkCard
                         .padding(.horizontal)

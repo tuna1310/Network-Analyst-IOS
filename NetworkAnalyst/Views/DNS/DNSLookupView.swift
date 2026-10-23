@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import NetworkCore
 
 /// Màn hình Tra cứu DNS đa bản ghi (DoH/UDP) và WHOIS / RDAP (URLSession)
 public struct DNSLookupView: View {
@@ -51,6 +52,17 @@ public struct DNSLookupView: View {
                 .padding(.vertical)
             }
             .navigationTitle("DNS & WHOIS / RDAP")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    NavigationLink(destination: RDAPLookupView()) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "globe.americas.fill")
+                            Text("RDAP")
+                                .font(.caption.bold())
+                        }
+                    }
+                }
+            }
             .background(Color(uiColor: .systemGroupedBackground))
         }
     }
@@ -249,47 +261,55 @@ public struct DNSLookupView: View {
     // MARK: - RDAP Results Card
     private var rdapResultsCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            if let rdap = viewModel.rdapResult {
+            if let rdap = viewModel.rdapRecord {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("THÔNG TIN ĐĂNG KÝ (RDAP / WHOIS)")
                             .font(.caption.bold())
                             .foregroundColor(.secondary)
-                        Text(rdap.ldhName ?? rdap.query)
+                        Text(rdap.title)
                             .font(.headline)
                     }
                     Spacer()
                 }
                 
-                if let err = rdap.error {
+                VStack(spacing: 8) {
+                    if let reg = rdap.registrarOrOrg {
+                        rdapRow(label: "Nhà đăng ký / Tổ chức", value: reg)
+                    }
+                    if let owner = rdap.registrantName {
+                        rdapRow(label: "Chủ thể đăng ký", value: owner)
+                    }
+                    if let rDate = rdap.registrationDate {
+                        rdapRow(label: "Ngày khởi tạo", value: rDate)
+                    }
+                    if let eDate = rdap.expirationDate {
+                        rdapRow(label: "Ngày hết hạn", value: eDate)
+                    }
+                    if let uDate = rdap.lastUpdatedDate {
+                        rdapRow(label: "Cập nhật lần cuối", value: uDate)
+                    }
+                    if let cidr = rdap.cidrOrRange {
+                        rdapRow(label: "Dải IP / CIDR", value: cidr)
+                    }
+                    if !rdap.status.isEmpty {
+                        rdapRow(label: "Trạng thái", value: rdap.status.joined(separator: ", "))
+                    }
+                    if !rdap.nameservers.isEmpty {
+                        rdapRow(label: "Máy chủ tên miền (Nameservers)", value: rdap.nameservers.joined(separator: "\n"))
+                    }
+                }
+            } else if let err = viewModel.rdapError {
+                HStack(alignment: .top, spacing: 8) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundColor(.red)
                     Text(err)
                         .font(.subheadline)
                         .foregroundColor(.red)
-                        .padding(.vertical, 8)
-                } else {
-                    VStack(spacing: 8) {
-                        if let reg = rdap.registrar {
-                            rdapRow(label: "Nhà đăng ký (Registrar)", value: reg)
-                        }
-                        if let rDate = rdap.registrationDate {
-                            rdapRow(label: "Ngày khởi tạo", value: rDate)
-                        }
-                        if let eDate = rdap.expirationDate {
-                            rdapRow(label: "Ngày hết hạn", value: eDate)
-                        }
-                        if let uDate = rdap.lastUpdatedDate {
-                            rdapRow(label: "Cập nhật lần cuối", value: uDate)
-                        }
-                        if !rdap.status.isEmpty {
-                            rdapRow(label: "Trạng thái", value: rdap.status.joined(separator: ", "))
-                        }
-                        if !rdap.nameservers.isEmpty {
-                            rdapRow(label: "Máy chủ tên miền (Nameservers)", value: rdap.nameservers.joined(separator: "\n"))
-                        }
-                    }
                 }
+                .padding(.vertical, 8)
             } else {
-                Text("Nhập tên miền hoặc IP để tra cứu hồ sơ chủ sở hữu chính thức qua giao thức RDAP (RFC 7480-7484).")
+                Text("Nhập tên miền, IP hoặc ASN để tra cứu hồ sơ chủ sở hữu chính thức qua giao thức RDAP (RFC 7480-7484).")
                     .font(.footnote)
                     .foregroundColor(.secondary)
                     .padding(.vertical, 16)

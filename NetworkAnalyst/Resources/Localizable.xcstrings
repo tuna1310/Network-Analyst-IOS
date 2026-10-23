@@ -1,181 +1,1383 @@
 {
-  "sourceLanguage" : "vi",
-  "strings" : {
-    "tab.dashboard" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Dashboard" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Tổng quan" } }
+  "sourceLanguage": "vi",
+  "strings": {
+    "tab.dashboard": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dashboard"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tổng quan"
+          }
+        }
       }
     },
-    "tab.lan_scanner" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "LAN Scan" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Quét LAN" } }
+    "tab.lan_scanner": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LAN Scan"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quét LAN"
+          }
+        }
       }
     },
-    "tab.port_scanner" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Port Scan" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Quét cổng" } }
+    "tab.port_scanner": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Port Scan"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quét cổng"
+          }
+        }
       }
     },
-    "tab.ping_traceroute" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Ping & Trace" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ping & Trace" } }
+    "tab.ping_traceroute": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ping & Trace"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ping & Trace"
+          }
+        }
       }
     },
-    "tab.dns_rdap" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "DNS & WHOIS" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "DNS & WHOIS" } }
+    "tab.dns_rdap": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DNS & WHOIS"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DNS & WHOIS"
+          }
+        }
       }
     },
-    "common.cancel" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cancel" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Hủy" } }
+    "common.cancel": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hủy"
+          }
+        }
       }
     },
-    "common.done" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Done" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Xong" } }
+    "common.done": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xong"
+          }
+        }
       }
     },
-    "common.copied" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Copied to clipboard" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Đã sao chép vào bộ nhớ tạm" } }
+    "common.copied": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copied to clipboard"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã sao chép vào bộ nhớ tạm"
+          }
+        }
       }
     },
-    "common.unknown" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unknown" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Không rõ" } }
+    "common.unknown": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unknown"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không rõ"
+          }
+        }
       }
     },
-    "oui.random_mac" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Private / Randomized MAC" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "MAC Ngẫu nhiên / Riêng tư" } }
+    "oui.random_mac": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Private / Randomized MAC"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MAC Ngẫu nhiên / Riêng tư"
+          }
+        }
       }
     },
-    "oui.unknown_vendor" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unknown Vendor" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Không rõ nhà sản xuất" } }
+    "oui.unknown_vendor": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unknown Vendor"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không rõ nhà sản xuất"
+          }
+        }
       }
     },
-    "traceroute.mode_ping" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "ICMP Ping" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Kiểm tra Ping" } }
+    "traceroute.mode_ping": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ICMP Ping"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kiểm tra Ping"
+          }
+        }
       }
     },
-    "traceroute.mode_traceroute" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Traceroute (IP_TTL)" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Dò tuyến Traceroute" } }
+    "traceroute.mode_traceroute": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Traceroute (IP_TTL)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dò tuyến Traceroute"
+          }
+        }
       }
     },
-    "traceroute.target_placeholder" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Enter host or IP (e.g. 1.1.1.1, google.com)" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Nhập IP hoặc domain (vd: 1.1.1.1, google.com)" } }
+    "traceroute.target_placeholder": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter host or IP (e.g. 1.1.1.1, google.com)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhập IP hoặc domain (vd: 1.1.1.1, google.com)"
+          }
+        }
       }
     },
-    "traceroute.max_hops" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Max Hops:" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Số chặng tối đa:" } }
+    "traceroute.max_hops": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Max Hops:"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Số chặng tối đa:"
+          }
+        }
       }
     },
-    "traceroute.geoip_toggle" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Lookup country for each hop" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Tra cứu quốc gia từng hop" } }
+    "traceroute.geoip_toggle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lookup country for each hop"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tra cứu quốc gia từng hop"
+          }
+        }
       }
     },
-    "traceroute.geoip_disclaimer" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "When enabled, router IP addresses will be queried via an external HTTPS GeoIP API (ipinfo.io). Disabled by default for privacy." } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Khi bật, địa chỉ IP của mỗi hop sẽ được gửi qua HTTPS tới dịch vụ ngoài (ipinfo.io) để lấy vị trí. Mặc định tắt nhằm bảo vệ quyền riêng tư." } }
+    "traceroute.geoip_disclaimer": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When enabled, router IP addresses will be queried via an external HTTPS GeoIP API (ipinfo.io). Disabled by default for privacy."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khi bật, địa chỉ IP của mỗi hop sẽ được gửi qua HTTPS tới dịch vụ ngoài (ipinfo.io) để lấy vị trí. Mặc định tắt nhằm bảo vệ quyền riêng tư."
+          }
+        }
       }
     },
-    "traceroute.start" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Start Traceroute" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Bắt đầu Traceroute" } }
+    "traceroute.start": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start Traceroute"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bắt đầu Traceroute"
+          }
+        }
       }
     },
-    "traceroute.stop" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Stop Traceroute" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Dừng dò tuyến" } }
+    "traceroute.stop": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop Traceroute"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dừng dò tuyến"
+          }
+        }
       }
     },
-    "traceroute.hops_title" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "HOPS ROUTE PATH" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "ĐƯỜNG ĐI CÁC CHẶNG (HOPS)" } }
+    "traceroute.hops_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "HOPS ROUTE PATH"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ĐƯỜNG ĐI CÁC CHẶNG (HOPS)"
+          }
+        }
       }
     },
-    "traceroute.reached_destination" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reached destination at hop #%lld!" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Đã tới đích tại chặng #%lld!" } }
+    "traceroute.reached_destination": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reached destination at hop #%lld!"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã tới đích tại chặng #%lld!"
+          }
+        }
       }
     },
-    "traceroute.timeout" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Request timed out" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Hết thời gian chờ" } }
+    "traceroute.timeout": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Request timed out"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hết thời gian chờ"
+          }
+        }
       }
     },
-    "traceroute.probing" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Probing route to %@ (%@)..." } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Đang dò tuyến tới %@ (%@)..." } }
+    "traceroute.probing": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Probing route to %@ (%@)..."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang dò tuyến tới %@ (%@)..."
+          }
+        }
       }
     },
-    "traceroute.stopped" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Traceroute stopped." } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Đã dừng dò tuyến." } }
+    "traceroute.stopped": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Traceroute stopped."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã dừng dò tuyến."
+          }
+        }
       }
     },
-    "traceroute.completed" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Traceroute completed (%lld hops)." } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Đã hoàn tất dò tuyến (%lld chặng)." } }
+    "traceroute.completed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Traceroute completed (%lld hops)."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã hoàn tất dò tuyến (%lld chặng)."
+          }
+        }
+      }
+    },
+    "traceroute.darwin_limitation_notice": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "If intermediate hops show * * *, this is a known iOS/Darwin kernel security restriction where unprivileged sockets do not receive ICMP Type 11. Verification on physical device required."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nếu các hop trung gian hiển thị * * *, đây là giới hạn bảo mật đã biết của nhân iOS/Darwin đối với socket không đặc quyền (không chuyển giao ICMP Type 11). Cần kiểm chứng trên thiết bị iPhone thật."
+          }
+        }
+      }
+    },
+    "rdap.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RDAP & WHOIS"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RDAP & WHOIS"
+          }
+        }
+      }
+    },
+    "rdap.search_placeholder": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter domain (apple.com), IP (8.8.8.8) or ASN (AS15169)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhập tên miền (apple.com), IP (8.8.8.8) hoặc ASN (AS15169)"
+          }
+        }
+      }
+    },
+    "rdap.query_type_auto": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auto"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tự động"
+          }
+        }
+      }
+    },
+    "rdap.query_type_domain": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Domain"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tên miền"
+          }
+        }
+      }
+    },
+    "rdap.query_type_ip": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "IP Address"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Địa chỉ IP"
+          }
+        }
+      }
+    },
+    "rdap.query_type_asn": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ASN"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Số hiệu ASN"
+          }
+        }
+      }
+    },
+    "rdap.mode_summary": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Summary"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tóm tắt"
+          }
+        }
+      }
+    },
+    "rdap.mode_raw": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Raw JSON"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Raw JSON"
+          }
+        }
+      }
+    },
+    "rdap.mode_whois_fallback": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Legacy WHOIS"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "WHOIS cổ điển"
+          }
+        }
+      }
+    },
+    "rdap.owner_org": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Owner / Organization"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chủ sở hữu / Tổ chức"
+          }
+        }
+      }
+    },
+    "rdap.registrar": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Registrar"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhà đăng ký (Registrar)"
+          }
+        }
+      }
+    },
+    "rdap.dates": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Registration Timeline"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thời gian đăng ký"
+          }
+        }
+      }
+    },
+    "rdap.created_date": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Created Date"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ngày khởi tạo"
+          }
+        }
+      }
+    },
+    "rdap.updated_date": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last Updated"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cập nhật lần cuối"
+          }
+        }
+      }
+    },
+    "rdap.expires_date": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expiration Date"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ngày hết hạn"
+          }
+        }
+      }
+    },
+    "rdap.status": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Status"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trạng thái"
+          }
+        }
+      }
+    },
+    "rdap.cidr_range": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "IP CIDR / Range"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dải IP / CIDR"
+          }
+        }
+      }
+    },
+    "rdap.nameservers": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name Servers"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Máy chủ tên miền (Nameservers)"
+          }
+        }
+      }
+    },
+    "rdap.contacts": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contacts"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Liên hệ hành chính & kỹ thuật"
+          }
+        }
+      }
+    },
+    "rdap.copy_json": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy JSON"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sao chép JSON"
+          }
+        }
+      }
+    },
+    "rdap.copy_whois": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy WHOIS Text"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sao chép văn bản WHOIS"
+          }
+        }
+      }
+    },
+    "rdap.copied": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copied to clipboard!"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã sao chép vào bộ nhớ tạm!"
+          }
+        }
+      }
+    },
+    "rdap.not_found": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No registration record found (Unregistered or privacy protected)."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không tìm thấy hồ sơ đăng ký (Chưa đăng ký hoặc được bảo vệ danh tính)."
+          }
+        }
+      }
+    },
+    "rdap.rate_limited": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RDAP server rate limit exceeded (HTTP 429). Please try again shortly."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Máy chủ RDAP vượt quá giới hạn tần suất (HTTP 429). Vui lòng thử lại sau giây lát."
+          }
+        }
+      }
+    },
+    "rdap.whois_fallback_btn": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Query via Legacy WHOIS (TCP Port 43)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tra cứu bằng WHOIS cổ điển (Cổng TCP 43)"
+          }
+        }
+      }
+    },
+    "rdap.whois_referral_hops": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "WHOIS Referral Servers Followed (%lld hops)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Các máy chủ WHOIS chuyển tiếp (%lld hop)"
+          }
+        }
+      }
+    },
+    "details.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Network Details"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thông tin mạng chi tiết"
+          }
+        }
+      }
+    },
+    "details.wifi_section": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wi-Fi Information"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thông tin Wi-Fi"
+          }
+        }
+      }
+    },
+    "details.ssid": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SSID"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tên mạng (SSID)"
+          }
+        }
+      }
+    },
+    "details.bssid": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BSSID (MAC Router)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BSSID (MAC Router)"
+          }
+        }
+      }
+    },
+    "details.bssid_vendor": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Router Manufacturer"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhà sản xuất Router"
+          }
+        }
+      }
+    },
+    "details.security": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Security Protocol"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chuẩn bảo mật"
+          }
+        }
+      }
+    },
+    "details.ip_section": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "IP Configuration"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cấu hình IP cục bộ"
+          }
+        }
+      }
+    },
+    "details.ipv4_local": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Local IPv4"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "IPv4 cục bộ"
+          }
+        }
+      }
+    },
+    "details.subnet_mask": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subnet Mask"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mặt nạ mạng (Subnet Mask)"
+          }
+        }
+      }
+    },
+    "details.gateway": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Default Gateway"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cổng mặc định (Gateway)"
+          }
+        }
+      }
+    },
+    "details.dns_servers": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DNS Resolvers"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Máy chủ DNS"
+          }
+        }
+      }
+    },
+    "details.public_section": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Public Internet IP"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Địa chỉ IP công khai"
+          }
+        }
+      }
+    },
+    "details.public_ipv4": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Public IPv4"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "IPv4 công khai"
+          }
+        }
+      }
+    },
+    "details.public_ipv6": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Public IPv6"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "IPv6 công khai"
+          }
+        }
+      }
+    },
+    "details.cellular_section": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cellular & Carrier"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mạng di động & Nhà mạng"
+          }
+        }
+      }
+    },
+    "details.carrier": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Carrier Name"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tên nhà mạng"
+          }
+        }
+      }
+    },
+    "details.radio_tech": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Radio Technology"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Công nghệ sóng di động"
+          }
+        }
+      }
+    },
+    "details.interfaces_section": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Network Interfaces"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Danh sách giao diện mạng"
+          }
+        }
+      }
+    },
+    "details.interface_wifi": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wi-Fi"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wi-Fi"
+          }
+        }
+      }
+    },
+    "details.interface_cellular": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cellular"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Di động"
+          }
+        }
+      }
+    },
+    "details.interface_vpn": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "VPN (Active)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "VPN (Đang hoạt động)"
+          }
+        }
+      }
+    },
+    "details.interface_hotspot": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Personal Hotspot / Bridge"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Điểm phát sóng / Bridge"
+          }
+        }
+      }
+    },
+    "details.interface_ethernet": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ethernet Adapter"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cáp mạng Ethernet"
+          }
+        }
+      }
+    },
+    "details.interface_other": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Other Interface"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giao diện khác"
+          }
+        }
+      }
+    },
+    "details.tap_to_copy": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap row to copy value"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chạm dòng để sao chép"
+          }
+        }
+      }
+    },
+    "details.copied_toast": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copied: %@"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã sao chép: %@"
+          }
+        }
+      }
+    },
+    "details.oui_sample_warning": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Using bundled sample OUI data (24 vendors). Replace with official IEEE oui.csv for full lookup."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang dùng CSDL OUI mẫu (24 hãng). Hãy nạp oui.csv chính thức từ IEEE để tra cứu toàn diện."
+          }
+        }
+      }
+    },
+    "details.refresh": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refresh"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Làm mới"
+          }
+        }
+      }
+    },
+    "details.dns_deprecation_note": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Note: res_9_init is deprecated on iOS 16+. Resolvers are queried via system routing & Network.framework."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lưu ý: res_9_init đã deprecate trên iOS 16+. Máy chủ DNS được lấy qua bảng định tuyến hệ thống & Network.framework."
+          }
+        }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

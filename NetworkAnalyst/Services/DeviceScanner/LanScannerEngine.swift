@@ -25,6 +25,11 @@ public final class LanScannerEngine: ObservableObject {
     
     /// Bắt đầu phiên quét toàn bộ dải mạng LAN hiện tại
     public func startScan() {
+        guard AppConfigManager.shared.config.hasAcceptedScanDisclaimer else {
+            self.errorMessage = "Yêu cầu xác nhận cam kết chỉ quét mạng được ủy quyền trước khi thực hiện."
+            self.isScanning = false
+            return
+        }
         guard !isScanning else { return }
         isScanning = true
         progress = 0.0

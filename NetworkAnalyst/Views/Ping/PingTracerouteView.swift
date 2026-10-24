@@ -28,6 +28,7 @@ public struct PingTracerouteView: View {
     @StateObject private var tracerouteService = TracerouteService()
     
     @State private var tracerouteMaxHops: Int = 30
+    @State private var showDisclaimerModal: Bool = false
     
     public init() {}
     
@@ -54,6 +55,16 @@ public struct PingTracerouteView: View {
             }
             .navigationTitle(selectedTool == .ping ? "ICMP Ping" : "Traceroute (IP_TTL)")
             .background(Color(uiColor: .systemGroupedBackground))
+            .sheet(isPresented: $showDisclaimerModal) {
+                AuthorizationDisclaimerModal {
+                    tracerouteService.startTraceroute(
+                        host: pingViewModel.targetHost,
+                        maxHops: tracerouteMaxHops,
+                        timeout: 1.0,
+                        probesPerHop: 3
+                    )
+                }
+            }
         }
     }
     
@@ -301,12 +312,16 @@ public struct PingTracerouteView: View {
                 if tracerouteService.isRunning {
                     tracerouteService.stopTraceroute()
                 } else {
-                    tracerouteService.startTraceroute(
-                        host: pingViewModel.targetHost,
-                        maxHops: tracerouteMaxHops,
-                        timeout: 1.0,
-                        probesPerHop: 3
-                    )
+                    if !AppConfigManager.shared.config.hasAcceptedScanDisclaimer {
+                        showDisclaimerModal = true
+                    } else {
+                        tracerouteService.startTraceroute(
+                            host: pingViewModel.targetHost,
+                            maxHops: tracerouteMaxHops,
+                            timeout: 1.0,
+                            probesPerHop: 3
+                        )
+                    }
                 }
             } label: {
                 HStack {

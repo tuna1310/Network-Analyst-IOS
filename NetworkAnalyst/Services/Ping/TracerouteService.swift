@@ -37,6 +37,11 @@ public final class TracerouteService: ObservableObject {
     ) {
         stopTraceroute()
         
+        guard AppConfigManager.shared.config.hasAcceptedScanDisclaimer else {
+            statusMessage = "Yêu cầu cam kết chỉ quét mạng được ủy quyền trước khi thực hiện."
+            return
+        }
+        
         let cleanHost = host.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !cleanHost.isEmpty else {
             statusMessage = "Địa chỉ mục tiêu trống"

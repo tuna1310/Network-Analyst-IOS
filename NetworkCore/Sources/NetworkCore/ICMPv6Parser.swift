@@ -106,19 +106,22 @@ public struct ParsedICMPv6Packet: Sendable, Equatable {
 public enum ICMPv6Codec {
     
     /// Xây dựng gói tin ICMPv6 Echo Request (Type 128, Code 0)
-    /// LƯU Ý QUAN TRỌNG VỀ DARWIN KERNEL:
-    /// Đối với unprivileged datagram ICMPv6 socket `socket(AF_INET6, SOCK_DGRAM, IPPROTO_ICMPV6)`,
-    /// kernel Darwin tự động tính toán Checksum (bao gồm IPv6 Pseudo-header).
-    /// Vì vậy user code PHẢI để 2 byte checksum là 0x0000; nếu tự điền checksum sẽ bị kernel từ chối hoặc lỗi.
+    /// LƯU Ý VỀ ICMPv6 CHECKSUM TRÊN DARWIN/IOS:
+    /// Trên lý thuyết nhân Darwin có thể tự tính toán checksum cho unprivileged datagram ICMPv6 socket,
+    /// nhưng hành vi này chưa chắc chắn trên các thiết bị iPhone thương mại và bắt buộc phải kiểm chứng trên iPhone thật.
+    /// Hàm này mặc định để 2 byte checksum là 0x0000, đồng thời hỗ trợ cờ tính toán RFC 4443 pseudo-header checksum nếu cần.
     public static func buildEchoRequest(
         identifier: UInt16,
         sequence: UInt16,
-        payloadSize: Int = 32
+        payloadSize: Int = 32,
+        calculateChecksum: Bool = false,
+        sourceIPv6: String? = nil,
+        destIPv6: String? = nil
     ) -> [UInt8] {
         var packet = [UInt8](repeating: 0, count: 8 + payloadSize)
         packet[0] = 128 // Type: Echo Request
         packet[1] = 0   // Code: 0
-        packet[2] = 0   // Checksum byte 1 (để kernel Darwin tự tính)
+        packet[2] = 0   // Checksum byte 1
         packet[3] = 0   // Checksum byte 2
         
         // Identifier (bytes 4-5)
@@ -138,6 +141,61 @@ public enum ICMPv6Codec {
         }
         
         for i in 8..<payloadSize {
+            packet[8 + i] = UInt8((i + 65) % 256)
+        }
+        
+        // Tùy chọn tính toán Checksum theo RFC 4443 nếu kernel không tự tính
+        if calculateChecksum, let src = sourceIPv6, let dst = destIPv6 {
+            let cs = computeICMPv6Checksum(sourceIPv6: src, destinationIPv6: dst, icmpPacket: packet)
+            packet[2] = UInt8((cs >> 8) & 0xFF)
+            packet[3] = UInt8(cs & 0xFF)
+        }
+        
+        return packet
+    }
+    
+    /// Tính toán Checksum ICMPv6 kèm IPv6 Pseudo-Header (RFC 4443 / RFC 2460)
+    public static func computeICMPv6Checksum(
+        sourceIPv6: String,
+        destinationIPv6: String,
+        icmpPacket: [UInt8]
+    ) -> UInt16 {
+        var srcSin6 = sockaddr_in6()
+        var dstSin6 = sockaddr_in6()
+        guard inet_pton(AF_INET6, sourceIPv6, &srcSin6.sin6_addr) == 1,
+              inet_pton(AF_INET6, destinationIPv6, &dstSin6.sin6_addr) == 1 else {
+            return 0
+        }
+        
+        var pseudoHeader = [UInt8]()
+        pseudoHeader.reserveCapacity(40 + icmpPacket.count)
+        
+        // 16 bytes Source IPv6
+        withUnsafeBytes(of: srcSin6.sin6_addr) { buffer in
+            pseudoHeader.append(contentsOf: buffer)
+        }
+        // 16 bytes Destination IPv6
+        withUnsafeBytes(of: dstSin6.sin6_addr) { buffer in
+            pseudoHeader.append(contentsOf: buffer)
+        }
+        // 4 bytes Upper-Layer Packet Length (32-bit big endian)
+        let length = UInt32(icmpPacket.count).bigEndian
+        withUnsafeBytes(of: length) { buffer in
+            pseudoHeader.append(contentsOf: buffer)
+        }
+        // 3 bytes zeros + 1 byte Next Header (58 = ICMPv6)
+        pseudoHeader.append(contentsOf: [0, 0, 0, 58])
+        
+        // Ghép toàn bộ ICMP packet với checksum = 0
+        var packetZeroChecksum = icmpPacket
+        if packetZeroChecksum.count >= 4 {
+            packetZeroChecksum[2] = 0
+            packetZeroChecksum[3] = 0
+        }
+        pseudoHeader.append(contentsOf: packetZeroChecksum)
+        
+        return ICMPChecksum.calculate(data: pseudoHeader)
+    }
             packet[8 + i] = UInt8((i + 65) % 256)
         }
         

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import NetworkCore
 
 /// Màn hình Lịch sử quét mạng lưu trữ cục bộ (JSON FileManager)
 public struct ScanHistoryView: View {

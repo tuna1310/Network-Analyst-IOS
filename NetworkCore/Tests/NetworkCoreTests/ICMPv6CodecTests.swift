@@ -106,4 +106,21 @@ final class ICMPv6CodecTests: XCTestCase {
         XCTAssertNil(ICMPv6Codec.parseResponse(bytes: [], senderIP: "::1"))
         XCTAssertNil(ICMPv6Codec.parseResponse(bytes: [129, 0, 0], senderIP: "::1"))
     }
+    
+    // MARK: - Test 6: Compute ICMPv6 Pseudo-Header Checksum
+    func testComputeICMPv6Checksum() {
+        let src = "fe80::1"
+        let dst = "fe80::2"
+        let packet = ICMPv6Codec.buildEchoRequest(
+            identifier: 0x1234,
+            sequence: 0x0001,
+            payloadSize: 16,
+            calculateChecksum: true,
+            sourceIPv6: src,
+            destIPv6: dst
+        )
+        
+        let checksum = (UInt16(packet[2]) << 8) | UInt16(packet[3])
+        XCTAssertNotEqual(checksum, 0)
+    }
 }

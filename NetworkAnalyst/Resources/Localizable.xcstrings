@@ -1938,6 +1938,1808 @@
           }
         }
       }
+    },
+    "Cam kết quét mạng được ủy quyền": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Authorized Scanning Commitment"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cam kết quét mạng được ủy quyền"
+          }
+        }
+      }
+    },
+    "Bạn chỉ được phép quét cổng, phân tích mạng và thăm dò dịch vụ trên những thiết bị hoặc mạng mà bạn sở hữu hoặc đã được ủy quyền hợp pháp.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You may only scan ports, analyze networks, and probe services on devices or networks that you own or have legal authorization to assess."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bạn chỉ được phép quét cổng, phân tích mạng và thăm dò dịch vụ trên những thiết bị hoặc mạng mà bạn sở hữu hoặc đã được ủy quyền hợp pháp."
+          }
+        }
+      }
+    },
+    "Hành vi quét mạng không có thẩm quyền có thể kích hoạt hệ thống phát hiện xâm nhập (IDS/IPS), bị chặn kết nối, hoặc vi phạm pháp luật an toàn thông tin.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unauthorized network scanning may trigger intrusion detection systems (IDS/IPS), result in blocked connections, or violate cybersecurity laws."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hành vi quét mạng không có thẩm quyền có thể kích hoạt hệ thống phát hiện xâm nhập (IDS/IPS), bị chặn kết nối, hoặc vi phạm pháp luật an toàn thông tin."
+          }
+        }
+      }
+    },
+    "Toàn bộ tiến trình quét được xử lý trực tiếp trên thiết bị (On-Device), bảo mật và không truyền dữ liệu nội bộ tới bất kỳ máy chủ nào.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All scans are processed directly on-device, securely, and no internal network data is transmitted to external servers."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toàn bộ tiến trình quét được xử lý trực tiếp trên thiết bị (On-Device), bảo mật và không truyền dữ liệu nội bộ tới bất kỳ máy chủ nào."
+          }
+        }
+      }
+    },
+    "Tôi đã hiểu và cam kết tuân thủ": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I understand and agree to comply"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tôi đã hiểu và cam kết tuân thủ"
+          }
+        }
+      }
+    },
+    "Biểu đồ Độ trễ RTT (ms)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RTT Latency Chart (ms)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Biểu đồ Độ trễ RTT (ms)"
+          }
+        }
+      }
+    },
+    "Xem chi tiết": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "View Details"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xem chi tiết"
+          }
+        }
+      }
+    },
+    "Tổng quan mạng": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Network Overview"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tổng quan mạng"
+          }
+        }
+      }
+    },
+    "Lịch sử": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "History"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lịch sử"
+          }
+        }
+      }
+    },
+    "Tên mạng (SSID)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Network Name (SSID)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tên mạng (SSID)"
+          }
+        }
+      }
+    },
+    "Thông tin SSID/BSSID được iOS bảo vệ:": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SSID/BSSID protected by iOS:"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thông tin SSID/BSSID được iOS bảo vệ:"
+          }
+        }
+      }
+    },
+    "iOS yêu cầu quyền 'Vị trí khi dùng' để hiển thị tên Wi-Fi (SSID).": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iOS requires 'While Using App' Location permission to display the Wi-Fi name (SSID)."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iOS yêu cầu quyền 'Vị trí khi dùng' để hiển thị tên Wi-Fi (SSID)."
+          }
+        }
+      }
+    },
+    "Cấp quyền Vị trí": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grant Location Permission"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cấp quyền Vị trí"
+          }
+        }
+      }
+    },
+    "Đang kiểm tra thông tin điểm truy cập Wi-Fi...": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Checking Wi-Fi access point information..."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang kiểm tra thông tin điểm truy cập Wi-Fi..."
+          }
+        }
+      }
+    },
+    "CẤU HÌNH MẠNG CỤC BỘ (LAN)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LOCAL NETWORK CONFIGURATION (LAN)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CẤU HÌNH MẠNG CỤC BỘ (LAN)"
+          }
+        }
+      }
+    },
+    "Địa chỉ IPv6 nội bộ:": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Internal IPv6 Address:"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Địa chỉ IPv6 nội bộ:"
+          }
+        }
+      }
+    },
+    "INTERNET & IP CÔNG KHAI": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "INTERNET & PUBLIC IP"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "INTERNET & IP CÔNG KHAI"
+          }
+        }
+      }
+    },
+    "Địa chỉ IP Công khai (Public IP)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Public IP Address"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Địa chỉ IP Công khai (Public IP)"
+          }
+        }
+      }
+    },
+    "Nhà mạng (ISP / ASN)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Service Provider (ISP / ASN)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhà mạng (ISP / ASN)"
+          }
+        }
+      }
+    },
+    "Vị trí địa lý": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geographic Location"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vị trí địa lý"
+          }
+        }
+      }
+    },
+    "Đang tra cứu thông tin địa chỉ IP công khai...": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Looking up public IP information..."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang tra cứu thông tin địa chỉ IP công khai..."
+          }
+        }
+      }
+    },
+    "KIỂM TRA ĐỘ TRỄ NHANH (ICMP)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "QUICK LATENCY CHECK (ICMP)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "KIỂM TRA ĐỘ TRỄ NHANH (ICMP)"
+          }
+        }
+      }
+    },
+    "Router Gateway": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Router Gateway"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Router Gateway"
+          }
+        }
+      }
+    },
+    "Cloudflare (1.1.1.1)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cloudflare (1.1.1.1)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cloudflare (1.1.1.1)"
+          }
+        }
+      }
+    },
+    "Chưa gán địa chỉ IP": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No IP address assigned"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa gán địa chỉ IP"
+          }
+        }
+      }
+    },
+    "Lịch sử phân tích": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scan History"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lịch sử phân tích"
+          }
+        }
+      }
+    },
+    "Hủy": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hủy"
+          }
+        }
+      }
+    },
+    "Xóa tất cả": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear All"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xóa tất cả"
+          }
+        }
+      }
+    },
+    "Thao tác này sẽ xóa vĩnh viễn toàn bộ nhật ký quét đã lưu trên máy.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This action will permanently delete all scan history stored on this device."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thao tác này sẽ xóa vĩnh viễn toàn bộ nhật ký quét đã lưu trên máy."
+          }
+        }
+      }
+    },
+    "Chưa có lịch sử quét": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No scan history yet"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa có lịch sử quét"
+          }
+        }
+      }
+    },
+    "Kết quả từ các lần quét mạng LAN, kiểm tra cổng, ping và traceroute sẽ tự động được lưu lại tại đây.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Results from LAN scans, port scans, ping, and traceroute will automatically appear here."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kết quả từ các lần quét mạng LAN, kiểm tra cổng, ping và traceroute sẽ tự động được lưu lại tại đây."
+          }
+        }
+      }
+    },
+    "Tác vụ": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Task"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tác vụ"
+          }
+        }
+      }
+    },
+    "Phân loại": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Category"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phân loại"
+          }
+        }
+      }
+    },
+    "Mục tiêu": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Target"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mục tiêu"
+          }
+        }
+      }
+    },
+    "Thời gian": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thời gian"
+          }
+        }
+      }
+    },
+    "Tóm tắt kết quả": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Result Summary"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tóm tắt kết quả"
+          }
+        }
+      }
+    },
+    "Chi tiết kỹ thuật": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Technical Details"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chi tiết kỹ thuật"
+          }
+        }
+      }
+    },
+    "Chi tiết bản ghi": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entry Details"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chi tiết bản ghi"
+          }
+        }
+      }
+    },
+    "DNS & WHOIS / RDAP": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DNS & WHOIS / RDAP"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DNS & WHOIS / RDAP"
+          }
+        }
+      }
+    },
+    "Máy chủ DNS Resolver:": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DNS Resolver Server:"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Máy chủ DNS Resolver:"
+          }
+        }
+      }
+    },
+    "Cloudflare (1.1.1.1 / DoH)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cloudflare (1.1.1.1 / DoH)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cloudflare (1.1.1.1 / DoH)"
+          }
+        }
+      }
+    },
+    "Google (8.8.8.8 / DoH)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google (8.8.8.8 / DoH)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google (8.8.8.8 / DoH)"
+          }
+        }
+      }
+    },
+    "Quad9 (9.9.9.9 / DoH)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quad9 (9.9.9.9 / DoH)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quad9 (9.9.9.9 / DoH)"
+          }
+        }
+      }
+    },
+    "Tùy chỉnh IP": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Custom IP"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tùy chỉnh IP"
+          }
+        }
+      }
+    },
+    "Mạng hiện tại (Gateway)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Current Network (Gateway)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mạng hiện tại (Gateway)"
+          }
+        }
+      }
+    },
+    "Lưu ý: Mạng hiện tại truy vấn DNS của router gateway nội bộ. Do hệ thống iOS chỉ hỗ trợ giải quyết A/AAAA, các bản ghi mở rộng (HTTPS, CAA, SRV) có thể cần chọn Cloudflare/Google.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Note: Current network queries local gateway DNS. Because iOS resolvers typically only handle A/AAAA, advanced records (HTTPS, CAA, SRV) may require Cloudflare or Google via DoH."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lưu ý: Mạng hiện tại truy vấn DNS của router gateway nội bộ. Do hệ thống iOS chỉ hỗ trợ giải quyết A/AAAA, các bản ghi mở rộng (HTTPS, CAA, SRV) có thể cần chọn Cloudflare/Google."
+          }
+        }
+      }
+    },
+    "Tra cứu thông tin": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Perform Lookup"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tra cứu thông tin"
+          }
+        }
+      }
+    },
+    "KẾT QUẢ PHÂN GIẢI DNS": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DNS RESOLUTION RESULTS"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "KẾT QUẢ PHÂN GIẢI DNS"
+          }
+        }
+      }
+    },
+    "Không tìm thấy bản ghi nào khớp với điều kiện tìm kiếm.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No records found matching the search criteria."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không tìm thấy bản ghi nào khớp với điều kiện tìm kiếm."
+          }
+        }
+      }
+    },
+    "Nhập tên miền và bấm 'Tra cứu thông tin' để kiểm tra bản ghi DNS.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter a domain and tap 'Perform Lookup' to query DNS records."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhập tên miền và bấm 'Tra cứu thông tin' để kiểm tra bản ghi DNS."
+          }
+        }
+      }
+    },
+    "THÔNG TIN ĐĂNG KÝ (RDAP / WHOIS)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "REGISTRATION DATA (RDAP / WHOIS)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "THÔNG TIN ĐĂNG KÝ (RDAP / WHOIS)"
+          }
+        }
+      }
+    },
+    "Nhập tên miền, IP hoặc ASN để tra cứu hồ sơ chủ sở hữu chính thức qua giao thức RDAP (RFC 7480-7484).": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter a domain, IP address, or ASN to lookup registration ownership records via RFC 7480-7484 RDAP."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhập tên miền, IP hoặc ASN để tra cứu hồ sơ chủ sở hữu chính thức qua giao thức RDAP (RFC 7480-7484)."
+          }
+        }
+      }
+    },
+    "Loại truy vấn:": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Query Type:"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loại truy vấn:"
+          }
+        }
+      }
+    },
+    "Bấm nút bên dưới để truy vấn máy chủ WHOIS qua cổng TCP 43 truyền thống:": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap below to query the classic WHOIS server over TCP port 43:"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bấm nút bên dưới để truy vấn máy chủ WHOIS qua cổng TCP 43 truyền thống:"
+          }
+        }
+      }
+    },
+    "PHẢN HỒI GỐC RDAP (RFC 7483 JSON)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RAW RDAP RESPONSE (RFC 7483 JSON)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PHẢN HỒI GỐC RDAP (RFC 7483 JSON)"
+          }
+        }
+      }
+    },
+    "PHẢN HỒI WHOIS CỔ ĐIỂN (TCP PORT 43)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CLASSIC WHOIS RESPONSE (TCP PORT 43)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PHẢN HỒI WHOIS CỔ ĐIỂN (TCP PORT 43)"
+          }
+        }
+      }
+    },
+    "Thông Báo RDAP": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RDAP Notices"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thông Báo RDAP"
+          }
+        }
+      }
+    },
+    "Nhập tên miền, IP hoặc ASN và bấm 'Tra cứu thông tin'": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter domain, IP, or ASN and tap 'Perform Lookup'"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhập tên miền, IP hoặc ASN và bấm 'Tra cứu thông tin'"
+          }
+        }
+      }
+    },
+    "Thông số mạng": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Network Parameters"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thông số mạng"
+          }
+        }
+      }
+    },
+    "Địa chỉ IPv4": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "IPv4 Address"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Địa chỉ IPv4"
+          }
+        }
+      }
+    },
+    "Địa chỉ IPv6": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "IPv6 Address"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Địa chỉ IPv6"
+          }
+        }
+      }
+    },
+    "Tên máy (Hostname)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hostname"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tên máy (Hostname)"
+          }
+        }
+      }
+    },
+    "Địa chỉ MAC": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MAC Address"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Địa chỉ MAC"
+          }
+        }
+      }
+    },
+    "Nhà sản xuất (Vendor)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vendor / Manufacturer"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhà sản xuất (Vendor)"
+          }
+        }
+      }
+    },
+    "Độ trễ phản hồi (RTT)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Response Latency (RTT)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Độ trễ phản hồi (RTT)"
+          }
+        }
+      }
+    },
+    "Phương thức phát hiện": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Discovery Methods"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phương thức phát hiện"
+          }
+        }
+      }
+    },
+    "Dịch vụ Bonjour phát hiện": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Discovered Bonjour Services"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dịch vụ Bonjour phát hiện"
+          }
+        }
+      }
+    },
+    "Các cổng mở sơ bộ": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Initially Open Ports"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Các cổng mở sơ bộ"
+          }
+        }
+      }
+    },
+    "Quét toàn bộ cổng của thiết bị này": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scan all ports on this device"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quét toàn bộ cổng của thiết bị này"
+          }
+        }
+      }
+    },
+    "Chi tiết thiết bị": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device Details"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chi tiết thiết bị"
+          }
+        }
+      }
+    },
+    "Đóng": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đóng"
+          }
+        }
+      }
+    },
+    "Quét mạng LAN": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LAN Device Scanner"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quét mạng LAN"
+          }
+        }
+      }
+    },
+    "BẠN": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "YOU"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BẠN"
+          }
+        }
+      }
+    },
+    "Chưa có thiết bị nào được quét": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No devices discovered yet"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa có thiết bị nào được quét"
+          }
+        }
+      }
+    },
+    "Nhấn 'Bắt đầu quét' để phát hiện các thiết bị kết nối trong mạng Wi-Fi cục bộ qua ICMP, TCP/UDP, NetBIOS, mDNS và Bonjour.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap 'Start Scan' to discover connected devices on your Wi-Fi network via ICMP, TCP/UDP, NetBIOS, mDNS, and Bonjour."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhấn 'Bắt đầu quét' để phát hiện các thiết bị kết nối trong mạng Wi-Fi cục bộ qua ICMP, TCP/UDP, NetBIOS, mDNS và Bonjour."
+          }
+        }
+      }
+    },
+    "Bắt đầu quét mạng": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start Network Scan"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bắt đầu quét mạng"
+          }
+        }
+      }
+    },
+    "Số gói:": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Packets:"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Số gói:"
+          }
+        }
+      }
+    },
+    "5 gói": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "5 packets"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "5 gói"
+          }
+        }
+      }
+    },
+    "10 gói": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "10 packets"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "10 gói"
+          }
+        }
+      }
+    },
+    "20 gói": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "20 packets"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "20 gói"
+          }
+        }
+      }
+    },
+    "50 gói": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "50 packets"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "50 gói"
+          }
+        }
+      }
+    },
+    "KẾT QUẢ THỐNG KÊ": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "STATISTICAL RESULTS"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "KẾT QUẢ THỐNG KÊ"
+          }
+        }
+      }
+    },
+    "NHẬT KÝ GÓI TIN (ICMP PACKETS)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PACKET LOG (ICMP PACKETS)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NHẬT KÝ GÓI TIN (ICMP PACKETS)"
+          }
+        }
+      }
+    },
+    "Ứng dụng đã tạm dừng khi xuống nền để bảo toàn tài nguyên. Bấm Tiếp tục để tiếp tục quét.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scan paused automatically when entering background to preserve resources. Tap Resume to continue."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ứng dụng đã tạm dừng khi xuống nền để bảo toàn tài nguyên. Bấm Tiếp tục để tiếp tục quét."
+          }
+        }
+      }
+    },
+    "Quét cổng TCP": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TCP Port Scanner"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quét cổng TCP"
+          }
+        }
+      }
+    },
+    "Bắt đầu quét": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start Scan"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bắt đầu quét"
+          }
+        }
+      }
+    },
+    "Nhập các cổng cách nhau bằng dấu phẩy hoặc dấu gạch nối cho dải (1-65535).": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter ports separated by commas or hyphenated ranges (1-65535)."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhập các cổng cách nhau bằng dấu phẩy hoặc dấu gạch nối cho dải (1-65535)."
+          }
+        }
+      }
+    },
+    "Quét toàn dải 1 đến 65535. Màn hình tự động giữ sáng. Vui lòng giữ ứng dụng ở màn hình chính (foreground) để tránh bị iOS ngắt kết nối mạng nền.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scanning full range 1-65535. Screen remains awake. Keep app in foreground to avoid iOS background disconnect."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quét toàn dải 1 đến 65535. Màn hình tự động giữ sáng. Vui lòng giữ ứng dụng ở màn hình chính (foreground) để tránh bị iOS ngắt kết nối mạng nền."
+          }
+        }
+      }
+    },
+    "Thăm dò banner dịch vụ (Banner Grabbing)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Probe service banners (Banner Grabbing)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thăm dò banner dịch vụ (Banner Grabbing)"
+          }
+        }
+      }
+    },
+    "Dừng": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dừng"
+          }
+        }
+      }
+    },
+    "Bắt đầu quét cổng": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start Port Scan"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bắt đầu quét cổng"
+          }
+        }
+      }
+    },
+    "Hiển thị:": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Display:"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hiển thị:"
+          }
+        }
+      }
+    },
+    "MỞ": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OPEN"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MỞ"
+          }
+        }
+      }
+    },
+    "ĐÓNG": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CLOSED"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ĐÓNG"
+          }
+        }
+      }
+    },
+    "BỊ CHẶN": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "FILTERED"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BỊ CHẶN"
+          }
+        }
+      }
+    },
+    "QUẢNG CÁO": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SPONSORED"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "QUẢNG CÁO"
+          }
+        }
+      }
+    },
+    "Google Mobile Ads Mock": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google Mobile Ads Mock"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google Mobile Ads Mock"
+          }
+        }
+      }
+    },
+    "Banner 320x50 giả lập • Xem README để tích hợp SDK thật": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mock 320x50 Banner • See README to integrate real SDK"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Banner 320x50 giả lập • Xem README để tích hợp SDK thật"
+          }
+        }
+      }
+    },
+    "Quảng cáo Toàn Màn Hình": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Interstitial Ad"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quảng cáo Toàn Màn Hình"
+          }
+        }
+      }
+    },
+    "UP": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "UP"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ĐANG HOẠT ĐỘNG"
+          }
+        }
+      }
+    },
+    "RDAP": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RDAP"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RDAP"
+          }
+        }
+      }
+    },
+    "TCP Retry (TC=1)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TCP Retry (TC=1)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thử lại TCP (TC=1)"
+          }
+        }
+      }
+    },
+    "GATEWAY": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GATEWAY"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GATEWAY"
+          }
+        }
+      }
+    },
+    "15": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "15"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "15"
+          }
+        }
+      }
+    },
+    "30": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "30"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "30"
+          }
+        }
+      }
+    },
+    "* * *": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "* * *"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "* * *"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

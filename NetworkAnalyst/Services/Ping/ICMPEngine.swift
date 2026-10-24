@@ -173,7 +173,9 @@ public actor ICMPEngine {
         destinationAddr.sin6_len = __uint8_t(MemoryLayout<sockaddr_in6>.size)
         inet_pton(AF_INET6, ipAddress, &destinationAddr.sin6_addr)
         
-        // Kernel Darwin tự động tính Checksum ICMPv6 trên datagram socket; user code để 0x0000
+        // LƯU Ý VỀ ICMPv6 CHECKSUM TRÊN DARWIN/IOS:
+        // Chưa chắc chắn kernel Darwin có tự tính checksum hay không trên mọi thiết bị thương mại;
+        // bắt buộc phải thử nghiệm trên iPhone thật. Mặc định gửi với 0x0000.
         let packetData = ICMPv6Codec.buildEchoRequest(
             identifier: self.identifier,
             sequence: UInt16(sequence & 0xFFFF),

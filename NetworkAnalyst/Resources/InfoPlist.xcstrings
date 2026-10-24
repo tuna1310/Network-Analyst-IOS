@@ -1,0 +1,57 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "CFBundleDisplayName" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Network Analyst"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Network Analyst"
+          }
+        }
+      }
+    },
+    "NSLocalNetworkUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Network Analyst requires Local Network access to discover connected devices on your Wi-Fi, probe active ports, and analyze LAN configurations."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Network Analyst cần quyền truy cập Mạng cục bộ để quét tìm các thiết bị kết nối trong mạng Wi-Fi, kiểm tra cổng mở và phân tích cấu hình mạng LAN."
+          }
+        }
+      }
+    },
+    "NSLocationWhenInUseUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location access is strictly required by Apple iOS to read and display the current Wi-Fi network name (SSID) and router hardware address (BSSID)."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quyền vị trí là yêu cầu bắt buộc của Apple iOS để ứng dụng có thể đọc và hiển thị tên mạng Wi-Fi (SSID) và địa chỉ phần cứng router (BSSID)."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

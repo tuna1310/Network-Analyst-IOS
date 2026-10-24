@@ -39,6 +39,10 @@ public final class PortScannerEngine: ObservableObject {
     
     /// Bắt đầu hoặc tiếp tục quét danh sách các cổng
     public func startScan(host: String, ports: [Int]) {
+        guard AppConfigManager.shared.config.hasAcceptedScanDisclaimer else {
+            statusMessage = "Yêu cầu cam kết chỉ quét mạng được ủy quyền trước khi thực hiện."
+            return
+        }
         guard !isScanning else { return }
         guard !ports.isEmpty else {
             statusMessage = "Danh sách cổng trống."

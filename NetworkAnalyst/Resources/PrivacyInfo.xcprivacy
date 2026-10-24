@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Ứng dụng không thu thập dữ liệu để theo dõi người dùng (Tracking) -->
+	<key>NSPrivacyTracking</key>
+	<false/>
+	
+	<!-- Danh sách tên miền theo dõi: Không có -->
+	<key>NSPrivacyTrackingDomains</key>
+	<array/>
+	
+	<!-- Các loại dữ liệu người dùng được thu thập: Không có dữ liệu định danh người dùng được thu thập -->
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array/>
+	
+	<!-- Khai báo các API thuộc nhóm Required Reason mà ứng dụng thực tế sử dụng -->
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array>
+		<!-- 1. File Timestamp API: Được dùng trong RDAPBootstrapManager để kiểm tra thời gian sửa đổi của tệp cache đĩa (TTL 24h) -->
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryFileTimestamp</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<!-- C617.1: Truy cập thuộc tính thời gian của tệp trong thư mục container của ứng dụng phục vụ chức năng app -->
+				<string>C617.1</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

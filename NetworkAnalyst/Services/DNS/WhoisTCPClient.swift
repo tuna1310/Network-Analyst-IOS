@@ -46,12 +46,19 @@ public actor WhoisTCPClient {
         }
         
         var currentServer = initialServer
+        var currentConnectTarget = initialServer
         var referralChain: [String] = [currentServer]
         var latestText = ""
         
+        // Kiểm tra an toàn cho máy chủ ban đầu
+        if let initialValidIP = resolveAndValidatePublicHost(initialServer) {
+            currentConnectTarget = initialValidIP
+        }
+        
         for hop in 0...maxReferralHops {
             do {
-                let responseText = try await performSingleTCPQuery(server: currentServer, query: cleanQuery)
+                // Kết nối thẳng tới IP đã xác thực (ngăn chặn tấn công DNS Rebinding)
+                let responseText = try await performSingleTCPQuery(connectTarget: currentConnectTarget, query: cleanQuery)
                 latestText = responseText
                 
                 // Nếu đây là hop cuối cùng của giới hạn, dừng lại
@@ -63,11 +70,13 @@ public actor WhoisTCPClient {
                 if let nextServer = WhoisReferralParser.extractReferralServer(from: responseText) {
                     let sanitizedNext = nextServer.lowercased()
                     if sanitizedNext != currentServer.lowercased() && !referralChain.contains(sanitizedNext) {
-                        // RÀNG BUỘC BẢO MẬT: Bắt buộc phân giải DNS máy chủ referral và từ chối nếu ra IP private / loopback / link-local
-                        guard resolveAndValidatePublicHost(sanitizedNext) else {
-                            // Phát hiện referral trỏ về mạng nội bộ -> Ngắt chuỗi chuyển tiếp ngay lập tức
+                        // RÀNG BUỘC BẢO MẬT: Bắt buộc phân giải DNS máy chủ referral và từ chối nếu ra IP private / loopback / link-local / ULA
+                        guard let validatedIP = resolveAndValidatePublicHost(sanitizedNext) else {
+                            // Phát hiện referral trỏ về mạng nội bộ hoặc không phân giải được -> Ngắt referral
                             break
                         }
+                        // Kết nối thẳng tới IP đã xác thực để ngăn chặn DNS Rebinding
+                        currentConnectTarget = validatedIP
                         currentServer = sanitizedNext
                         referralChain.append(sanitizedNext)
                         continue
@@ -90,7 +99,7 @@ public actor WhoisTCPClient {
                         query: cleanQuery,
                         referralChain: referralChain,
                         rawText: "",
-                        error: "Lỗi kết nối máy chủ \(currentServer): \(error.localizedDescription)"
+                        error: "Lỗi kết nối máy chủ \(currentServer) (\(currentConnectTarget)): \(error.localizedDescription)"
                     )
                 }
             }
@@ -105,9 +114,9 @@ public actor WhoisTCPClient {
     }
     
     // MARK: - Single TCP Query qua NWConnection
-    private func performSingleTCPQuery(server: String, query: String) async throws -> String {
+    private func performSingleTCPQuery(connectTarget: String, query: String) async throws -> String {
         try await withCheckedThrowingContinuation { continuation in
-            let endpoint = NWEndpoint.Host(server)
+            let endpoint = NWEndpoint.Host(connectTarget)
             let port = NWEndpoint.Port(integerLiteral: 43)
             
             let tcpOptions = NWProtocolTCP.Options()
@@ -208,11 +217,12 @@ public actor WhoisTCPClient {
         }
     }
     
-    // MARK: - DNS SSRF Validation
-    /// Phân giải DNS của máy chủ referral và từ chối nếu bất kỳ IP phân giải nào là private / loopback / link-local / ULA
-    private func resolveAndValidatePublicHost(_ hostname: String) -> Bool {
+    // MARK: - DNS SSRF & Rebinding Validation
+    /// Phân giải DNS của máy chủ referral, từ chối nếu bất kỳ IP nào là private / loopback / link-local / ULA
+    /// và trả về IP công cộng hợp lệ đầu tiên để kết nối trực tiếp (chống DNS Rebinding).
+    private func resolveAndValidatePublicHost(_ hostname: String) -> String? {
         guard WhoisReferralParser.isValidPublicWhoisHost(hostname) else {
-            return false
+            return nil
         }
         
         #if canImport(Darwin)
@@ -229,11 +239,13 @@ public actor WhoisTCPClient {
         var res: UnsafeMutablePointer<addrinfo>?
         let status = getaddrinfo(hostname, nil, &hints, &res)
         guard status == 0, let first = res else {
-            return false
+            return nil
         }
         defer { freeaddrinfo(res) }
         
         var ptr: UnsafeMutablePointer<addrinfo>? = first
+        var firstValidIP: String? = nil
+        
         while let current = ptr {
             var hostBuffer = [CChar](repeating: 0, count: Int(NI_MAXHOST))
             let nameInfoStatus = getnameinfo(
@@ -247,15 +259,19 @@ public actor WhoisTCPClient {
             )
             if nameInfoStatus == 0 {
                 let ipString = String(cString: hostBuffer)
+                // Nếu bất kỳ IP nào trỏ về dải nội bộ/riêng tư -> Từ chối toàn bộ máy chủ referral này
                 if !WhoisReferralParser.isValidPublicWhoisHost(ipString) {
-                    return false
+                    return nil
+                }
+                if firstValidIP == nil {
+                    firstValidIP = ipString
                 }
             }
             ptr = current.pointee.ai_next
         }
-        return true
+        return firstValidIP
         #else
-        return WhoisReferralParser.isValidPublicWhoisHost(hostname)
+        return WhoisReferralParser.isValidPublicWhoisHost(hostname) ? hostname : nil
         #endif
     }
 }

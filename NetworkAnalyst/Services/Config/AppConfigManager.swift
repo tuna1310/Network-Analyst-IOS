@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 /// Cấu hình người dùng và trạng thái cam kết pháp lý được lưu trữ bằng tệp JSON
-/// trong thư mục Application Support (Không dùng UserDefaults).
+/// trong thư mục Application Support (Không dùng UserDefaults, loại trừ khỏi iCloud backup).
 public struct AppConfig: Codable, Sendable {
     public var hasAcceptedScanDisclaimer: Bool
     public var disclaimerAcceptedDate: Date?
@@ -33,15 +33,23 @@ public final class AppConfigManager: ObservableObject {
     
     private static var storageDirectory: URL {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        let dir = appSupport.appendingPathComponent("Config", isDirectory: true)
+        var dir = appSupport.appendingPathComponent("Config", isDirectory: true)
         if !FileManager.default.fileExists(atPath: dir.path) {
             try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         }
+        // Đặt thuộc tính không sao lưu lên iCloud cho thư mục config
+        var values = URLResourceValues()
+        values.isExcludedFromBackup = true
+        try? dir.setResourceValues(values)
         return dir
     }
     
     private static var configFileURL: URL {
-        storageDirectory.appendingPathComponent("config.json")
+        var fileURL = storageDirectory.appendingPathComponent("config.json")
+        var values = URLResourceValues()
+        values.isExcludedFromBackup = true
+        try? fileURL.setResourceValues(values)
+        return fileURL
     }
     
     public init() {
@@ -91,6 +99,12 @@ public final class AppConfigManager: ObservableObject {
                 encoder.outputFormatting = .prettyPrinted
                 let data = try encoder.encode(snapshot)
                 try data.write(to: fileURL, options: .atomic)
+                
+                // Đảm bảo cờ loại trừ backup được gán sau khi ghi đĩa
+                var mutableURL = fileURL
+                var values = URLResourceValues()
+                values.isExcludedFromBackup = true
+                try? mutableURL.setResourceValues(values)
             } catch {
                 print("Lỗi ghi cấu hình xuống đĩa: \(error.localizedDescription)")
             }

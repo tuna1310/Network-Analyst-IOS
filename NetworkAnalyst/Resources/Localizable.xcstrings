@@ -1666,6 +1666,278 @@
           }
         }
       }
+    },
+    "history.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scan History"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lịch sử phân tích"
+          }
+        }
+      }
+    },
+    "history.empty": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No scan history yet"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa có lịch sử quét"
+          }
+        }
+      }
+    },
+    "history.clear_all": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear All History"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xóa toàn bộ lịch sử"
+          }
+        }
+      }
+    },
+    "history.clear_confirm": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Are you sure you want to delete all saved scan logs?"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thao tác này sẽ xóa vĩnh viễn toàn bộ nhật ký quét đã lưu trên máy."
+          }
+        }
+      }
+    },
+    "disclaimer.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Authorized Scanning Commitment"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cam kết quét mạng được ủy quyền"
+          }
+        }
+      }
+    },
+    "disclaimer.agree": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I understand and commit to comply"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tôi đã hiểu và cam kết tuân thủ"
+          }
+        }
+      }
+    },
+    "disclaimer.rule1": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You may only scan networks or devices you own or have explicit authorization to assess."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bạn chỉ được phép quét cổng, phân tích mạng và thăm dò dịch vụ trên những thiết bị hoặc mạng mà bạn sở hữu hoặc đã được ủy quyền hợp pháp."
+          }
+        }
+      }
+    },
+    "disclaimer.rule2": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unauthorized network scanning may trigger intrusion detection systems and violate cybersecurity laws."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hành vi quét mạng không có thẩm quyền có thể kích hoạt hệ thống phát hiện xâm nhập (IDS/IPS), bị chặn kết nối, hoặc vi phạm pháp luật an toàn thông tin."
+          }
+        }
+      }
+    },
+    "disclaimer.rule3": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All scans are processed entirely on-device; no internal network data is sent to external servers."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toàn bộ tiến trình quét được xử lý trực tiếp trên thiết bị (On-Device), bảo mật và không truyền dữ liệu nội bộ tới bất kỳ máy chủ nào."
+          }
+        }
+      }
+    },
+    "lan.ipv6": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "IPv6 Address"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Địa chỉ IPv6"
+          }
+        }
+      }
+    },
+    "lan.no_ipv6": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No IPv6 address (Router or device does not have IPv6 enabled)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không có địa chỉ IPv6 (Router hoặc thiết bị không kích hoạt IPv6)"
+          }
+        }
+      }
+    },
+    "lan.hostname_source": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Source"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nguồn"
+          }
+        }
+      }
+    },
+    "ping.ipv6_no_route": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Current network has no IPv6 connectivity"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mạng hiện tại không có kết nối IPv6"
+          }
+        }
+      }
+    },
+    "port.full_scan_foreground_warning": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scanning 1-65535. Screen will stay awake. Keep app in foreground to avoid iOS background disconnect."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quét toàn dải 1 đến 65535. Màn hình tự động giữ sáng. Vui lòng giữ ứng dụng ở màn hình chính (foreground) để tránh bị iOS ngắt kết nối mạng nền."
+          }
+        }
+      }
+    },
+    "port.background_paused": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scan paused automatically when entering background to preserve resources. Tap Resume to continue."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ứng dụng đã tạm dừng khi xuống nền để bảo toàn tài nguyên. Bấm Tiếp tục để tiếp tục quét."
+          }
+        }
+      }
+    },
+    "dns.gateway_records_notice": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Local gateway DNS did not return this record type. Routers typically only support A/AAAA. Consider DoH."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Máy chủ DNS cục bộ (Gateway) không phản hồi loại bản ghi này (router thường chỉ hỗ trợ A/AAAA). Gợi ý: Hãy chuyển sang DoH."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

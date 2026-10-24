@@ -13,6 +13,9 @@ import NetworkCore
 public struct HostProbeResult: Sendable {
     public let isAlive: Bool
     public let hostname: String?
+    public let hostnameSource: HostnameSource?
+    public let ipv6Address: String?
+    public let ipv6StatusExplanation: String?
     public let macAddress: String?
     public let vendor: String?
     public let deviceType: DeviceType
@@ -25,11 +28,12 @@ public struct HostProbeResult: Sendable {
 public actor UnicastProber {
     public init() {}
     
-    /// Thăm dò toàn diện một IP đích bằng ICMP, TCP probe, NetBIOS, mDNS, LLMNR và SNMP
+    /// Thăm dò toàn diện một IP đích bằng ICMP, TCP probe, NetBIOS, mDNS, LLMNR, SNMP và DNS PTR
     public func probe(
         ipAddress: String,
         isGateway: Bool = false,
         isSelf: Bool = false,
+        gatewayIP: String? = nil,
         timeout: TimeInterval = 0.5
     ) async -> HostProbeResult? {
         // Nếu là chính máy này
@@ -37,6 +41,9 @@ public actor UnicastProber {
             return HostProbeResult(
                 isAlive: true,
                 hostname: HostNameResolver.getDeviceName(),
+                hostnameSource: .mDNS,
+                ipv6Address: NetworkInterfaceProvider.getPrimaryWiFiInterface()?.ipv6Address,
+                ipv6StatusExplanation: nil,
                 macAddress: "iOS Sandbox (Protected)",
                 vendor: "Apple Inc.",
                 deviceType: .appleDevice,
@@ -48,7 +55,12 @@ public actor UnicastProber {
         
         var methods: [DiscoveryMethod] = []
         var openPorts: [Int] = []
-        var discoveredHostname: String? = nil
+        var netbiosName: String? = nil
+        var mdnsName: String? = nil
+        var llmnrName: String? = nil
+        var ptrName: String? = nil
+        var discoveredIpv6: String? = nil
+        
         var discoveredMac: String? = nil
         var discoveredVendor: String? = nil
         var detectedType: DeviceType = isGateway ? .router : .unknown
@@ -57,23 +69,39 @@ public actor UnicastProber {
         // 1. Thăm dò NetBIOS Name Service (UDP 137)
         if let netbiosResult = await queryNetBIOS(ipAddress: ipAddress, timeout: timeout) {
             methods.append(.netbios)
-            discoveredHostname = netbiosResult.name
+            netbiosName = netbiosResult.name
             discoveredMac = netbiosResult.mac
             discoveredVendor = netbiosResult.vendor ?? "Windows / SMB Host"
             detectedType = netbiosResult.isNas ? .nas : .windows
         }
         
-        // 2. Thăm dò mDNS Unicast (UDP 5353) & LLMNR (UDP 5355)
-        if let mdnsName = await queryMDNSUnicast(ipAddress: ipAddress, timeout: timeout) {
-            methods.append(.mdns)
-            if discoveredHostname == nil { discoveredHostname = mdnsName }
-            if mdnsName.lowercased().contains("apple") || mdnsName.lowercased().contains("iphone") || mdnsName.lowercased().contains("mac") {
+        // 2. Thăm dò mDNS Unicast (UDP 5353)
+        let mdnsResult = await queryMDNSUnicast(ipAddress: ipAddress, timeout: timeout)
+        if let name = mdnsResult.hostname {
+            methods.append(.bonjour)
+            mdnsName = name
+            if name.lowercased().contains("apple") || name.lowercased().contains("iphone") || name.lowercased().contains("mac") {
                 detectedType = .appleDevice
                 discoveredVendor = "Apple Inc."
             }
         }
+        if let v6 = mdnsResult.ipv6 {
+            discoveredIpv6 = v6
+        }
         
-        // 3. Thăm dò SNMP (UDP 161)
+        // 3. Thăm dò LLMNR (UDP 5355)
+        if let ll = await queryLLMNR(ipAddress: ipAddress, timeout: timeout) {
+            methods.append(.llmnr)
+            llmnrName = ll
+        }
+        
+        // 4. Thăm dò DNS PTR cục bộ (UDP 53 gửi tới Gateway, timeout 500ms)
+        if let ptr = await queryLocalDNSPTR(ipAddress: ipAddress, gatewayIP: gatewayIP, timeout: min(timeout, 0.5)) {
+            methods.append(.ptr)
+            ptrName = ptr
+        }
+        
+        // 5. Thăm dò SNMP (UDP 161)
         if let snmpDesc = await querySNMP(ipAddress: ipAddress, timeout: timeout) {
             methods.append(.snmp)
             if discoveredVendor == nil {
@@ -86,7 +114,7 @@ public actor UnicastProber {
             }
         }
         
-        // 4. Thử ICMP Ping (Datagram Socket)
+        // 6. Thử ICMP Ping (Datagram Socket)
         let icmpEngine = ICMPEngine()
         let pingResult = await icmpEngine.pingOnce(to: ipAddress, sequence: 1, timeout: timeout, payloadSize: 16)
         if pingResult.status == .success {
@@ -96,7 +124,7 @@ public actor UnicastProber {
             }
         }
         
-        // 5. Thăm dò TCP Probe trên các cổng phổ biến
+        // 7. Thăm dò TCP Probe trên các cổng phổ biến
         let commonProbePorts = [80, 443, 22, 445, 8080, 5000, 62078]
         for port in commonProbePorts {
             let portResult = await probeTCPPort(ipAddress: ipAddress, port: port, timeout: 0.35)
@@ -120,26 +148,32 @@ public actor UnicastProber {
             }
         }
         
-        // Đảo ngược DNS PTR lookup nếu chưa có hostname
-        if discoveredHostname == nil {
-            if let reverseName = HostNameResolver.reverseLookup(ipAddress: ipAddress) {
-                discoveredHostname = reverseName
-            }
-        }
-        
         // Nếu không có bất kỳ phương thức nào phản hồi => host offline/không tồn tại
         if methods.isEmpty {
             return nil
         }
+        
+        // Chọn tên máy chủ theo phân cấp ưu tiên: mDNS > NetBIOS > LLMNR > PTR
+        let bestHost = HostnameResolver.resolveBestHostname(
+            mDNS: mdnsName,
+            netBIOS: netbiosName,
+            llmnr: llmnrName,
+            ptr: ptrName
+        )
         
         if isGateway && detectedType == .unknown {
             detectedType = .router
             discoveredVendor = discoveredVendor ?? "Network Gateway"
         }
         
+        let v6Explanation = (discoveredIpv6 == nil) ? "Không có địa chỉ IPv6 (Router hoặc thiết bị không kích hoạt IPv6)" : nil
+        
         return HostProbeResult(
             isAlive: true,
-            hostname: discoveredHostname,
+            hostname: bestHost?.name,
+            hostnameSource: bestHost?.source,
+            ipv6Address: discoveredIpv6,
+            ipv6StatusExplanation: v6Explanation,
             macAddress: discoveredMac,
             vendor: discoveredVendor,
             deviceType: detectedType,
@@ -147,6 +181,7 @@ public actor UnicastProber {
             rttMs: bestRTT,
             methods: Array(Set(methods))
         )
+    }
     }
     
     // MARK: - NetBIOS Name Query (RFC 1002) qua UDP 137
@@ -243,9 +278,11 @@ public actor UnicastProber {
     }
     
     // MARK: - mDNS Unicast Probe (UDP 5353)
-    private func queryMDNSUnicast(ipAddress: String, timeout: TimeInterval) async -> String? {
+    private func queryMDNSUnicast(ipAddress: String, timeout: TimeInterval) async -> (hostname: String?, ipv6: String?) {
+        guard let revDomain = HostnameResolver.ipv4ToReverseDomain(ipAddress) else { return (nil, nil) }
+        
         let sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)
-        guard sock >= 0 else { return nil }
+        guard sock >= 0 else { return (nil, nil) }
         defer { close(sock) }
         
         var tv = timeval(tv_sec: 0, tv_usec: Int32(timeout * 1_000_000))
@@ -256,33 +293,75 @@ public actor UnicastProber {
         dest.sin_port = in_port_t(5353).bigEndian
         inet_pton(AF_INET, ipAddress, &dest.sin_addr)
         
-        // Reverse DNS format for IPv4: e.g. 1.1.168.192.in-addr.arpa
-        let parts = ipAddress.split(separator: ".")
-        guard parts.count == 4 else { return nil }
-        let revDomain = "\(parts[3]).\(parts[2]).\(parts[1]).\(parts[0]).in-addr.arpa"
-        
-        var packet: [UInt8] = [
-            0x00, 0x01, // Transaction ID
-            0x00, 0x00, // Flags (standard query)
-            0x00, 0x01, // 1 question
-            0x00, 0x00, // 0 answers
-            0x00, 0x00, // 0 authority
-            0x00, 0x00  // 0 additional
-        ]
-        
-        // Encode domain name
-        for part in revDomain.split(separator: ".") {
-            packet.append(UInt8(part.utf8.count))
-            packet.append(contentsOf: part.utf8)
-        }
-        packet.append(0x00) // End label
-        packet.append(0x00); packet.append(0x0C) // Type PTR (12)
-        packet.append(0x00); packet.append(0x01) // Class IN (1)
+        let queryData = DNSCodec.buildQuery(domain: revDomain, type: .PTR, useEDNS0: false)
         
         let sent = withUnsafePointer(to: &dest) { addrPtr in
             addrPtr.withMemoryRebound(to: sockaddr.self, capacity: 1) { sa in
-                packet.withUnsafeBytes { raw in
-                    sendto(sock, raw.baseAddress, packet.count, 0, sa, socklen_t(MemoryLayout<sockaddr_in>.size))
+                queryData.withUnsafeBytes { raw in
+                    sendto(sock, raw.baseAddress, queryData.count, 0, sa, socklen_t(MemoryLayout<sockaddr_in>.size))
+                }
+            }
+        }
+        guard sent > 0 else { return (nil, nil) }
+        
+        var buffer = [UInt8](repeating: 0, count: 1024)
+        var srcAddr = sockaddr_in()
+        var srcLen = socklen_t(MemoryLayout<sockaddr_in>.size)
+        
+        let readLen = withUnsafeMutablePointer(to: &srcAddr) { addrPtr in
+            addrPtr.withMemoryRebound(to: sockaddr.self, capacity: 1) { sa in
+                recvfrom(sock, &buffer, buffer.count, 0, sa, &srcLen)
+            }
+        }
+        guard readLen > 12 else { return (nil, nil) }
+        
+        var foundName: String? = nil
+        var foundIpv6: String? = nil
+        
+        if let (_, answers) = try? DNSCodec.parseResponse(bytes: Array(buffer[0..<readLen])) {
+            for ans in answers {
+                if ans.type == .PTR && foundName == nil {
+                    foundName = ans.value
+                } else if ans.type == .AAAA && foundIpv6 == nil {
+                    foundIpv6 = ans.value
+                }
+            }
+        }
+        
+        // Trích xuất fallback chuỗi ASCII nếu parser mDNS nén không trích hết
+        if foundName == nil, let ascii = String(bytes: buffer[0..<readLen], encoding: .ascii) {
+            let tokens = ascii.components(separatedBy: CharacterSet.alphanumerics.inverted)
+            for token in tokens where token.count >= 3 && !token.contains("in-addr") && !token.contains("arpa") {
+                foundName = token
+                break
+            }
+        }
+        
+        return (foundName, foundIpv6)
+    }
+    
+    // MARK: - LLMNR Query (RFC 4795) qua UDP 5355
+    private func queryLLMNR(ipAddress: String, timeout: TimeInterval) async -> String? {
+        guard let revDomain = HostnameResolver.ipv4ToReverseDomain(ipAddress) else { return nil }
+        
+        let sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)
+        guard sock >= 0 else { return nil }
+        defer { close(sock) }
+        
+        var tv = timeval(tv_sec: 0, tv_usec: Int32(timeout * 1_000_000))
+        setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &tv, socklen_t(MemoryLayout<timeval>.size))
+        
+        var dest = sockaddr_in()
+        dest.sin_family = sa_family_t(AF_INET)
+        dest.sin_port = in_port_t(5355).bigEndian
+        inet_pton(AF_INET, ipAddress, &dest.sin_addr)
+        
+        let queryData = DNSCodec.buildQuery(domain: revDomain, type: .PTR, useEDNS0: false)
+        
+        let sent = withUnsafePointer(to: &dest) { addrPtr in
+            addrPtr.withMemoryRebound(to: sockaddr.self, capacity: 1) { sa in
+                queryData.withUnsafeBytes { raw in
+                    sendto(sock, raw.baseAddress, queryData.count, 0, sa, socklen_t(MemoryLayout<sockaddr_in>.size))
                 }
             }
         }
@@ -299,14 +378,61 @@ public actor UnicastProber {
         }
         guard readLen > 12 else { return nil }
         
-        // Trích xuất chuỗi có định dạng .local nếu có
-        if let ascii = String(bytes: buffer[0..<readLen], encoding: .ascii) {
-            let tokens = ascii.components(separatedBy: CharacterSet.alphanumerics.inverted)
-            for token in tokens where token.count >= 3 && !token.contains("in-addr") && !token.contains("arpa") {
-                return token
+        if let (_, answers) = try? DNSCodec.parseResponse(bytes: Array(buffer[0..<readLen])) {
+            for ans in answers where ans.type == .PTR {
+                return ans.value
             }
         }
         return nil
+    }
+    
+    // MARK: - DNS PTR Query tới DNS Resolver cục bộ (Gateway) qua UDP 53
+    private func queryLocalDNSPTR(ipAddress: String, gatewayIP: String?, timeout: TimeInterval) async -> String? {
+        guard let gw = gatewayIP ?? NetworkInterfaceProvider.getDefaultGateway() else { return nil }
+        guard let revDomain = HostnameResolver.ipv4ToReverseDomain(ipAddress) else { return nil }
+        
+        let sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)
+        guard sock >= 0 else { return nil }
+        defer { close(sock) }
+        
+        var tv = timeval(tv_sec: 0, tv_usec: Int32(timeout * 1_000_000))
+        setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &tv, socklen_t(MemoryLayout<timeval>.size))
+        
+        var dest = sockaddr_in()
+        dest.sin_family = sa_family_t(AF_INET)
+        dest.sin_port = in_port_t(53).bigEndian
+        inet_pton(AF_INET, gw, &dest.sin_addr)
+        
+        let queryData = DNSCodec.buildQuery(domain: revDomain, type: .PTR, useEDNS0: false)
+        
+        let sent = withUnsafePointer(to: &dest) { addrPtr in
+            addrPtr.withMemoryRebound(to: sockaddr.self, capacity: 1) { sa in
+                queryData.withUnsafeBytes { raw in
+                    sendto(sock, raw.baseAddress, queryData.count, 0, sa, socklen_t(MemoryLayout<sockaddr_in>.size))
+                }
+            }
+        }
+        guard sent > 0 else { return nil }
+        
+        var buffer = [UInt8](repeating: 0, count: 512)
+        var srcAddr = sockaddr_in()
+        var srcLen = socklen_t(MemoryLayout<sockaddr_in>.size)
+        
+        let readLen = withUnsafeMutablePointer(to: &srcAddr) { addrPtr in
+            addrPtr.withMemoryRebound(to: sockaddr.self, capacity: 1) { sa in
+                recvfrom(sock, &buffer, buffer.count, 0, sa, &srcLen)
+            }
+        }
+        guard readLen > 12 else { return nil }
+        
+        if let (_, answers) = try? DNSCodec.parseResponse(bytes: Array(buffer[0..<readLen])) {
+            for ans in answers where ans.type == .PTR {
+                return ans.value
+            }
+        }
+        
+        // Dùng getnameinfo làm phương án dự phòng chuẩn POSIX
+        return HostNameResolver.reverseLookup(ipAddress: ipAddress)
     }
     
     // MARK: - SNMP v1/v2c GetRequest (UDP 161)

@@ -31,6 +31,9 @@ public actor RDAPClient {
         let (cleanQuery, detectedType) = RDAPBootstrap.detectQueryType(from: trimmed)
         let finalType = explicitType ?? detectedType
         
+        // Đảm bảo nạp dữ liệu Bootstrap động từ IANA (cache đĩa 24h)
+        await RDAPBootstrapManager.shared.ensureBootstrapLoaded()
+        
         guard let url = RDAPBootstrap.resolveQueryURL(for: cleanQuery, type: finalType) else {
             return .failure(NSError(domain: "RDAPClient", code: -2, userInfo: [NSLocalizedDescriptionKey: "Không thể tạo URL RDAP hợp lệ"]))
         }

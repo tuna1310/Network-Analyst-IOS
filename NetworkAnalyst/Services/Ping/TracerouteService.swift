@@ -54,11 +54,12 @@ public final class TracerouteService: ObservableObject {
         traceTask = Task {
             // Phân giải host thành IP
             let icmp = ICMPEngine()
-            guard let targetIP = await icmp.resolveHostToIPv4(cleanHost) else {
+            guard let resolved = await icmp.resolveHost(cleanHost) else {
                 self.statusMessage = "Không thể phân giải địa chỉ IP cho \(cleanHost)"
                 self.isRunning = false
                 return
             }
+            let targetIP = resolved.ipAddress
             
             let probingMsg = String(localized: "traceroute.probing")
             self.statusMessage = String(format: probingMsg, cleanHost, targetIP)
@@ -98,6 +99,16 @@ public final class TracerouteService: ObservableObject {
             if !Task.isCancelled && self.isRunning {
                 let compFormat = String(localized: "traceroute.completed")
                 self.statusMessage = String(format: compFormat, self.hops.count)
+                
+                // Ghi nhận vào lịch sử
+                ScanHistoryManager.shared.addEntry(
+                    type: .traceroute,
+                    target: "\(cleanHost) (\(targetIP))",
+                    summary: "Dò được \(self.hops.count) hop tới đích",
+                    details: self.hops.map { h in
+                        "Hop \(h.hop): \(h.ipAddress ?? "*") (\(h.hostname ?? "No PTR")) - \(h.formattedRTT)"
+                    }.joined(separator: "\n")
+                )
             }
             self.isRunning = false
         }

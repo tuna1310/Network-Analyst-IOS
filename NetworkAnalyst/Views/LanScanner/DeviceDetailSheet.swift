@@ -43,17 +43,45 @@ public struct DeviceDetailSheet: View {
                 
                 Section(header: Text("Thông số mạng")) {
                     HStack {
-                        Text("Địa chỉ IP")
+                        Text("Địa chỉ IPv4")
                         Spacer()
                         Text(device.ipAddress)
                             .font(.system(.body, design: .monospaced).bold())
                     }
                     
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack {
+                            Text("Địa chỉ IPv6")
+                            Spacer()
+                            if let v6 = device.ipv6Address {
+                                Text(v6)
+                                    .font(.system(.footnote, design: .monospaced).bold())
+                                    .textSelection(.enabled)
+                            }
+                        }
+                        if device.ipv6Address == nil {
+                            Text(device.ipv6StatusExplanation ?? "Không có địa chỉ IPv6 (Router hoặc thiết bị không kích hoạt IPv6)")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    
                     HStack {
                         Text("Tên máy (Hostname)")
                         Spacer()
-                        Text(device.hostname ?? "Không xác định")
-                            .foregroundColor(device.hostname != nil ? .primary : .secondary)
+                        VStack(alignment: .trailing, spacing: 2) {
+                            Text(device.hostname ?? "Không xác định")
+                                .foregroundColor(device.hostname != nil ? .primary : .secondary)
+                            if let src = device.hostnameSource {
+                                Text("Nguồn: \(src.rawValue)")
+                                    .font(.caption2.bold())
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(Color.blue.opacity(0.1))
+                                    .foregroundColor(.blue)
+                                    .cornerRadius(4)
+                            }
+                        }
                     }
                     
                     HStack {

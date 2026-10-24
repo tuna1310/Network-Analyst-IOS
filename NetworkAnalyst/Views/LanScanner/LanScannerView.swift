@@ -40,6 +40,11 @@ public struct LanScannerView: View {
                     onSelectDeviceForPortScan(ip)
                 }
             }
+            .sheet(isPresented: $viewModel.showDisclaimerModal) {
+                AuthorizationDisclaimerModal {
+                    viewModel.startScan()
+                }
+            }
         }
     }
     
@@ -178,6 +183,16 @@ public struct LanScannerView: View {
                                         .background(Color.blue.opacity(0.2))
                                         .foregroundColor(.blue)
                                         .cornerRadius(4)
+                                }
+                                
+                                if let src = device.hostnameSource {
+                                    Text(src.rawValue)
+                                        .font(.system(size: 8, weight: .bold))
+                                        .padding(.horizontal, 4)
+                                        .padding(.vertical, 1)
+                                        .background(Color.purple.opacity(0.15))
+                                        .foregroundColor(.purple)
+                                        .cornerRadius(3)
                                 }
                             }
                             

@@ -71,6 +71,17 @@ public struct DashboardView: View {
                 .padding(.vertical)
             }
             .navigationTitle("Tổng quan mạng")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink(destination: ScanHistoryView()) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "clock.arrow.circlepath")
+                            Text("Lịch sử")
+                                .font(.caption.bold())
+                        }
+                    }
+                }
+            }
             .background(Color(uiColor: .systemGroupedBackground))
             .refreshable {
                 await viewModel.refresh()

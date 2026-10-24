@@ -23,6 +23,27 @@ public struct PortScannerView: View {
                 // Header cấu hình mục tiêu & 3 chế độ quét
                 targetConfigCard
                 
+                // Cảnh báo khi app xuống nền bị tạm dừng
+                if viewModel.backgroundPausedWarning {
+                    HStack(spacing: 8) {
+                        Image(systemName: "pause.circle.fill")
+                            .foregroundColor(.orange)
+                        Text("Ứng dụng đã tạm dừng khi xuống nền để bảo toàn tài nguyên. Bấm Tiếp tục để tiếp tục quét.")
+                            .font(.caption)
+                            .foregroundColor(.primary)
+                        Spacer()
+                        Button("Đóng") {
+                            viewModel.backgroundPausedWarning = false
+                        }
+                        .font(.caption.bold())
+                    }
+                    .padding(10)
+                    .background(Color.orange.opacity(0.15))
+                    .cornerRadius(8)
+                    .padding(.horizontal)
+                    .padding(.top, 6)
+                }
+                
                 // Thanh tiến trình & chỉ số quét thời gian thực
                 if viewModel.engine.isScanning || viewModel.engine.scannedCount > 0 {
                     scanStatusBar
@@ -51,6 +72,11 @@ public struct PortScannerView: View {
                 }
             } message: {
                 Text("Quét toàn bộ 65,535 cổng có thể mất \(viewModel.estimatedDurationText) và tiêu tốn pin cũng như băng thông mạng. Bạn có chắc chắn muốn tiếp tục?")
+            }
+            .sheet(isPresented: $viewModel.showDisclaimerModal) {
+                AuthorizationDisclaimerModal {
+                    viewModel.startScan()
+                }
             }
         }
     }
@@ -122,12 +148,14 @@ public struct PortScannerView: View {
                 }
                 
             case .full:
-                HStack(spacing: 8) {
-                    Image(systemName: "exclamationmark.triangle.fill")
-                        .foregroundColor(.orange)
-                    Text("Chế độ quét toàn bộ cổng (1 đến 65535). Yêu cầu xác nhận trước khi quét.")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundColor(.orange)
+                        Text("Quét toàn dải 1 đến 65535. Màn hình tự động giữ sáng. Vui lòng giữ ứng dụng ở màn hình chính (foreground) để tránh bị iOS ngắt kết nối mạng nền.")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
                 }
                 .padding(8)
                 .frame(maxWidth: .infinity, alignment: .leading)

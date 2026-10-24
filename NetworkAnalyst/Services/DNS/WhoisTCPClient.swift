@@ -8,6 +8,9 @@
 import Foundation
 import Network
 import NetworkCore
+#if canImport(Darwin)
+import Darwin
+#endif
 
 /// Kết quả truy vấn WHOIS qua cổng TCP 43
 public struct WhoisResult: Sendable {
@@ -60,6 +63,11 @@ public actor WhoisTCPClient {
                 if let nextServer = WhoisReferralParser.extractReferralServer(from: responseText) {
                     let sanitizedNext = nextServer.lowercased()
                     if sanitizedNext != currentServer.lowercased() && !referralChain.contains(sanitizedNext) {
+                        // RÀNG BUỘC BẢO MẬT: Bắt buộc phân giải DNS máy chủ referral và từ chối nếu ra IP private / loopback / link-local
+                        guard resolveAndValidatePublicHost(sanitizedNext) else {
+                            // Phát hiện referral trỏ về mạng nội bộ -> Ngắt chuỗi chuyển tiếp ngay lập tức
+                            break
+                        }
                         currentServer = sanitizedNext
                         referralChain.append(sanitizedNext)
                         continue
@@ -198,5 +206,56 @@ public actor WhoisTCPClient {
             var nextAcc = accumulated
             self.readLoop(connection: connection, accumulated: &nextAcc, completion: completion)
         }
+    }
+    
+    // MARK: - DNS SSRF Validation
+    /// Phân giải DNS của máy chủ referral và từ chối nếu bất kỳ IP phân giải nào là private / loopback / link-local / ULA
+    private func resolveAndValidatePublicHost(_ hostname: String) -> Bool {
+        guard WhoisReferralParser.isValidPublicWhoisHost(hostname) else {
+            return false
+        }
+        
+        #if canImport(Darwin)
+        var hints = addrinfo(
+            ai_flags: AI_ADDRCONFIG,
+            ai_family: AF_UNSPEC,
+            ai_socktype: SOCK_STREAM,
+            ai_protocol: IPPROTO_TCP,
+            ai_addrlen: 0,
+            ai_canonname: nil,
+            ai_addr: nil,
+            ai_next: nil
+        )
+        var res: UnsafeMutablePointer<addrinfo>?
+        let status = getaddrinfo(hostname, nil, &hints, &res)
+        guard status == 0, let first = res else {
+            return false
+        }
+        defer { freeaddrinfo(res) }
+        
+        var ptr: UnsafeMutablePointer<addrinfo>? = first
+        while let current = ptr {
+            var hostBuffer = [CChar](repeating: 0, count: Int(NI_MAXHOST))
+            let nameInfoStatus = getnameinfo(
+                current.pointee.ai_addr,
+                current.pointee.ai_addrlen,
+                &hostBuffer,
+                socklen_t(hostBuffer.count),
+                nil,
+                0,
+                NI_NUMERICHOST
+            )
+            if nameInfoStatus == 0 {
+                let ipString = String(cString: hostBuffer)
+                if !WhoisReferralParser.isValidPublicWhoisHost(ipString) {
+                    return false
+                }
+            }
+            ptr = current.pointee.ai_next
+        }
+        return true
+        #else
+        return WhoisReferralParser.isValidPublicWhoisHost(hostname)
+        #endif
     }
 }

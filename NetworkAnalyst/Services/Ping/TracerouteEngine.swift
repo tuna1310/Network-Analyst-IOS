@@ -101,16 +101,26 @@ public actor TracerouteEngine: TracerouteEngineProtocol {
         )
     }
     
-    // MARK: - Single Probe (ICMP with UDP fallback)
+    // MARK: - Single Probe (ICMP with UDP fallback / ICMPv6)
     private func singleProbe(targetIP: String, hop: Int, sequence: UInt16, timeout: TimeInterval) async -> (rttMs: Double?, routerIP: String?, isDestination: Bool) {
-        // 1. Thử gửi probe ICMP với IP_TTL
+        // Trường hợp mục tiêu là IPv6
+        if targetIP.contains(":") {
+            let startTime = CFAbsoluteTimeGetCurrent()
+            if let v6Result = await sendICMPv6Probe(targetIP: targetIP, hop: hop, sequence: sequence, timeout: timeout) {
+                let rtt = (CFAbsoluteTimeGetCurrent() - startTime) * 1000.0
+                return (rtt, v6Result.routerIP, v6Result.isDestinationReached)
+            }
+            return (nil, nil, false)
+        }
+        
+        // 1. Thử gửi probe ICMP IPv4 với IP_TTL
         let startTime = CFAbsoluteTimeGetCurrent()
         if let icmpResult = await sendICMPProbe(targetIP: targetIP, hop: hop, sequence: sequence, timeout: timeout) {
             let rtt = (CFAbsoluteTimeGetCurrent() - startTime) * 1000.0
             return (rtt, icmpResult.routerIP, icmpResult.isDestinationReached)
         }
         
-        // 2. Phương án dự phòng: Gửi gói UDP tới cổng cao với IP_TTL
+        // 2. Phương án dự phòng IPv4: Gửi gói UDP tới cổng cao với IP_TTL
         if !isCancelled {
             let udpStart = CFAbsoluteTimeGetCurrent()
             if let udpResult = await sendUDPProbe(targetIP: targetIP, hop: hop, sequence: sequence, timeout: timeout) {
@@ -120,6 +130,57 @@ public actor TracerouteEngine: TracerouteEngineProtocol {
         }
         
         return (nil, nil, false)
+    }
+    
+    // MARK: - ICMPv6 Socket Probe (Hop Limit)
+    private func sendICMPv6Probe(targetIP: String, hop: Int, sequence: UInt16, timeout: TimeInterval) async -> (routerIP: String?, isDestinationReached: Bool)? {
+        let sock = socket(AF_INET6, SOCK_DGRAM, IPPROTO_ICMPV6)
+        guard sock >= 0 else { return nil }
+        defer { close(sock) }
+        
+        // Thiết lập Hop Limit cho IPv6 bằng IPV6_UNICAST_HOPS
+        var hops = Int32(hop)
+        setsockopt(sock, IPPROTO_IPV6, IPV6_UNICAST_HOPS, &hops, socklen_t(MemoryLayout<Int32>.size))
+        
+        var tv = timeval(tv_sec: Int(timeout), tv_usec: Int32((timeout.truncatingRemainder(dividingBy: 1)) * 1_000_000))
+        setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &tv, socklen_t(MemoryLayout<timeval>.size))
+        
+        var destinationAddr = sockaddr_in6()
+        destinationAddr.sin6_family = sa_family_t(AF_INET6)
+        destinationAddr.sin6_len = __uint8_t(MemoryLayout<sockaddr_in6>.size)
+        inet_pton(AF_INET6, targetIP, &destinationAddr.sin6_addr)
+        
+        let packet = ICMPv6Codec.buildEchoRequest(identifier: self.identifier, sequence: sequence, payloadSize: 24)
+        
+        let sent = packet.withUnsafeBytes { raw in
+            withUnsafePointer(to: &destinationAddr) { addrPtr in
+                addrPtr.withMemoryRebound(to: sockaddr.self, capacity: 1) { sa in
+                    sendto(sock, raw.baseAddress, packet.count, 0, sa, socklen_t(MemoryLayout<sockaddr_in6>.size))
+                }
+            }
+        }
+        guard sent > 0 else { return nil }
+        
+        var buffer = [UInt8](repeating: 0, count: 1024)
+        var senderAddr = sockaddr_in6()
+        var senderLen = socklen_t(MemoryLayout<sockaddr_in6>.size)
+        
+        let received = withUnsafeMutablePointer(to: &senderAddr) { addrPtr in
+            addrPtr.withMemoryRebound(to: sockaddr.self, capacity: 1) { sa in
+                recvfrom(sock, &buffer, buffer.count, 0, sa, &senderLen)
+            }
+        }
+        guard received > 0 else { return nil }
+        
+        var senderIPBuffer = [CChar](repeating: 0, count: Int(INET6_ADDRSTRLEN))
+        inet_ntop(AF_INET6, &senderAddr.sin6_addr, &senderIPBuffer, socklen_t(INET6_ADDRSTRLEN))
+        let senderIP = String(cString: senderIPBuffer)
+        
+        if let parsed = ICMPv6Codec.parseResponse(bytes: Array(buffer[0..<received]), senderIP: senderIP) {
+            return (senderIP, parsed.isDestinationReached)
+        }
+        
+        return (senderIP, false)
     }
     
     // MARK: - ICMP Socket Probe

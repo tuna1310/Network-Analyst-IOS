@@ -17,6 +17,7 @@ public final class LanScannerViewModel: ObservableObject {
     @Published public var selectedFilter: DeviceType? = nil
     @Published public var selectedDeviceForDetail: DiscoveredDevice? = nil
     @Published public var navigateToPortScannerWithIP: String? = nil
+    @Published public var showDisclaimerModal: Bool = false
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -47,6 +48,10 @@ public final class LanScannerViewModel: ObservableObject {
     }
     
     public func startScan() {
+        guard AppConfigManager.shared.config.hasAcceptedScanDisclaimer else {
+            showDisclaimerModal = true
+            return
+        }
         engine.startScan()
     }
     

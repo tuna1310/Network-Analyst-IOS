@@ -8,6 +8,9 @@
 import Foundation
 import Combine
 import NetworkCore
+#if canImport(UIKit)
+import UIKit
+#endif
 
 /// Bộ lọc trạng thái hiển thị danh sách cổng
 public enum PortFilterOption: String, CaseIterable, Identifiable {
@@ -34,7 +37,10 @@ public final class PortScannerViewModel: ObservableObject {
     @Published public var estimatedDurationText: String = ""
     @Published public var filterOption: PortFilterOption = .openOnly
     @Published public var shareSheetPresented: Bool = false
+    @Published public var backgroundPausedWarning: Bool = false
+    @Published public var showDisclaimerModal: Bool = false
     
+    private var previousIdleTimerDisabled: Bool = false
     private var cancellables = Set<AnyCancellable>()
     
     public init(initialHost: String = "") {
@@ -47,11 +53,48 @@ public final class PortScannerViewModel: ObservableObject {
             self.targetHost = "127.0.0.1"
         }
         
+        #if canImport(UIKit)
+        self.previousIdleTimerDisabled = UIApplication.shared.isIdleTimerDisabled
+        #endif
+        
         engine.objectWillChange
             .sink { [weak self] _ in
-                self?.objectWillChange.send()
+                guard let self = self else { return }
+                self.objectWillChange.send()
+                
+                // Đồng bộ giữ màn hình sáng khi đang quét
+                let active = self.engine.isScanning && !self.engine.isPaused
+                self.setScreenIdleTimer(disabled: active)
             }
             .store(in: &cancellables)
+            
+        #if canImport(UIKit)
+        NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                if self.engine.isScanning && !self.engine.isPaused {
+                    self.pauseScan()
+                    self.backgroundPausedWarning = true
+                }
+            }
+            .store(in: &cancellables)
+        #endif
+    }
+    
+    deinit {
+        #if canImport(UIKit)
+        UIApplication.shared.isIdleTimerDisabled = previousIdleTimerDisabled
+        #endif
+    }
+    
+    private func setScreenIdleTimer(disabled: Bool) {
+        #if canImport(UIKit)
+        if disabled {
+            UIApplication.shared.isIdleTimerDisabled = true
+        } else {
+            UIApplication.shared.isIdleTimerDisabled = previousIdleTimerDisabled
+        }
+        #endif
     }
     
     public var displayedPorts: [ScannedPort] {
@@ -69,7 +112,13 @@ public final class PortScannerViewModel: ObservableObject {
     
     /// Bắt đầu quét dựa trên chế độ hiện tại
     public func startScan() {
+        guard AppConfigManager.shared.config.hasAcceptedScanDisclaimer else {
+            showDisclaimerModal = true
+            return
+        }
+        
         customRangeError = nil
+        backgroundPausedWarning = false
         
         switch scanMode {
         case .popular:
@@ -108,6 +157,7 @@ public final class PortScannerViewModel: ObservableObject {
     }
     
     public func resumeScan() {
+        backgroundPausedWarning = false
         engine.resumeScan()
     }
     

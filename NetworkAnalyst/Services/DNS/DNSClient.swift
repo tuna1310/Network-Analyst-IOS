@@ -87,6 +87,14 @@ public actor DNSClient {
             )
         }
         
+        var finalError = udpResult.error ?? "Không nhận được phản hồi từ \(provider.rawValue)"
+        if case .system(let gw) = provider {
+            let gwDesc = (gw != nil && !gw!.isEmpty) ? "Gateway: \(gw!)" : "DHCP Gateway"
+            if type == .HTTPS || type == .SVCB || type == .SRV || type == .CAA {
+                finalError = "Máy chủ DNS cục bộ (\(gwDesc)) không phản hồi loại bản ghi \(type.rawValue). Router thông thường chỉ hỗ trợ hoặc chuyển tiếp A/AAAA, và không trả lời các bản ghi đặc biệt như HTTPS, SVCB, SRV, CAA. Gợi ý: Hãy chuyển sang Cloudflare (1.1.1.1) hoặc Google (8.8.8.8) qua DoH."
+            }
+        }
+        
         return DNSQueryResult(
             domain: cleanDomain,
             recordType: type,
@@ -95,7 +103,7 @@ public actor DNSClient {
             responseTimeMs: elapsed,
             isTruncated: udpResult.isTruncated,
             retriedOverTCP: false,
-            error: udpResult.error ?? "Không nhận được phản hồi từ \(provider.rawValue)"
+            error: finalError
         )
     }
     

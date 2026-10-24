@@ -155,6 +155,14 @@ public final class PortScannerEngine: ObservableObject {
                 self.progress = 1.0
                 self.statusMessage = "Hoàn tất! Phát hiện \(self.openPorts.count) cổng mở."
                 self.isScanning = false
+                
+                // Ghi nhận vào lịch sử quét cổng cục bộ
+                ScanHistoryManager.shared.addEntry(
+                    type: .port,
+                    target: host,
+                    summary: "Quét \(self.totalCount) cổng, tìm thấy \(self.openPorts.count) cổng mở",
+                    details: self.openPorts.map { "Port \($0.port): \($0.serviceName ?? "Chưa rõ") (\($0.status.rawValue))" }.joined(separator: "\n")
+                )
             }
         }
     }

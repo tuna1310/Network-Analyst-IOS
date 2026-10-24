@@ -308,22 +308,32 @@ NetworkAnalystIOS/
 │   │   └── LocalNetworkPermissionManager.swift # Xử lý và hướng dẫn quyền Mạng cục bộ iOS
 │   ├── Services/
 │   │   ├── DeviceScanner/
-│   │   │   ├── DiscoveredDevice.swift# Model thiết bị, icon, phân loại loại thiết bị
+│   │   │   ├── DiscoveredDevice.swift# Model thiết bị, icon, IPv6, Hostname source
 │   │   │   ├── BonjourBrowser.swift  # NWBrowser duyệt tìm mDNS services
-│   │   │   ├── UnicastProber.swift   # NetBIOS UDP 137, mDNS 5353, LLMNR 5355, SNMP 161, TCP probe
-│   │   │   └── LanScannerEngine.swift# TaskGroup quét đa luồng kết hợp dải Subnet
+│   │   │   ├── UnicastProber.swift   # NetBIOS UDP 137, mDNS 5353, LLMNR 5355, Local PTR 53, SNMP 161, TCP probe
+│   │   │   └── LanScannerEngine.swift# TaskGroup quét đa luồng kết hợp dải Subnet & lưu lịch sử
 │   │   ├── PortScanner/
 │   │   │   ├── PortScannerModels.swift # Cổng mở/đóng/lọc & Database tên dịch vụ IANA
 │   │   │   └── PortScannerEngine.swift # Quét cổng bằng NWConnection & TaskGroup giới hạn 200 tasks
 │   │   ├── Ping/
 │   │   │   ├── PingModels.swift      # Kết quả gói tin & Thống kê RTT min/avg/max/stddev
-│   │   │   ├── ICMPEngine.swift      # Socket ICMP Datagram (SOCK_DGRAM, IPPROTO_ICMP) không cần root
-│   │   │   └── PingService.swift     # Quản lý chuỗi gói tin ping liên tục
+│   │   │   ├── ICMPEngine.swift      # Socket ICMP & ICMPv6 Datagram (SOCK_DGRAM) không cần root
+│   │   │   ├── PingService.swift     # Quản lý chuỗi gói tin ping liên tục
+│   │   │   ├── TracerouteModels.swift# Model Hop, RTT, Trạng thái, GeoIP
+│   │   │   ├── TracerouteEngine.swift# Traceroute IPv4 (IP_TTL) & IPv6 (IPV6_UNICAST_HOPS)
+│   │   │   └── TracerouteService.swift# Quản lý phiên traceroute đa luồng
 │   │   ├── DNS/
 │   │   │   ├── PublicIPService.swift # URLSession lấy Public IP, ISP, Geo location
 │   │   │   ├── RDAPClient.swift      # Tra cứu WHOIS / RDAP (RFC 7480-7484)
-│   │   │   ├── DNSRecordTypes.swift  # Model bản ghi DNS (A, AAAA, MX, TXT, NS, SOA, SRV, PTR, CAA)
+│   │   │   ├── RDAPBootstrapManager.swift # Tải động & Cache đĩa 24h từ data.iana.org/rdap/
+│   │   │   ├── WhoisTCPClient.swift  # WHOIS TCP Port 43 Fallback với DNS SSRF Validation
+│   │   │   ├── DNSRecordTypes.swift  # Model bản ghi DNS (A, AAAA, MX, TXT, NS, SOA, SRV, PTR, CAA, SVCB, HTTPS)
 │   │   │   └── DNSClient.swift       # DoH JSON/RFC 8484 Wire và UDP DNS Client
+│   │   ├── History/
+│   │   │   ├── ScanHistoryModels.swift # Model bản ghi lịch sử Codable
+│   │   │   └── ScanHistoryManager.swift# Lưu trữ JSON trong Application Support (max 100/loại)
+│   │   ├── Config/
+│   │   │   └── AppConfigManager.swift# Cấu hình cam kết pháp lý trong Application Support
 │   │   └── Ads/
 │   │       ├── AdServiceProtocol.swift # Interface chuẩn cho dịch vụ quảng cáo
 │   │       └── AdViews.swift         # Banner view chân trang & Interstitial modal giả lập
@@ -335,9 +345,12 @@ NetworkAnalystIOS/
 │   │   └── DNSLookupViewModel.swift
 │   ├── Views/
 │   │   ├── Components/
-│   │   │   └── UIComponents.swift    # PermissionAlertBanner, MetricItemCard, LatencyMiniChart
+│   │   │   ├── UIComponents.swift    # PermissionAlertBanner, MetricItemCard, LatencyMiniChart
+│   │   │   └── AuthorizationDisclaimerModal.swift # Modal cam kết chỉ quét mạng được ủy quyền
 │   │   ├── Dashboard/
-│   │   │   └── DashboardView.swift
+│   │   │   ├── DashboardView.swift
+│   │   │   ├── NetworkDetailsView.swift
+│   │   │   └── ScanHistoryView.swift # Màn hình xem, lọc và xóa lịch sử quét
 │   │   ├── LanScanner/
 │   │   │   ├── LanScannerView.swift
 │   │   │   └── DeviceDetailSheet.swift
@@ -346,10 +359,12 @@ NetworkAnalystIOS/
 │   │   ├── Ping/
 │   │   │   └── PingTracerouteView.swift
 │   │   └── DNS/
-│   │       └── DNSLookupView.swift
+│   │       ├── DNSLookupView.swift
+│   │       └── RDAPLookupView.swift
 │   └── Resources/
 │       ├── Assets.xcassets           # AppIcon, AccentColor
 │       ├── Info.plist                # Quyền Local Network, Location, Bonjour services
+│       ├── Localizable.xcstrings     # Đa ngôn ngữ En / Vi (114 keys)
 │       └── NetworkAnalyst.entitlements # com.apple.developer.networking.wifi-info
 └── README.md
 ```
@@ -392,12 +407,13 @@ Dự án được định nghĩa chính thức qua file `project.yml` để trá
 ## 🔍 Bảng Trạng Thái Kiểm Chứng (Verification Matrix)
 
 > [!NOTE]
-> Môi trường phát triển hiện tại là Windows, không cài đặt Swift toolchain (`swift --version` không khả dụng). Do đó, toàn bộ mã nguồn Swift và các bộ Unit Test mới chỉ được **rà soát bằng mắt (code review), chưa biên dịch và chưa chạy test tự động**.
+> Môi trường phát triển hiện tại là Windows, không cài đặt Swift toolchain (`swift : The term 'swift' is not recognized`). Do đó, toàn bộ mã nguồn Swift và các bộ Unit Test mới chỉ được **rà soát bằng mắt (code review), chưa biên dịch và chưa chạy test tự động**.
 
-| Đã kiểm chứng thực tế (chạy thật trên Windows) | Rà soát bằng mắt, chưa biên dịch (cần Mac) | Bắt buộc kiểm chứng trên thiết bị thật (iPhone) |
+| Đã kiểm chứng thực tế (chạy thật trên Windows) | Rà soát bằng mắt, chưa biên dịch (cần Mac/Swift Toolchain) | Bắt buộc kiểm chứng trên thiết bị thật (iPhone) |
 |---|---|---|
-| - Script Python `build_oui.py` đọc CSV và sinh `oui.json` (24 vendors). | - Toàn bộ mã nguồn Swift 5.9, `actor`, `@MainActor`, `Sendable`, SwiftUI Views (`PortScannerView`, `DNSLookupView`). | - Socket ICMP unprivileged nhận ICMP Type 11 (Time Exceeded) từ router mạng viễn thông. |
-| - Tính hợp lệ cú pháp JSON của `Localizable.xcstrings` (98 keys) và `oui.json`. | - Toàn bộ Unit Tests trong `NetworkCoreTests` (`DNSCodecTests`, `PortRangeParserTests`, `PortScanStatusTests`, `RDAPParserTests`, `WhoisReferralParserTests`, `InterfaceClassifierTests`, `OUILookupTests`, `ICMPChecksumTests`). | - Quyền Wi-Fi SSID / BSSID (`NEHotspotNetwork.fetchCurrent`) trên router thật. |
-| - Cấu trúc cú pháp `project.yml` và `Package.swift`. | - Lệnh `xcodegen generate` sinh project Xcode từ `project.yml`. | - Nhận diện VPN qua `utun*` active + có IP gán thực tế. |
-| | - Biên dịch và link các resource bundle (`Localizable.xcstrings`, `oui.json`). | - Phản hồi TCP Port 43 từ WHOIS server của các registrar khác nhau qua mạng 4G/5G. |
-| | - Hành vi socket TCP khi thử lại (Fallback) gói tin DNS bị cắt ngắn (`TC=1`). | - Quét cổng 65,535 cổng có bị hệ điều hành iOS đưa vào trạng thái suspend/ngắt background hay không. |
+| - Script Python `build_oui.py` đọc CSV và sinh `oui.json`. | - Toàn bộ mã nguồn Swift 5.9, `actor`, `@MainActor`, `Sendable`, SwiftUI Views (`PortScannerView`, `DNSLookupView`, `ScanHistoryView`, `AuthorizationDisclaimerModal`). | - Socket ICMP/ICMPv6 unprivileged nhận gói tin Type 11 / Type 3 (Time Exceeded / Hop Limit Exceeded) từ router mạng viễn thông. |
+| - Tính hợp lệ cú pháp JSON của `Localizable.xcstrings` (114 keys), `oui.json`. | - **12 bộ Unit Test (70 tests)** trong `NetworkCoreTests` (`DNSCodecTests`: 7, `HostnameResolverTests`: 8, `ICMPChecksumTests`: 3, `ICMPv6CodecTests`: 5, `InterfaceClassifierTests`: 7, `OUILookupTests`: 8, `PortRangeParserTests`: 8, `PortScanStatusTests`: 6, `RDAPBootstrapParserTests`: 3, `RDAPParserTests`: 5, `TracerouteParserTests`: 4, `WhoisReferralParserTests`: 6). | - Quyền Wi-Fi SSID / BSSID (`NEHotspotNetwork.fetchCurrent`) và Entitlement thật. |
+| - Cấu trúc cú pháp `project.yml` và `NetworkCore/Package.swift`. | - Lệnh `xcodegen generate` sinh project Xcode từ `project.yml`. | - Nhận diện VPN qua `utun*` active + có IP gán thực tế. |
+| - Script Python quét đếm và xác thực tên 12 test classes + 70 unit tests. | - Biên dịch và link các resource bundle (`Localizable.xcstrings`, `oui.json` qua `Bundle.module`). | - Gửi probe ICMPv6 qua mạng di động IPv6-only (T-Mobile/Viettel/VNPT IPv6 APN). |
+| | - Hành vi socket TCP khi thử lại (Fallback) gói tin DNS bị cắt ngắn (`TC=1`). | - Quét 65,535 cổng có bị iOS tạm dừng/ngắt kết nối nền dù đã giữ màn hình sáng hay không. |
+| | - Lưu/đọc JSON lịch sử quét (`ScanHistoryManager`) trong thư mục Application Support. | - Tải và ghi đĩa cache 24h tệp RDAP bootstrap từ `data.iana.org/rdap/`. |

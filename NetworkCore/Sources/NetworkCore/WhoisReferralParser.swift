@@ -62,15 +62,18 @@ public enum WhoisReferralParser {
         let clean = candidate.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         guard clean.contains(".") && !clean.contains(" ") && clean.count >= 4 else { return false }
         
-        // Ngăn chặn localhost và địa chỉ IP loopback / private RFC 1918 / link-local
+        // Ngăn chặn localhost và địa chỉ IP loopback / private RFC 1918 / link-local / ULA
         if clean == "localhost" ||
+           clean == "0.0.0.0" ||
+           clean == "::" ||
            clean.hasPrefix("127.") ||
            clean.hasPrefix("10.") ||
            clean.hasPrefix("192.168.") ||
            clean.hasPrefix("169.254.") ||
            clean == "::1" ||
            clean.hasPrefix("fe80:") ||
-           clean.hasPrefix("fc00:") {
+           clean.hasPrefix("fc") ||
+           clean.hasPrefix("fd") {
             return false
         }
         

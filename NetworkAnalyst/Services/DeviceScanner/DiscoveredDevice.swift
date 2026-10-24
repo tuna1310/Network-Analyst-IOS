@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import NetworkCore
 
 /// Phân loại loại thiết bị trong mạng
 public enum DeviceType: String, Sendable, CaseIterable {
@@ -44,6 +45,7 @@ public enum DiscoveryMethod: String, Sendable, CaseIterable {
     case netbios = "NetBIOS (Port 137)"
     case llmnr = "LLMNR (Port 5355)"
     case snmp = "SNMP (Port 161)"
+    case ptr = "DNS PTR"
     case localInterface = "Thiết bị này"
 }
 
@@ -51,7 +53,10 @@ public enum DiscoveryMethod: String, Sendable, CaseIterable {
 public struct DiscoveredDevice: Identifiable, Sendable, Equatable {
     public var id: String { ipAddress }
     public let ipAddress: String
+    public var ipv6Address: String?
+    public var ipv6StatusExplanation: String?
     public var hostname: String?
+    public var hostnameSource: HostnameSource?
     public var macAddress: String?
     public var vendor: String?
     public var deviceType: DeviceType
@@ -65,7 +70,10 @@ public struct DiscoveredDevice: Identifiable, Sendable, Equatable {
     
     public init(
         ipAddress: String,
+        ipv6Address: String? = nil,
+        ipv6StatusExplanation: String? = nil,
         hostname: String? = nil,
+        hostnameSource: HostnameSource? = nil,
         macAddress: String? = nil,
         vendor: String? = nil,
         deviceType: DeviceType = .unknown,
@@ -78,7 +86,10 @@ public struct DiscoveredDevice: Identifiable, Sendable, Equatable {
         lastSeen: Date = Date()
     ) {
         self.ipAddress = ipAddress
+        self.ipv6Address = ipv6Address
+        self.ipv6StatusExplanation = ipv6StatusExplanation ?? (ipv6Address == nil ? "Không có địa chỉ IPv6 (Router hoặc thiết bị không kích hoạt IPv6)" : nil)
         self.hostname = hostname
+        self.hostnameSource = hostnameSource
         self.macAddress = macAddress
         self.vendor = vendor
         self.deviceType = deviceType

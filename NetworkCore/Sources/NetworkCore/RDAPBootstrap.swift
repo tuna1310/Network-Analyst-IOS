@@ -17,7 +17,8 @@ public enum RDAPBootstrap {
     public static let ianaIPv6BootstrapURL = URL(string: "https://data.iana.org/rdap/ipv6.json")!
     public static let ianaASNBootstrapURL = URL(string: "https://data.iana.org/rdap/asn.json")!
     
-    // Bộ đệm tĩnh trong bộ nhớ (In-memory Bootstrap Cache)
+    // BẢNG DỰ PHÒNG OFFLINE (CÓ THỂ LỖI THỜI THEO THỜI GIAN)
+    // Nguồn chính thức luôn được tải động từ data.iana.org/rdap/ và lưu cache xuống đĩa 24h.
     private static var dnsRegistryCache: [String: String] = [
         "com": "https://rdap.verisign.com/com/v1/",
         "net": "https://rdap.verisign.com/net/v1/",
@@ -27,15 +28,28 @@ public enum RDAPBootstrap {
         "me": "https://rdap.identitydigital.services/rdap/",
         "vn": "https://rdap.vnnic.vn/"
     ]
+    private static let lock = NSLock()
     
-    /// Cập nhật cache từ phản hồi bootstrap IANA dns.json
+    /// Cập nhật cache từ dữ liệu tải động từ IANA dns.json
+    public static func updateDNSCache(with mapping: [String: String]) {
+        lock.lock()
+        defer { lock.unlock() }
+        for (k, v) in mapping {
+            dnsRegistryCache[k.lowercased()] = v
+        }
+    }
+    
+    /// Cập nhật cache từ phản hồi bootstrap IANA thô
     public static func updateDNSCache(from services: [[[String]]]) {
+        lock.lock()
+        defer { lock.unlock() }
         for service in services {
             guard service.count >= 2 else { continue }
             let tlds = service[0]
             guard let serverBase = service[1].first else { continue }
+            let norm = serverBase.hasSuffix("/") ? serverBase : "\(serverBase)/"
             for tld in tlds {
-                dnsRegistryCache[tld.lowercased()] = serverBase
+                dnsRegistryCache[tld.lowercased()] = norm
             }
         }
     }

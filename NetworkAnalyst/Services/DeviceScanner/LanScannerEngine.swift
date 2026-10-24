@@ -54,7 +54,10 @@ public final class LanScannerEngine: ObservableObject {
         
         let selfDevice = DiscoveredDevice(
             ipAddress: localIP,
+            ipv6Address: wifi.ipv6Address,
+            ipv6StatusExplanation: wifi.ipv6Address == nil ? "Thiết bị chưa được cấp địa chỉ IPv6" : nil,
             hostname: HostNameResolver.getDeviceName(),
+            hostnameSource: .mDNS,
             macAddress: "iOS Sandbox (Protected)",
             vendor: "Apple Inc.",
             deviceType: .appleDevice,
@@ -93,11 +96,15 @@ public final class LanScannerEngine: ObservableObject {
                                 ipAddress: targetIP,
                                 isGateway: isGw,
                                 isSelf: isMe,
+                                gatewayIP: gatewayIP,
                                 timeout: 0.45
                             ) {
                                 return DiscoveredDevice(
                                     ipAddress: targetIP,
+                                    ipv6Address: probeRes.ipv6Address,
+                                    ipv6StatusExplanation: probeRes.ipv6StatusExplanation,
                                     hostname: probeRes.hostname,
+                                    hostnameSource: probeRes.hostnameSource,
                                     macAddress: probeRes.macAddress,
                                     vendor: probeRes.vendor,
                                     deviceType: probeRes.deviceType,
@@ -142,11 +149,15 @@ public final class LanScannerEngine: ObservableObject {
                                 ipAddress: nextIP,
                                 isGateway: isGw,
                                 isSelf: isMe,
+                                gatewayIP: gatewayIP,
                                 timeout: 0.45
                             ) {
                                 return DiscoveredDevice(
                                     ipAddress: nextIP,
+                                    ipv6Address: probeRes.ipv6Address,
+                                    ipv6StatusExplanation: probeRes.ipv6StatusExplanation,
                                     hostname: probeRes.hostname,
+                                    hostnameSource: probeRes.hostnameSource,
                                     macAddress: probeRes.macAddress,
                                     vendor: probeRes.vendor,
                                     deviceType: probeRes.deviceType,
@@ -169,8 +180,9 @@ public final class LanScannerEngine: ObservableObject {
             for b in bonjourResults {
                 if let ip = b.ipAddress, let idx = results.firstIndex(where: { $0.ipAddress == ip }) {
                     results[idx].bonjourServices.append("\(b.name) (\(b.serviceType))")
-                    if results[idx].hostname == nil {
+                    if results[idx].hostnameSource == nil || results[idx].hostnameSource != .mDNS {
                         results[idx].hostname = b.name
+                        results[idx].hostnameSource = .mDNS
                     }
                     if !results[idx].discoveryMethods.contains(.bonjour) {
                         results[idx].discoveryMethods.append(.bonjour)
@@ -182,6 +194,17 @@ public final class LanScannerEngine: ObservableObject {
             self.progress = 1.0
             self.currentHost = "Hoàn tất quét. Tìm thấy \(results.count) thiết bị."
             self.isScanning = false
+            
+            // Ghi nhận vào lịch sử quét cục bộ
+            let targetRange = hostRange.first.map { "\($0)/\(wifi.subnetMask ?? "24")" } ?? localIP
+            ScanHistoryManager.shared.addEntry(
+                type: .lan,
+                target: targetRange,
+                summary: "Tìm thấy \(results.count) thiết bị trong mạng nội bộ",
+                details: results.map { d in
+                    "\(d.ipAddress) | \(d.displayName) | \(d.vendor ?? "Chưa rõ") | IPv6: \(d.ipv6Address ?? "Không có")"
+                }.joined(separator: "\n")
+            )
         }
     }
     

@@ -25,11 +25,37 @@ public actor ICMPEngine {
         self.isCancelled = true
     }
     
-    /// Phân giải hostname sang IPv4 string
-    public func resolveHostToIPv4(_ host: String) -> String? {
+    public struct ResolvedTarget: Sendable {
+        public let ipAddress: String
+        public let isIPv6: Bool
+        
+        public init(ipAddress: String, isIPv6: Bool) {
+            self.ipAddress = ipAddress
+            self.isIPv6 = isIPv6
+        }
+    }
+    
+    /// Phân giải hostname sang IPv4 hoặc IPv6 string
+    public func resolveHost(_ host: String) -> ResolvedTarget? {
+        let clean = host.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !clean.isEmpty else { return nil }
+        
+        // Kiểm tra nếu là IPv6 trực tiếp
+        var sin6 = sockaddr_in6()
+        if inet_pton(AF_INET6, clean, &sin6.sin6_addr) == 1 {
+            return ResolvedTarget(ipAddress: clean, isIPv6: true)
+        }
+        
+        // Kiểm tra nếu là IPv4 trực tiếp
+        var sin4 = sockaddr_in()
+        if inet_pton(AF_INET, clean, &sin4.sin_addr) == 1 {
+            return ResolvedTarget(ipAddress: clean, isIPv6: false)
+        }
+        
+        // Phân giải bằng getaddrinfo với AF_UNSPEC
         var hints = addrinfo(
             ai_flags: AI_DEFAULT,
-            ai_family: AF_INET,
+            ai_family: AF_UNSPEC,
             ai_socktype: SOCK_DGRAM,
             ai_protocol: 0,
             ai_addrlen: 0,
@@ -39,26 +65,53 @@ public actor ICMPEngine {
         )
         
         var res: UnsafeMutablePointer<addrinfo>?
-        guard getaddrinfo(host, nil, &hints, &res) == 0, let first = res else {
+        guard getaddrinfo(clean, nil, &hints, &res) == 0, let first = res else {
             return nil
         }
         defer { freeaddrinfo(res) }
         
-        var ipBuffer = [CChar](repeating: 0, count: Int(INET_ADDRSTRLEN))
-        let sin = first.pointee.ai_addr.withMemoryRebound(to: sockaddr_in.self, capacity: 1) { $0.pointee }
-        var sin_addr = sin.sin_addr
-        inet_ntop(AF_INET, &sin_addr, &ipBuffer, socklen_t(INET_ADDRSTRLEN))
-        return String(cString: ipBuffer)
+        var ptr: UnsafeMutablePointer<addrinfo>? = first
+        var ipv6Candidate: String? = nil
+        
+        while let current = ptr {
+            if current.pointee.ai_family == AF_INET {
+                var ipBuffer = [CChar](repeating: 0, count: Int(INET_ADDRSTRLEN))
+                let sin = current.pointee.ai_addr.withMemoryRebound(to: sockaddr_in.self, capacity: 1) { $0.pointee }
+                var addr = sin.sin_addr
+                inet_ntop(AF_INET, &addr, &ipBuffer, socklen_t(INET_ADDRSTRLEN))
+                return ResolvedTarget(ipAddress: String(cString: ipBuffer), isIPv6: false)
+            } else if current.pointee.ai_family == AF_INET6 && ipv6Candidate == nil {
+                var ipBuffer = [CChar](repeating: 0, count: Int(INET6_ADDRSTRLEN))
+                let sin6 = current.pointee.ai_addr.withMemoryRebound(to: sockaddr_in6.self, capacity: 1) { $0.pointee }
+                var addr6 = sin6.sin6_addr
+                inet_ntop(AF_INET6, &addr6, &ipBuffer, socklen_t(INET6_ADDRSTRLEN))
+                ipv6Candidate = String(cString: ipBuffer)
+            }
+            ptr = current.pointee.ai_next
+        }
+        
+        if let v6 = ipv6Candidate {
+            return ResolvedTarget(ipAddress: v6, isIPv6: true)
+        }
+        return nil
     }
     
-    /// Gửi một gói ICMP Echo Request đơn lẻ và đợi phản hồi
+    /// Phân giải hostname sang IPv4 string (tương thích ngược)
+    public func resolveHostToIPv4(_ host: String) -> String? {
+        if let res = resolveHost(host), !res.isIPv6 {
+            return res.ipAddress
+        }
+        return nil
+    }
+    
+    /// Gửi một gói ICMP Echo Request đơn lẻ và đợi phản hồi (hỗ trợ cả IPv4 và IPv6)
     public func pingOnce(
         to host: String,
         sequence: Int,
         timeout: TimeInterval = 1.0,
         payloadSize: Int = 32
     ) async -> PingPacketResult {
-        guard let ipAddress = resolveHostToIPv4(host) else {
+        guard let resolved = resolveHost(host) else {
             return PingPacketResult(
                 sequence: sequence,
                 host: host,
@@ -68,6 +121,160 @@ public actor ICMPEngine {
                 status: .error("Không thể phân giải địa chỉ IP")
             )
         }
+        
+        if resolved.isIPv6 {
+            return await pingOnceIPv6(
+                host: host,
+                ipAddress: resolved.ipAddress,
+                sequence: sequence,
+                timeout: timeout,
+                payloadSize: payloadSize
+            )
+        } else {
+            return await pingOnceIPv4(
+                host: host,
+                ipAddress: resolved.ipAddress,
+                sequence: sequence,
+                timeout: timeout,
+                payloadSize: payloadSize
+            )
+        }
+    }
+    
+    // MARK: - IPv6 Ping (ICMPv6 RFC 4443)
+    private func pingOnceIPv6(
+        host: String,
+        ipAddress: String,
+        sequence: Int,
+        timeout: TimeInterval,
+        payloadSize: Int
+    ) async -> PingPacketResult {
+        let sock = socket(AF_INET6, SOCK_DGRAM, IPPROTO_ICMPV6)
+        guard sock >= 0 else {
+            return PingPacketResult(
+                sequence: sequence,
+                host: host,
+                ipAddress: ipAddress,
+                rttMs: nil,
+                bytes: 0,
+                status: .error("Mạng hiện tại không hỗ trợ hoặc không có kết nối IPv6 (Socket errno \(errno))")
+            )
+        }
+        defer { close(sock) }
+        
+        var timeoutVal = timeval(
+            tv_sec: Int(timeout),
+            tv_usec: Int32((timeout.truncatingRemainder(dividingBy: 1)) * 1_000_000)
+        )
+        setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &timeoutVal, socklen_t(MemoryLayout<timeval>.size))
+        
+        var destinationAddr = sockaddr_in6()
+        destinationAddr.sin6_family = sa_family_t(AF_INET6)
+        destinationAddr.sin6_len = __uint8_t(MemoryLayout<sockaddr_in6>.size)
+        inet_pton(AF_INET6, ipAddress, &destinationAddr.sin6_addr)
+        
+        // Kernel Darwin tự động tính Checksum ICMPv6 trên datagram socket; user code để 0x0000
+        let packetData = ICMPv6Codec.buildEchoRequest(
+            identifier: self.identifier,
+            sequence: UInt16(sequence & 0xFFFF),
+            payloadSize: payloadSize
+        )
+        
+        let startTime = CFAbsoluteTimeGetCurrent()
+        
+        let bytesSent = packetData.withUnsafeBytes { rawBuffer -> Int in
+            guard let baseAddress = rawBuffer.baseAddress else { return -1 }
+            return withUnsafePointer(to: &destinationAddr) { addrPtr in
+                addrPtr.withMemoryRebound(to: sockaddr.self, capacity: 1) { sa in
+                    sendto(sock, baseAddress, packetData.count, 0, sa, socklen_t(MemoryLayout<sockaddr_in6>.size))
+                }
+            }
+        }
+        
+        guard bytesSent > 0 else {
+            let err = errno
+            let reason = (err == EHOSTUNREACH || err == ENETUNREACH)
+                ? "Mạng hiện tại không có kết nối IPv6 (Host/Network unreachable)"
+                : "Lỗi gửi gói tin IPv6: errno \(err)"
+            return PingPacketResult(
+                sequence: sequence,
+                host: host,
+                ipAddress: ipAddress,
+                rttMs: nil,
+                bytes: 0,
+                status: .error(reason)
+            )
+        }
+        
+        var receiveBuffer = [UInt8](repeating: 0, count: 1024)
+        var senderAddr = sockaddr_in6()
+        var senderLen = socklen_t(MemoryLayout<sockaddr_in6>.size)
+        
+        let bytesReceived = withUnsafeMutablePointer(to: &senderAddr) { addrPtr in
+            addrPtr.withMemoryRebound(to: sockaddr.self, capacity: 1) { sa in
+                recvfrom(sock, &receiveBuffer, receiveBuffer.count, 0, sa, &senderLen)
+            }
+        }
+        
+        let endTime = CFAbsoluteTimeGetCurrent()
+        let rtt = (endTime - startTime) * 1000.0
+        
+        guard bytesReceived > 0 else {
+            return PingPacketResult(
+                sequence: sequence,
+                host: host,
+                ipAddress: ipAddress,
+                rttMs: nil,
+                bytes: 0,
+                status: .timeout
+            )
+        }
+        
+        var senderIPBuffer = [CChar](repeating: 0, count: Int(INET6_ADDRSTRLEN))
+        inet_ntop(AF_INET6, &senderAddr.sin6_addr, &senderIPBuffer, socklen_t(INET6_ADDRSTRLEN))
+        let senderIP = String(cString: senderIPBuffer)
+        
+        if let parsed = ICMPv6Codec.parseResponse(bytes: Array(receiveBuffer[0..<bytesReceived]), senderIP: senderIP) {
+            if parsed.type == .echoReply {
+                return PingPacketResult(
+                    sequence: sequence,
+                    host: host,
+                    ipAddress: ipAddress,
+                    rttMs: rtt,
+                    bytes: bytesReceived,
+                    ttl: 64,
+                    status: .success
+                )
+            } else if parsed.type == .destinationUnreachable {
+                return PingPacketResult(
+                    sequence: sequence,
+                    host: host,
+                    ipAddress: ipAddress,
+                    rttMs: rtt,
+                    bytes: bytesReceived,
+                    status: .error(parsed.explanation)
+                )
+            }
+        }
+        
+        return PingPacketResult(
+            sequence: sequence,
+            host: host,
+            ipAddress: ipAddress,
+            rttMs: rtt,
+            bytes: bytesReceived,
+            status: .success
+        )
+    }
+    
+    // MARK: - IPv4 Ping (RFC 792)
+    private func pingOnceIPv4(
+        host: String,
+        ipAddress: String,
+        sequence: Int,
+        timeout: TimeInterval,
+        payloadSize: Int
+    ) async -> PingPacketResult {
         
         // Tạo unprivileged ICMP Datagram socket
         let sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_ICMP)

@@ -50,6 +50,11 @@ public final class DNSLookupViewModel: ObservableObject {
     
     public init() {}
     
+    private func ifCaseSystem(_ provider: DNSProvider) -> Bool {
+        if case .system = provider { return true }
+        return false
+    }
+    
     /// Thực hiện tra cứu tùy theo tab hiện tại (DNS hoặc RDAP)
     public func performLookup() async {
         let clean = domainInput.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -101,7 +106,11 @@ public final class DNSLookupViewModel: ObservableObject {
                     responseTimeMs: maxResponseTime,
                     isTruncated: anyTruncated,
                     retriedOverTCP: anyRetriedTCP,
-                    error: aggregatedRecords.isEmpty ? "Không tìm thấy bản ghi DNS nào cho \(clean)" : nil
+                    error: aggregatedRecords.isEmpty ? (
+                        ifCaseSystem(provider)
+                            ? "Không nhận được phản hồi bản ghi từ DNS mạng hiện tại (Gateway). Router mạng thường chỉ hỗ trợ A/AAAA hoặc chặn truy vấn đa bản ghi. Gợi ý: Hãy chuyển sang Cloudflare (1.1.1.1) hoặc Google (8.8.8.8) qua DoH."
+                            : "Không tìm thấy bản ghi DNS nào cho \(clean)"
+                    ) : nil
                 )
             } else {
                 let res = await DNSClient.shared.resolve(domain: clean, type: selectedRecordType, provider: provider)

@@ -2,6 +2,9 @@
 
 Ứng dụng phân tích và chẩn đoán mạng chuyên nghiệp xây dựng trên **iOS 16+**, **Swift 5.9+**, **SwiftUI**, **Swift Concurrency** (`async/await`, `actor`, `TaskGroup`), và **Network.framework**.
 
+> [!NOTE]
+> **Dữ liệu OUI IEEE**: Vì chưa có tệp `Scripts/data/oui.csv` từ IEEE tải về máy, app vẫn đang dùng dữ liệu mẫu 24 hãng bundled trong package. Để nạp toàn bộ cơ sở dữ liệu IEEE (>35,000 hãng), bạn chỉ cần tải tệp `oui.csv` từ IEEE Standards Association đặt vào `Scripts/data/oui.csv` rồi chạy `python Scripts/build_oui.py`.
+
 ---
 
 ## 📑 Mục Lục
@@ -257,21 +260,44 @@ NetworkAnalystIOS/
 │       ├── Assets.xcassets
 │       ├── Info.plist
 │       ├── InfoPlist.xcstrings       # Đa ngôn ngữ En/Vi cho mô tả quyền hệ thống
-│       ├── Localizable.xcstrings     # Đa ngôn ngữ En/Vi (213 keys) cho toàn bộ ứng dụng
+│       ├── Localizable.xcstrings     # Đa ngôn ngữ En/Vi (507 keys) cho toàn bộ ứng dụng
 │       ├── NetworkAnalyst.entitlements
 │       ├── oui.json
-│       └── PrivacyInfo.xcprivacy     # Apple Privacy Manifest (File timestamp C617.1)
+│       └── PrivacyInfo.xcprivacy     # Apple Privacy Manifest (File timestamp C617.1 & Boot time 35F9.1)
 └── Scripts/
-    ├── build_oui.py                  # Script sinh oui.json từ CSV
-    ├── audit_strings.py              # Script quét chuỗi UI chưa khai báo
-    └── validate_localizable.py       # Script kiểm tra 100% key có đủ En và Vi
+    ├── mac_first_build.sh            # Kịch bản tự động thực hiện lần build đầu trên Mac
+    ├── check_format_specifiers.py    # Kiểm tra khớp tham số định dạng (%@, %d) giữa code và xcstrings
+    ├── audit_strings.py              # Script quét chuỗi UI và gán biến chưa bản địa hóa
+    ├── validate_localizable.py       # Script kiểm tra 100% key có đủ En và Vi
+    ├── grep_privacy_apis.py          # Script rà soát các Apple Required Reason APIs
+    └── build_oui.py                  # Script sinh oui.json từ CSV IEEE
 ```
 
 ---
 
 ## 🛠️ Hướng Dẫn Biên Dịch, Chạy Test & Tự Động Hóa (CI/CD)
 
-### 1. Sinh Dự Án Bằng XcodeGen
+### 0. Lần Build Đầu Tiên Trên Mac (Khuyến Nghị)
+Dự án đã chuẩn bị sẵn kịch bản kiểm tra toàn diện [Scripts/mac_first_build.sh](file:///Scripts/mac_first_build.sh). Bạn chỉ cần mở Terminal trên máy Mac và chạy:
+```bash
+bash Scripts/mac_first_build.sh
+```
+Kịch bản sẽ tự động:
+1. Kiểm tra công cụ `xcodebuild`, `swift`, và tự động cài `xcodegen` qua Homebrew nếu thiếu.
+2. Chạy `xcodegen generate` để tạo `NetworkAnalyst.xcodeproj`.
+3. Chạy `swift test --package-path NetworkCore` (13 test suites).
+4. Tự động dò tìm iPhone Simulator khả dụng trên máy (không hardcode thiết bị cố định).
+5. Biên dịch `NetworkAnalyst` app target (`CODE_SIGNING_ALLOWED=NO`).
+6. Chạy toàn bộ Unit Tests trên iOS Simulator.
+7. Ghi lại toàn bộ log chi tiết vào thư mục `build_logs/`:
+   - `build_logs/01_xcodegen.log`
+   - `build_logs/02_networkcore_test.log`
+   - `build_logs/03_xcodebuild_build.log`
+   - `build_logs/04_xcodebuild_test.log`
+
+Nếu có bất kỳ bước nào gặp lỗi, bạn chỉ cần mở file log tương ứng và gửi log cho tôi để xử lý chính xác ngay lập tức.
+
+### 1. Sinh Dự Án Thủ Công Bằng XcodeGen
 Trên macOS có Xcode 15+, chạy lệnh:
 ```bash
 brew install xcodegen
@@ -290,16 +316,15 @@ swift test --package-path NetworkCore
 xcodebuild test \
   -project NetworkAnalyst.xcodeproj \
   -scheme NetworkAnalystTests \
-  -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest'
+  -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+  CODE_SIGNING_ALLOWED=NO
 ```
 
-### 4. Tự Động Hóa Với GitHub Actions CI
-Dự án đã tích hợp tệp workflow `.github/workflows/ci.yml`. Mỗi khi push hoặc mở pull request lên nhánh `master` hoặc `main`, máy ảo GitHub Actions `macos-14` sẽ tự động:
-1. Cài đặt XcodeGen qua Homebrew.
-2. Sinh `NetworkAnalyst.xcodeproj`.
-3. Chạy toàn bộ 77 unit tests của `NetworkCore`.
-4. Biên dịch và chạy test trên iOS Simulator iPhone 15.
-*(Lưu ý: Tệp CI mới chỉ được soạn thảo và kiểm tra cú pháp, chưa chạy trên môi trường Windows hiện tại).*
+### 4. Tự Động Hóa Với GitLab CI/CD
+Dự án sử dụng tệp cấu hình chính [.gitlab-ci.yml](file:///.gitlab-ci.yml). Khi push hoặc mở Merge Request lên `master` hoặc `main`, GitLab CI runner với tag `macos` sẽ tự động thực hiện 2 jobs:
+1. `test_network_core`: Chạy `swift test` độc lập.
+2. `test_ios_app`: Cài đặt XcodeGen, sinh dự án và chạy test trên iOS Simulator.
+*(Lưu ý quan trọng: Trên GitLab SaaS, runner macOS yêu cầu compute minutes gói trả phí, hoặc bạn có thể kết nối macOS Runner tự host).*
 
 ---
 

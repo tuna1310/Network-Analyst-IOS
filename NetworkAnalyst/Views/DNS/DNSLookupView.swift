@@ -5,6 +5,7 @@
 //  Created for iOS 16+, Swift 5.9+
 //
 
+import Foundation
 import SwiftUI
 import NetworkCore
 
@@ -19,9 +20,9 @@ public struct DNSLookupView: View {
             ScrollView {
                 VStack(spacing: 16) {
                     // Segment chuyển đổi giữa DNS và RDAP
-                    Picker("Chế độ tra cứu", selection: $viewModel.lookupMode) {
+                    Picker(String(localized: "dns.lookup_mode_picker", defaultValue: "Chế độ tra cứu"), selection: $viewModel.lookupMode) {
                         ForEach(LookupMode.allCases) { mode in
-                            Text(mode.rawValue).tag(mode)
+                            Text(mode.title).tag(mode)
                         }
                     }
                     .pickerStyle(.segmented)
@@ -39,7 +40,7 @@ public struct DNSLookupView: View {
                     
                     // Kết quả hiển thị
                     if viewModel.isQuerying {
-                        ProgressView("Đang tra cứu dữ liệu...")
+                        ProgressView(LocalizedStringKey("dns.loading_query"))
                             .padding(.vertical, 32)
                     } else if viewModel.lookupMode == .dns {
                         dnsResultsCard
@@ -51,7 +52,7 @@ public struct DNSLookupView: View {
                 }
                 .padding(.vertical)
             }
-            .navigationTitle("DNS & WHOIS / RDAP")
+            .navigationTitle(LocalizedStringKey("dns.nav_title"))
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     NavigationLink(destination: RDAPLookupView()) {
@@ -73,7 +74,7 @@ public struct DNSLookupView: View {
             HStack {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(.blue)
-                TextField("Nhập tên miền (vd: apple.com) hoặc IP", text: $viewModel.domainInput)
+                TextField(LocalizedStringKey("dns.search_placeholder"), text: $viewModel.domainInput)
                     .textFieldStyle(.plain)
                     .autocorrectionDisabled()
                     .textInputAutocapitalization(.never)
@@ -115,18 +116,18 @@ public struct DNSLookupView: View {
             if viewModel.lookupMode == .dns {
                 VStack(alignment: .leading, spacing: 6) {
                     HStack {
-                        Text("Máy chủ DNS Resolver:")
+                        Text(LocalizedStringKey("dns.resolver_label"))
                             .font(.caption)
                             .foregroundColor(.secondary)
                         
                         Spacer()
                         
-                        Picker("DNS Provider", selection: $viewModel.selectedProviderOption) {
-                            Text("Cloudflare (1.1.1.1 / DoH)").tag(0)
-                            Text("Google (8.8.8.8 / DoH)").tag(1)
-                            Text("Quad9 (9.9.9.9 / DoH)").tag(2)
-                            Text("Tùy chỉnh IP").tag(3)
-                            Text("Mạng hiện tại (Gateway)").tag(4)
+                        Picker(LocalizedStringKey("dns.resolver_label"), selection: $viewModel.selectedProviderOption) {
+                            Text(LocalizedStringKey("dns.provider_cloudflare")).tag(0)
+                            Text(LocalizedStringKey("dns.provider_google")).tag(1)
+                            Text(LocalizedStringKey("dns.provider_quad9")).tag(2)
+                            Text(LocalizedStringKey("dns.resolver_custom")).tag(3)
+                            Text(LocalizedStringKey("dns.resolver_current")).tag(4)
                         }
                         .pickerStyle(.menu)
                     }
@@ -135,12 +136,12 @@ public struct DNSLookupView: View {
                         HStack {
                             Image(systemName: "server.rack")
                                 .foregroundColor(.secondary)
-                            TextField("Nhập IP máy chủ DNS (vd: 208.67.222.222)", text: $viewModel.customResolverIP)
+                            TextField(LocalizedStringKey("dns.custom_ip_placeholder"), text: $viewModel.customResolverIP)
                                 .font(.caption.monospaced())
                                 .textFieldStyle(.roundedBorder)
                         }
                     } else if viewModel.selectedProviderOption == 4 {
-                        Text("Lưu ý: Mạng hiện tại truy vấn DNS của router gateway nội bộ. Do hệ thống iOS chỉ hỗ trợ giải quyết A/AAAA, các bản ghi mở rộng (HTTPS, CAA, SRV) có thể cần chọn Cloudflare/Google.")
+                        Text(LocalizedStringKey("dns.gateway_records_notice"))
                             .font(.system(size: 9))
                             .foregroundColor(.secondary)
                     }
@@ -154,7 +155,7 @@ public struct DNSLookupView: View {
                 HStack {
                     Spacer()
                     Image(systemName: "arrow.triangle.2.circlepath")
-                    Text("Tra cứu thông tin")
+                    Text(LocalizedStringKey("dns.lookup_button"))
                         .bold()
                     Spacer()
                 }
@@ -197,7 +198,7 @@ public struct DNSLookupView: View {
             if let result = viewModel.dnsResult {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("KẾT QUẢ PHÂN GIẢI DNS")
+                        Text(LocalizedStringKey("dns.results_header"))
                             .font(.caption.bold())
                             .foregroundColor(.secondary)
                         Text(result.domain)
@@ -206,7 +207,7 @@ public struct DNSLookupView: View {
                     Spacer()
                     HStack(spacing: 6) {
                         if result.retriedOverTCP {
-                            Text("TCP Retry (TC=1)")
+                            Text(LocalizedStringKey("dns.tc_retried"))
                                 .font(.system(size: 9, weight: .bold))
                                 .padding(.horizontal, 5)
                                 .padding(.vertical, 2)
@@ -227,7 +228,7 @@ public struct DNSLookupView: View {
                         .foregroundColor(.secondary)
                         .padding(.vertical, 8)
                 } else if result.records.isEmpty {
-                    Text("Không tìm thấy bản ghi nào khớp với điều kiện tìm kiếm.")
+                    Text(LocalizedStringKey("dns.no_matching_records"))
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .padding(.vertical, 8)
@@ -251,7 +252,7 @@ public struct DNSLookupView: View {
                                     
                                     Spacer()
                                     
-                                    Text("TTL \(record.ttl)s")
+                                    Text(verbatim: "TTL \(record.ttl)s")
                                         .font(.caption2)
                                         .foregroundColor(.secondary)
                                 }
@@ -277,7 +278,7 @@ public struct DNSLookupView: View {
                     }
                 }
             } else {
-                Text("Nhập tên miền và bấm 'Tra cứu thông tin' để kiểm tra bản ghi DNS.")
+                Text(LocalizedStringKey("dns.empty_prompt"))
                     .font(.footnote)
                     .foregroundColor(.secondary)
                     .padding(.vertical, 16)
@@ -294,7 +295,7 @@ public struct DNSLookupView: View {
             if let rdap = viewModel.rdapRecord {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("THÔNG TIN ĐĂNG KÝ (RDAP / WHOIS)")
+                        Text(LocalizedStringKey("rdap.results_header"))
                             .font(.caption.bold())
                             .foregroundColor(.secondary)
                         Text(rdap.title)
@@ -305,28 +306,28 @@ public struct DNSLookupView: View {
                 
                 VStack(spacing: 8) {
                     if let reg = rdap.registrarOrOrg {
-                        rdapRow(label: "Nhà đăng ký / Tổ chức", value: reg)
+                        rdapRow(label: LocalizedStringKey("rdap.registrar"), value: reg)
                     }
                     if let owner = rdap.registrantName {
-                        rdapRow(label: "Chủ thể đăng ký", value: owner)
+                        rdapRow(label: LocalizedStringKey("rdap.owner_org"), value: owner)
                     }
                     if let rDate = rdap.registrationDate {
-                        rdapRow(label: "Ngày khởi tạo", value: rDate)
+                        rdapRow(label: LocalizedStringKey("rdap.created_date"), value: rDate)
                     }
                     if let eDate = rdap.expirationDate {
-                        rdapRow(label: "Ngày hết hạn", value: eDate)
+                        rdapRow(label: LocalizedStringKey("rdap.expires_date"), value: eDate)
                     }
                     if let uDate = rdap.lastUpdatedDate {
-                        rdapRow(label: "Cập nhật lần cuối", value: uDate)
+                        rdapRow(label: LocalizedStringKey("rdap.updated_date"), value: uDate)
                     }
                     if let cidr = rdap.cidrOrRange {
-                        rdapRow(label: "Dải IP / CIDR", value: cidr)
+                        rdapRow(label: LocalizedStringKey("rdap.cidr_range"), value: cidr)
                     }
                     if !rdap.status.isEmpty {
-                        rdapRow(label: "Trạng thái", value: rdap.status.joined(separator: ", "))
+                        rdapRow(label: LocalizedStringKey("rdap.status"), value: rdap.status.joined(separator: ", "))
                     }
                     if !rdap.nameservers.isEmpty {
-                        rdapRow(label: "Máy chủ tên miền (Nameservers)", value: rdap.nameservers.joined(separator: "\n"))
+                        rdapRow(label: LocalizedStringKey("rdap.nameservers"), value: rdap.nameservers.joined(separator: "\n"))
                     }
                 }
             } else if let err = viewModel.rdapError {
@@ -339,7 +340,7 @@ public struct DNSLookupView: View {
                 }
                 .padding(.vertical, 8)
             } else {
-                Text("Nhập tên miền, IP hoặc ASN để tra cứu hồ sơ chủ sở hữu chính thức qua giao thức RDAP (RFC 7480-7484).")
+                Text(LocalizedStringKey("rdap.empty_prompt"))
                     .font(.footnote)
                     .foregroundColor(.secondary)
                     .padding(.vertical, 16)
@@ -350,7 +351,7 @@ public struct DNSLookupView: View {
         .cornerRadius(14)
     }
     
-    private func rdapRow(label: String, value: String) -> some View {
+    private func rdapRow(label: LocalizedStringKey, value: String) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(label)
                 .font(.caption2)

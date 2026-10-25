@@ -42,7 +42,7 @@ public actor WhoisTCPClient {
     public func query(domainOrIP: String, initialServer: String = "whois.iana.org") async -> WhoisResult {
         let cleanQuery = domainOrIP.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !cleanQuery.isEmpty else {
-            return WhoisResult(query: domainOrIP, error: "Tên miền hoặc IP không hợp lệ")
+            return WhoisResult(query: domainOrIP, error: String(localized: "whois.error.invalid_query", defaultValue: "Tên miền hoặc IP không hợp lệ"))
         }
         
         var currentServer = initialServer
@@ -88,18 +88,20 @@ public actor WhoisTCPClient {
             } catch {
                 if !latestText.isEmpty {
                     // Nếu đã có phản hồi ở hop trước, giữ lại kết quả và ghi nhận lỗi
+                    let referralWarningFormat = String(localized: "whois.error.referral_warning", defaultValue: "Cảnh báo chuyển tiếp: %@")
                     return WhoisResult(
                         query: cleanQuery,
                         referralChain: referralChain,
                         rawText: latestText,
-                        error: "Cảnh báo chuyển tiếp: \(error.localizedDescription)"
+                        error: String(format: referralWarningFormat, error.localizedDescription)
                     )
                 } else {
+                    let connectionFailedFormat = String(localized: "whois.error.connection_failed", defaultValue: "Lỗi kết nối máy chủ %@ (%@): %@")
                     return WhoisResult(
                         query: cleanQuery,
                         referralChain: referralChain,
                         rawText: "",
-                        error: "Lỗi kết nối máy chủ \(currentServer) (\(currentConnectTarget)): \(error.localizedDescription)"
+                        error: String(format: connectionFailedFormat, currentServer, currentConnectTarget, error.localizedDescription)
                     )
                 }
             }
@@ -138,7 +140,8 @@ public actor WhoisTCPClient {
                 guard !isResumed else { return }
                 isResumed = true
                 connection.cancel()
-                continuation.resume(throwing: NSError(domain: "WhoisTCPClient", code: -1001, userInfo: [NSLocalizedDescriptionKey: "Hết thời gian chờ phản hồi từ \(server) (5s)"]))
+                let timeoutFormat = String(localized: "whois.error.timeout", defaultValue: "Hết thời gian chờ phản hồi từ %@ (5s)")
+                continuation.resume(throwing: NSError(domain: "WhoisTCPClient", code: -1001, userInfo: [NSLocalizedDescriptionKey: String(format: timeoutFormat, connectTarget)]))
             }
             timer.resume()
             
@@ -169,7 +172,7 @@ public actor WhoisTCPClient {
                         }
                         
                         // Đọc dữ liệu phản hồi liên tục cho đến khi EOF hoặc đủ 64KB
-                        self.readLoop(connection: connection, accumulated: &accumulatedData, completion: finishWithResult)
+                        Self.readLoop(connection: connection, accumulated: Data(), maxBytes: self.maxResponseBytes, completion: finishWithResult)
                     })
                     
                 case .failed(let err):
@@ -185,35 +188,34 @@ public actor WhoisTCPClient {
         }
     }
     
-    private func readLoop(
+    private nonisolated static func readLoop(
         connection: NWConnection,
-        accumulated: inout Data,
+        accumulated: Data,
+        maxBytes: Int,
         completion: @escaping (Result<String, Error>) -> Void
     ) {
-        connection.receive(minimumIncompleteLength: 1, maximumLength: 8192) { [weak self] content, _, isComplete, error in
-            guard let self = self else { return }
-            
+        connection.receive(minimumIncompleteLength: 1, maximumLength: 8192) { content, _, isComplete, error in
             if let error = error {
                 completion(.failure(error))
                 return
             }
             
+            var newAcc = accumulated
             if let content = content {
-                accumulated.append(content)
+                newAcc.append(content)
             }
             
             // Kiểm tra giới hạn 64KB hoặc kết nối đã hoàn tất
-            if isComplete || accumulated.count >= self.maxResponseBytes {
-                let text = String(data: accumulated, encoding: .utf8)
-                    ?? String(data: accumulated, encoding: .ascii)
-                    ?? String(decoding: accumulated, as: UTF8.self)
+            if isComplete || newAcc.count >= maxBytes {
+                let text = String(data: newAcc, encoding: .utf8)
+                    ?? String(data: newAcc, encoding: .ascii)
+                    ?? String(decoding: newAcc, as: UTF8.self)
                 completion(.success(text))
                 return
             }
             
             // Tiếp tục nhận thêm
-            var nextAcc = accumulated
-            self.readLoop(connection: connection, accumulated: &nextAcc, completion: completion)
+            readLoop(connection: connection, accumulated: newAcc, maxBytes: maxBytes, completion: completion)
         }
     }
     

@@ -86,7 +86,7 @@ public struct NetworkDetailsView: View {
             VStack(spacing: 8) {
                 copyableRow(
                     label: LocalizedStringKey("details.ssid"),
-                    value: viewModel.details.ssid ?? "Chưa kết nối Wi-Fi / Cần cấp quyền Vị trí",
+                    value: viewModel.details.ssid ?? String(localized: "details.wifi_not_connected_or_permission", defaultValue: "Chưa kết nối Wi-Fi / Cần cấp quyền Vị trí"),
                     isPlaceholder: viewModel.details.ssid == nil
                 )
                 
@@ -159,13 +159,13 @@ public struct NetworkDetailsView: View {
             VStack(spacing: 8) {
                 copyableRow(
                     label: LocalizedStringKey("details.public_ipv4"),
-                    value: viewModel.details.publicIPv4 ?? "Đang kiểm tra...",
+                    value: viewModel.details.publicIPv4 ?? String(localized: "details.checking", defaultValue: "Đang kiểm tra..."),
                     isPlaceholder: viewModel.details.publicIPv4 == nil
                 )
                 
                 copyableRow(
                     label: LocalizedStringKey("details.public_ipv6"),
-                    value: viewModel.details.publicIPv6 ?? "Không có kết nối IPv6",
+                    value: viewModel.details.publicIPv6 ?? String(localized: "details.no_ipv6_connection", defaultValue: "Không có kết nối IPv6"),
                     isPlaceholder: viewModel.details.publicIPv6 == nil
                 )
             }
@@ -183,7 +183,7 @@ public struct NetworkDetailsView: View {
             VStack(spacing: 8) {
                 copyableRow(
                     label: LocalizedStringKey("details.carrier"),
-                    value: viewModel.details.carrierName ?? "Không phát hiện SIM / e-SIM",
+                    value: viewModel.details.carrierName ?? String(localized: "details.no_sim_detected", defaultValue: "Không phát hiện SIM / e-SIM"),
                     isPlaceholder: viewModel.details.carrierName == nil
                 )
                 
@@ -240,7 +240,7 @@ public struct NetworkDetailsView: View {
                                         .foregroundColor(.secondary)
                                         .multilineTextAlignment(.leading)
                                 } else {
-                                    Text("Chưa gán địa chỉ IP")
+                                    Text(LocalizedStringKey("details.ip_unassigned"))
                                         .font(.system(size: 11))
                                         .foregroundColor(.secondary)
                                 }

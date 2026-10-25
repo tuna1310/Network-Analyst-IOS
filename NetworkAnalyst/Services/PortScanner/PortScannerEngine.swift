@@ -24,7 +24,7 @@ public final class PortScannerEngine: ObservableObject {
     @Published public private(set) var allScannedResults: [ScannedPort] = []
     @Published public private(set) var currentPort: Int = 0
     @Published public private(set) var scanRate: Double = 0.0 // Ports/giây
-    @Published public private(set) var statusMessage: String = "Sẵn sàng"
+    @Published public private(set) var statusMessage: String = String(localized: "portscan.status.ready", defaultValue: "Sẵn sàng")
     
     // Cấu hình
     @Published public var maxConcurrency: Int = 200 // Mặc định 200, trần cứng 250
@@ -40,12 +40,12 @@ public final class PortScannerEngine: ObservableObject {
     /// Bắt đầu hoặc tiếp tục quét danh sách các cổng
     public func startScan(host: String, ports: [Int]) {
         guard AppConfigManager.shared.config.hasAcceptedScanDisclaimer else {
-            statusMessage = "Yêu cầu cam kết chỉ quét mạng được ủy quyền trước khi thực hiện."
+            statusMessage = String(localized: "portscan.status.disclaimer_required", defaultValue: "Yêu cầu cam kết chỉ quét mạng được ủy quyền trước khi thực hiện.")
             return
         }
         guard !isScanning else { return }
         guard !ports.isEmpty else {
-            statusMessage = "Danh sách cổng trống."
+            statusMessage = String(localized: "portscan.status.empty_ports", defaultValue: "Danh sách cổng trống.")
             return
         }
         
@@ -59,7 +59,8 @@ public final class PortScannerEngine: ObservableObject {
         self.allScannedResults.removeAll()
         self.isScanning = true
         self.isPaused = false
-        self.statusMessage = "Đang quét \(targetHost)..."
+        let scanningFormat = String(localized: "portscan.status.scanning_host", defaultValue: "Đang quét %@...")
+        self.statusMessage = String(format: scanningFormat, targetHost)
         
         runScanLoop()
     }
@@ -68,7 +69,8 @@ public final class PortScannerEngine: ObservableObject {
     public func pauseScan() {
         guard isScanning && !isPaused else { return }
         isPaused = true
-        statusMessage = "Đã tạm dừng (Đã quét \(scannedCount)/\(totalCount) cổng)."
+        let pausedFormat = String(localized: "portscan.status.paused_count", defaultValue: "Đã tạm dừng (Đã quét %d/%d cổng).")
+        statusMessage = String(format: pausedFormat, scannedCount, totalCount)
         scanTask?.cancel()
         scanTask = nil
     }
@@ -77,7 +79,8 @@ public final class PortScannerEngine: ObservableObject {
     public func resumeScan() {
         guard isScanning && isPaused else { return }
         isPaused = false
-        statusMessage = "Đang tiếp tục quét \(targetHost)..."
+        let resumingFormat = String(localized: "portscan.status.resuming_host", defaultValue: "Đang tiếp tục quét %@...")
+        statusMessage = String(format: resumingFormat, targetHost)
         runScanLoop()
     }
     
@@ -87,7 +90,7 @@ public final class PortScannerEngine: ObservableObject {
         scanTask = nil
         isScanning = false
         isPaused = false
-        statusMessage = "Đã dừng quét."
+        statusMessage = String(localized: "portscan.status.stopped", defaultValue: "Đã dừng quét.")
     }
     
     // MARK: - Core Concurrency Scan Loop
@@ -97,7 +100,7 @@ public final class PortScannerEngine: ObservableObject {
         let isLAN = self.isPrivateTarget
         let timeout: TimeInterval = isLAN ? 0.8 : 1.8 // Timeout thích ứng LAN vs Internet
         let grabBanner = self.enableBannerGrabbing
-        let startTime = CFAbsoluteTimeGetCurrent()
+        let startTime = MonotonicClock.now()
         
         scanTask = Task {
             var completedCount = self.scannedCount
@@ -123,7 +126,7 @@ public final class PortScannerEngine: ObservableObject {
                     guard !Task.isCancelled && !self.isPaused else { break }
                     
                     completedCount += 1
-                    let elapsed = max(CFAbsoluteTimeGetCurrent() - startTime, 0.01)
+                    let elapsed = max(MonotonicClock.elapsedMs(since: startTime) / 1000.0, 0.01)
                     let currentRate = Double(completedCount) / elapsed
                     
                     self.scannedCount = completedCount
@@ -157,22 +160,24 @@ public final class PortScannerEngine: ObservableObject {
             
             if !self.isPaused && self.remainingPorts.isEmpty {
                 self.progress = 1.0
-                self.statusMessage = "Hoàn tất! Phát hiện \(self.openPorts.count) cổng mở."
+                let completedFormat = String(localized: "portscan.status.completed_open_ports", defaultValue: "Hoàn tất! Phát hiện %d cổng mở.")
+                self.statusMessage = String(format: completedFormat, self.openPorts.count)
                 self.isScanning = false
                 
                 // Ghi nhận vào lịch sử quét cổng cục bộ
+                let historySummaryFormat = String(localized: "portscan.history_summary_format", defaultValue: "Quét %d cổng, tìm thấy %d cổng mở")
                 ScanHistoryManager.shared.addEntry(
                     type: .port,
                     target: host,
-                    summary: "Quét \(self.totalCount) cổng, tìm thấy \(self.openPorts.count) cổng mở",
-                    details: self.openPorts.map { "Port \($0.port): \($0.serviceName ?? "Chưa rõ") (\($0.status.rawValue))" }.joined(separator: "\n")
+                    summary: String(format: historySummaryFormat, self.totalCount, self.openPorts.count),
+                    details: self.openPorts.map { "Port \($0.port): \($0.serviceName) (\($0.status.displayName))" }.joined(separator: "\n")
                 )
             }
         }
     }
     
     // MARK: - Single Port Probe
-    private static func probePort(
+    nonisolated private static func probePort(
         host: String,
         port: Int,
         timeout: TimeInterval,
@@ -190,7 +195,7 @@ public final class PortScannerEngine: ObservableObject {
         
         let params = NWParameters(tls: nil, tcp: tcpOptions)
         let connection = NWConnection(to: endpoint, using: params)
-        let startTime = CFAbsoluteTimeGetCurrent()
+        let startTime = MonotonicClock.now()
         
         return await withCheckedContinuation { continuation in
             var hasResumed = false
@@ -235,7 +240,7 @@ public final class PortScannerEngine: ObservableObject {
             connection.stateUpdateHandler = { state in
                 switch state {
                 case .ready:
-                    let rtt = (CFAbsoluteTimeGetCurrent() - startTime) * 1000.0
+                    let rtt = MonotonicClock.elapsedMs(since: startTime)
                     
                     if enableBanner {
                         // Thử đọc banner dịch vụ trong vòng 1.0 giây
@@ -268,7 +273,7 @@ public final class PortScannerEngine: ObservableObject {
     }
     
     // MARK: - Banner Grabbing Helper
-    private static func readBanner(
+    nonisolated private static func readBanner(
         connection: NWConnection,
         port: Int,
         completion: @escaping (String?) -> Void
@@ -293,14 +298,14 @@ public final class PortScannerEngine: ObservableObject {
         })
     }
     
-    private static func mapNWErrorToStatus(_ error: NWError) -> PortStatus {
+    nonisolated private static func mapNWErrorToStatus(_ error: NWError) -> PortStatus {
         var code: Int32? = nil
         var desc: String? = nil
         
         switch error {
         case .posix(let posixCode):
             code = posixCode.rawValue
-            desc = posixCode.description
+            desc = String(describing: posixCode)
         case .dns(let dnsCode):
             code = dnsCode
             desc = "DNS error \(dnsCode)"

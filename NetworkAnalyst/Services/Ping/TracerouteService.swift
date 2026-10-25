@@ -13,7 +13,7 @@ import Combine
 public final class TracerouteService: ObservableObject {
     @Published public private(set) var isRunning: Bool = false
     @Published public private(set) var hops: [TracerouteHop] = []
-    @Published public private(set) var statusMessage: String = "Sẵn sàng"
+    @Published public private(set) var statusMessage: String = String(localized: "traceroute.status.ready", defaultValue: "Sẵn sàng")
     @Published public var isGeoIPEnabled: Bool = false
     
     private var traceTask: Task<Void, Never>?
@@ -38,19 +38,20 @@ public final class TracerouteService: ObservableObject {
         stopTraceroute()
         
         guard AppConfigManager.shared.config.hasAcceptedScanDisclaimer else {
-            statusMessage = "Yêu cầu cam kết chỉ quét mạng được ủy quyền trước khi thực hiện."
+            statusMessage = String(localized: "traceroute.status.disclaimer_required", defaultValue: "Yêu cầu cam kết chỉ quét mạng được ủy quyền trước khi thực hiện.")
             return
         }
         
         let cleanHost = host.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !cleanHost.isEmpty else {
-            statusMessage = "Địa chỉ mục tiêu trống"
+            statusMessage = String(localized: "traceroute.status.empty_target", defaultValue: "Địa chỉ mục tiêu trống")
             return
         }
         
         isRunning = true
         hops.removeAll()
-        statusMessage = "Đang phân giải địa chỉ \(cleanHost)..."
+        let resolvingFormat = String(localized: "traceroute.status.resolving", defaultValue: "Đang phân giải địa chỉ %@...")
+        statusMessage = String(format: resolvingFormat, cleanHost)
         
         let engine = self.engine
         let enableGeo = self.isGeoIPEnabled
@@ -60,7 +61,8 @@ public final class TracerouteService: ObservableObject {
             // Phân giải host thành IP
             let icmp = ICMPEngine()
             guard let resolved = await icmp.resolveHost(cleanHost) else {
-                self.statusMessage = "Không thể phân giải địa chỉ IP cho \(cleanHost)"
+                let cannotResolveFormat = String(localized: "traceroute.status.cannot_resolve", defaultValue: "Không thể phân giải địa chỉ IP cho %@")
+                self.statusMessage = String(format: cannotResolveFormat, cleanHost)
                 self.isRunning = false
                 return
             }
@@ -109,7 +111,7 @@ public final class TracerouteService: ObservableObject {
                 ScanHistoryManager.shared.addEntry(
                     type: .traceroute,
                     target: "\(cleanHost) (\(targetIP))",
-                    summary: "Dò được \(self.hops.count) hop tới đích",
+                    summary: String(format: String(localized: "traceroute.history.summary_format", defaultValue: "Dò được %d hop tới đích"), self.hops.count),
                     details: self.hops.map { h in
                         "Hop \(h.hop): \(h.ipAddress ?? "*") (\(h.hostname ?? "No PTR")) - \(h.formattedRTT)"
                     }.joined(separator: "\n")

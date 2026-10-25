@@ -18,9 +18,9 @@ public enum PortScanMode: Int, CaseIterable, Identifiable {
     
     public var title: String {
         switch self {
-        case .popular: return "Phổ biến"
-        case .custom: return "Tùy chọn"
-        case .full: return "Toàn dải (1-65535)"
+        case .popular: return String(localized: "portscan.mode.popular", defaultValue: "Phổ biến")
+        case .custom: return String(localized: "portscan.mode.custom", defaultValue: "Tùy chọn")
+        case .full: return String(localized: "portscan.mode.full", defaultValue: "Toàn dải (1-65535)")
         }
     }
 }
@@ -59,8 +59,8 @@ public enum PortScanPreset: Hashable, Sendable {
     
     public var title: String {
         switch self {
-        case .top20: return "Top 20 phổ biến"
-        case .top100: return "Top 100 dịch vụ"
+        case .top20: return String(localized: "portscan.preset.top20", defaultValue: "Top 20 phổ biến")
+        case .top100: return String(localized: "portscan.preset.top100", defaultValue: "Top 100 dịch vụ")
         }
     }
     
@@ -86,29 +86,29 @@ public enum PortDatabase {
     public static func lookup(port: Int) -> (name: String, desc: String) {
         let name = PortStatusClassifier.serviceName(for: port)
         switch port {
-        case 21: return (name, "File Transfer Protocol - Truyền tập tin")
-        case 22: return (name, "Secure Shell - Quản trị từ xa an toàn")
-        case 23: return (name, "Telnet - Dòng lệnh chưa mã hóa")
-        case 25: return (name, "SMTP - Gửi thư điện tử")
-        case 53: return (name, "DNS - Phân giải tên miền")
-        case 80: return (name, "HTTP - Máy chủ Web không mã hóa")
-        case 110: return (name, "POP3 - Nhận thư điện tử")
-        case 143: return (name, "IMAP - Đồng bộ thư điện tử")
-        case 443: return (name, "HTTPS - Web bảo mật SSL/TLS")
-        case 445: return (name, "SMB / CIFS - Chia sẻ tập tin Windows")
-        case 554: return (name, "RTSP - Luồng video camera / media")
+        case 21: return (name, String(localized: "port.desc.ftp", defaultValue: "File Transfer Protocol - Truyền tập tin"))
+        case 22: return (name, String(localized: "port.desc.ssh", defaultValue: "Secure Shell - Quản trị từ xa an toàn"))
+        case 23: return (name, String(localized: "port.desc.telnet", defaultValue: "Telnet - Dòng lệnh chưa mã hóa"))
+        case 25: return (name, String(localized: "port.desc.smtp", defaultValue: "SMTP - Gửi thư điện tử"))
+        case 53: return (name, String(localized: "port.desc.dns", defaultValue: "DNS - Phân giải tên miền"))
+        case 80: return (name, String(localized: "port.desc.http", defaultValue: "HTTP - Máy chủ Web không mã hóa"))
+        case 110: return (name, String(localized: "port.desc.pop3", defaultValue: "POP3 - Nhận thư điện tử"))
+        case 143: return (name, String(localized: "port.desc.imap", defaultValue: "IMAP - Đồng bộ thư điện tử"))
+        case 443: return (name, String(localized: "port.desc.https", defaultValue: "HTTPS - Web bảo mật SSL/TLS"))
+        case 445: return (name, String(localized: "port.desc.smb", defaultValue: "SMB / CIFS - Chia sẻ tập tin Windows"))
+        case 554: return (name, String(localized: "port.desc.rtsp", defaultValue: "RTSP - Luồng video camera / media"))
         case 1433: return (name, "Microsoft SQL Server Database")
         case 1521: return (name, "Oracle Database Listener")
-        case 1883: return (name, "MQTT - Giao thức nhắn tin IoT")
+        case 1883: return (name, String(localized: "port.desc.mqtt", defaultValue: "MQTT - Giao thức nhắn tin IoT"))
         case 3306: return (name, "MySQL / MariaDB Database")
         case 3389: return (name, "RDP - Microsoft Remote Desktop")
         case 5000: return (name, "UPnP / Synology NAS / Flask")
         case 5432: return (name, "PostgreSQL Database")
         case 6379: return (name, "Redis In-Memory Data Store")
         case 8080: return (name, "HTTP Proxy / Apache Tomcat")
-        case 8443: return (name, "HTTPS Alt / Quản trị web an toàn")
+        case 8443: return (name, String(localized: "port.desc.https_alt", defaultValue: "HTTPS Alt / Quản trị web an toàn"))
         case 27017: return (name, "MongoDB NoSQL Database")
-        default: return (name, "Dịch vụ mạng")
+        default: return (name, String(localized: "port.service.generic", defaultValue: "Dịch vụ mạng"))
         }
     }
 }

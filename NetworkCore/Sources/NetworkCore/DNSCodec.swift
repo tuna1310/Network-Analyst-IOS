@@ -79,6 +79,7 @@ public struct ParsedDNSRecord: Sendable, Equatable, Identifiable {
     public let dnsClass: UInt16
     public let ttl: UInt32
     public let displayValue: String
+    public var value: String { displayValue }
     public let priority: Int?
     
     public init(name: String, type: DNSQueryType, dnsClass: UInt16 = 1, ttl: UInt32, displayValue: String, priority: Int? = nil) {
@@ -96,6 +97,12 @@ public struct ParsedSVCBParam: Sendable, Equatable {
     public let key: UInt16
     public let name: String
     public let value: String
+    
+    public init(key: UInt16, name: String, value: String) {
+        self.key = key
+        self.name = name
+        self.value = value
+    }
 }
 
 /// Bộ đóng gói và giải mã nhị phân DNS Wire Format (RFC 1035, RFC 6891 EDNS0, RFC 9460 SVCB/HTTPS)

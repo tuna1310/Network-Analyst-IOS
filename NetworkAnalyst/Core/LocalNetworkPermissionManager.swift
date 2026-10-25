@@ -12,9 +12,20 @@ import Combine
 
 /// Trạng thái quyền truy cập Mạng cục bộ (Local Network Privacy)
 public enum LocalNetworkAuthorizationStatus: String, Sendable {
-    case notDetermined = "Chưa xác định"
-    case granted = "Đã cấp quyền"
-    case denied = "Bị từ chối"
+    case notDetermined
+    case granted
+    case denied
+    
+    public var title: String {
+        switch self {
+        case .notDetermined:
+            return String(localized: "permission.status.not_determined", defaultValue: "Chưa xác định")
+        case .granted:
+            return String(localized: "permission.status.granted", defaultValue: "Đã cấp quyền")
+        case .denied:
+            return String(localized: "permission.status.denied", defaultValue: "Bị từ chối")
+        }
+    }
 }
 
 /// Trình quản lý kiểm tra và hướng dẫn quyền Mạng Cục Bộ của iOS

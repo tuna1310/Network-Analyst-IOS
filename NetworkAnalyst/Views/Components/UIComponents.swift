@@ -139,7 +139,7 @@ public struct LatencyMiniChart: View {
         
         VStack(alignment: .leading, spacing: 4) {
             HStack {
-                Text("Biểu đồ Độ trễ RTT (ms)")
+                Text(LocalizedStringKey("ping.chart_title"))
                     .font(.caption.bold())
                     .foregroundColor(.secondary)
                 Spacer()

@@ -118,7 +118,7 @@ public actor ICMPEngine {
                 ipAddress: host,
                 rttMs: nil,
                 bytes: 0,
-                status: .error("Không thể phân giải địa chỉ IP")
+                status: .error(String(localized: "ping.error.cannot_resolve", defaultValue: "Không thể phân giải địa chỉ IP"))
             )
         }
         
@@ -157,7 +157,7 @@ public actor ICMPEngine {
                 ipAddress: ipAddress,
                 rttMs: nil,
                 bytes: 0,
-                status: .error("Mạng hiện tại không hỗ trợ hoặc không có kết nối IPv6 (Socket errno \(errno))")
+                status: .error(String(format: String(localized: "ping.error.ipv6_unsupported_errno", defaultValue: "Mạng hiện tại không hỗ trợ hoặc không có kết nối IPv6 (Socket errno %d)"), errno))
             )
         }
         defer { close(sock) }
@@ -182,7 +182,7 @@ public actor ICMPEngine {
             payloadSize: payloadSize
         )
         
-        let startTime = CFAbsoluteTimeGetCurrent()
+        let startTime = MonotonicClock.now()
         
         let bytesSent = packetData.withUnsafeBytes { rawBuffer -> Int in
             guard let baseAddress = rawBuffer.baseAddress else { return -1 }
@@ -196,8 +196,8 @@ public actor ICMPEngine {
         guard bytesSent > 0 else {
             let err = errno
             let reason = (err == EHOSTUNREACH || err == ENETUNREACH)
-                ? "Mạng hiện tại không có kết nối IPv6 (Host/Network unreachable)"
-                : "Lỗi gửi gói tin IPv6: errno \(err)"
+                ? String(localized: "ping.error.ipv6_unreachable", defaultValue: "Mạng hiện tại không có kết nối IPv6 (Host/Network unreachable)")
+                : String(format: String(localized: "ping.error.ipv6_send_errno", defaultValue: "Lỗi gửi gói tin IPv6: errno %d"), err)
             return PingPacketResult(
                 sequence: sequence,
                 host: host,
@@ -218,8 +218,7 @@ public actor ICMPEngine {
             }
         }
         
-        let endTime = CFAbsoluteTimeGetCurrent()
-        let rtt = (endTime - startTime) * 1000.0
+        let rtt = MonotonicClock.elapsedMs(since: startTime)
         
         guard bytesReceived > 0 else {
             return PingPacketResult(
@@ -303,7 +302,7 @@ public actor ICMPEngine {
         // Tạo gói ICMP Echo Request (RFC 792)
         let packetData = createICMPEchoRequest(identifier: self.identifier, sequence: UInt16(sequence & 0xFFFF), payloadSize: payloadSize)
         
-        let startTime = CFAbsoluteTimeGetCurrent()
+        let startTime = MonotonicClock.now()
         
         // Gửi gói tin
         let bytesSent = packetData.withUnsafeBytes { rawBuffer -> Int in
@@ -322,7 +321,7 @@ public actor ICMPEngine {
                 ipAddress: ipAddress,
                 rttMs: nil,
                 bytes: 0,
-                status: .error("Lỗi gửi gói tin: errno \(errno)")
+                status: .error(String(format: String(localized: "ping.error.send_errno", defaultValue: "Lỗi gửi gói tin: errno %d"), errno))
             )
         }
         
@@ -337,8 +336,7 @@ public actor ICMPEngine {
             }
         }
         
-        let endTime = CFAbsoluteTimeGetCurrent()
-        let rttMs = (endTime - startTime) * 1000.0
+        let rttMs = MonotonicClock.elapsedMs(since: startTime)
         
         guard bytesRead > 0 else {
             if errno == EAGAIN || errno == EWOULDBLOCK {
@@ -357,7 +355,7 @@ public actor ICMPEngine {
                     ipAddress: ipAddress,
                     rttMs: nil,
                     bytes: 0,
-                    status: .error("Lỗi nhận: errno \(errno)")
+                    status: .error(String(format: String(localized: "ping.error.recv_errno", defaultValue: "Lỗi nhận: errno %d"), errno))
                 )
             }
         }
@@ -378,7 +376,7 @@ public actor ICMPEngine {
                 ipAddress: ipAddress,
                 rttMs: nil,
                 bytes: bytesRead,
-                status: .error("Gói tin phản hồi quá ngắn")
+                status: .error(String(localized: "ping.error.packet_too_short", defaultValue: "Gói tin phản hồi quá ngắn"))
             )
         }
         
@@ -452,7 +450,7 @@ public actor ICMPEngine {
     
     /// Dự phòng đo độ trễ qua TCP connect nếu ICMP bị chặn hoàn toàn
     private func fallbackTCPPing(host: String, sequence: Int, timeout: TimeInterval) async -> PingPacketResult {
-        let startTime = CFAbsoluteTimeGetCurrent()
+        let startTime = MonotonicClock.now()
         let endpoint = NWEndpoint.hostPort(host: NWEndpoint.Host(host), port: 80)
         let connection = NWConnection(to: endpoint, using: .tcp)
         
@@ -483,7 +481,7 @@ public actor ICMPEngine {
                 case .ready, .waiting:
                     hasResumed = true
                     timer.cancel()
-                    let rtt = (CFAbsoluteTimeGetCurrent() - startTime) * 1000.0
+                    let rtt = MonotonicClock.elapsedMs(since: startTime)
                     connection.cancel()
                     continuation.resume(returning: PingPacketResult(
                         sequence: sequence,
@@ -498,7 +496,7 @@ public actor ICMPEngine {
                     // Dù port 80 closed (RST), thời gian nhận RST cũng phản ánh RTT mạng
                     hasResumed = true
                     timer.cancel()
-                    let rtt = (CFAbsoluteTimeGetCurrent() - startTime) * 1000.0
+                    let rtt = MonotonicClock.elapsedMs(since: startTime)
                     connection.cancel()
                     continuation.resume(returning: PingPacketResult(
                         sequence: sequence,

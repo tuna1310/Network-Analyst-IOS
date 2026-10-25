@@ -66,7 +66,7 @@ final class OUILookupTests: XCTestCase {
         // Kiểm tra hàm lookupDetail trả về .randomized
         let db = OUIDatabase(customDictionary: ["F01898": "Apple, Inc."])
         XCTAssertEqual(db.lookupDetail(mac: "DA:A1:19:11:22:33"), .randomized)
-        XCTAssertEqual(db.lookup(mac: "DA:A1:19:11:22:33"), String(localized: "oui.random_mac", defaultValue: "Private / Randomized MAC"))
+        XCTAssertEqual(db.lookup(mac: "DA:A1:19:11:22:33"), "Private / Randomized MAC")
     }
     
     func testInvalidShortMACAddress() {

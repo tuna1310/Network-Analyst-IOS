@@ -21,7 +21,7 @@ public struct AdBannerContainerView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 6) {
-                        Text("QUẢNG CÁO")
+                        Text(String(localized: "ads.badge", defaultValue: "QUẢNG CÁO"))
                             .font(.system(size: 9, weight: .bold))
                             .padding(.horizontal, 4)
                             .padding(.vertical, 2)
@@ -33,7 +33,7 @@ public struct AdBannerContainerView: View {
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundColor(.primary)
                     }
-                    Text("Banner 320x50 giả lập • Xem README để tích hợp SDK thật")
+                    Text(String(localized: "ads.mock_banner_subtitle", defaultValue: "Banner 320x50 giả lập • Xem README để tích hợp SDK thật"))
                         .font(.system(size: 10))
                         .foregroundColor(.secondary)
                 }
@@ -76,7 +76,8 @@ public struct MockInterstitialView: View {
                                 .foregroundColor(.white)
                         }
                     } else {
-                        Text("Đóng sau \(countdown)s")
+                        let countdownFormat = String(localized: "ads.close_countdown", defaultValue: "Đóng sau %ds")
+                        Text(String(format: countdownFormat, countdown))
                             .font(.system(size: 13, weight: .medium))
                             .foregroundColor(.white.opacity(0.8))
                             .padding(.horizontal, 10)
@@ -94,11 +95,11 @@ public struct MockInterstitialView: View {
                         .font(.system(size: 64))
                         .foregroundColor(.yellow)
                     
-                    Text("Quảng cáo Toàn Màn Hình")
+                    Text(String(localized: "ads.interstitial_title", defaultValue: "Quảng cáo Toàn Màn Hình"))
                         .font(.title2.bold())
                         .foregroundColor(.white)
                     
-                    Text("Đây là quảng cáo xen kẽ Interstitial giả lập.\nKhi tích hợp Google Mobile Ads SDK thật, view này sẽ được thay thế bởi GADInterstitialAd.")
+                    Text(String(localized: "ads.interstitial_desc", defaultValue: "Đây là quảng cáo xen kẽ Interstitial giả lập.\nKhi tích hợp Google Mobile Ads SDK thật, view này sẽ được thay thế bởi GADInterstitialAd."))
                         .font(.subheadline)
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
@@ -112,7 +113,7 @@ public struct MockInterstitialView: View {
                         adService.dismissInterstitial()
                     }
                 } label: {
-                    Text(canDismiss ? "Bỏ qua & Tiếp tục" : "Đang tải...")
+                    Text(canDismiss ? String(localized: "ads.skip_button", defaultValue: "Bỏ qua & Tiếp tục") : String(localized: "ads.loading", defaultValue: "Đang tải..."))
                         .fontWeight(.semibold)
                         .frame(maxWidth: .infinity)
                         .padding()

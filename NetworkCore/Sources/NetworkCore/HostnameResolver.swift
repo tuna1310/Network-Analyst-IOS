@@ -6,6 +6,9 @@
 //
 
 import Foundation
+#if canImport(Darwin)
+import Darwin
+#endif
 
 /// Nguồn gốc của tên máy chủ được phát hiện trong mạng LAN
 public enum HostnameSource: String, Sendable, Comparable, Codable {
@@ -14,6 +17,8 @@ public enum HostnameSource: String, Sendable, Comparable, Codable {
     case llmnr = "LLMNR"
     case ptr = "DNS PTR"
     case none = "Không xác định"
+    
+    public var displayName: String { rawValue }
     
     public var priorityValue: Int {
         switch self {

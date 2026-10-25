@@ -11,9 +11,16 @@ import NetworkCore
 
 /// Tab lựa chọn giữa DNS Records và RDAP/Whois
 public enum LookupMode: String, CaseIterable, Identifiable {
-    case dns = "Bản ghi DNS"
-    case rdap = "WHOIS / RDAP"
+    case dns
+    case rdap
     public var id: String { rawValue }
+    
+    public var title: String {
+        switch self {
+        case .dns: return String(localized: "dns.tab_records", defaultValue: "Bản ghi DNS")
+        case .rdap: return String(localized: "dns.tab_rdap", defaultValue: "WHOIS / RDAP")
+        }
+    }
 }
 
 /// ViewModel điều khiển màn hình Tra cứu DNS đa bản ghi (kèm HTTPS/SVCB) và RDAP
@@ -108,8 +115,8 @@ public final class DNSLookupViewModel: ObservableObject {
                     retriedOverTCP: anyRetriedTCP,
                     error: aggregatedRecords.isEmpty ? (
                         ifCaseSystem(provider)
-                            ? "Không nhận được phản hồi bản ghi từ DNS mạng hiện tại (Gateway). Router mạng thường chỉ hỗ trợ A/AAAA hoặc chặn truy vấn đa bản ghi. Gợi ý: Hãy chuyển sang Cloudflare (1.1.1.1) hoặc Google (8.8.8.8) qua DoH."
-                            : "Không tìm thấy bản ghi DNS nào cho \(clean)"
+                            ? String(localized: "dns.error.gateway_unresponsive", defaultValue: "Không nhận được phản hồi bản ghi từ DNS mạng hiện tại (Gateway). Router mạng thường chỉ hỗ trợ A/AAAA hoặc chặn truy vấn đa bản ghi. Gợi ý: Hãy chuyển sang Cloudflare (1.1.1.1) hoặc Google (8.8.8.8) qua DoH.")
+                            : String(format: String(localized: "dns.error.no_records_for", defaultValue: "Không tìm thấy bản ghi DNS nào cho %@"), clean)
                     ) : nil
                 )
             } else {

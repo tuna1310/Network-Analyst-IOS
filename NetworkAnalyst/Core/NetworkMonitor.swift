@@ -22,7 +22,7 @@ public final class NetworkMonitor: ObservableObject {
     @Published public private(set) var isConstrained: Bool = false
     @Published public private(set) var supportsIPv4: Bool = false
     @Published public private(set) var supportsIPv6: Bool = false
-    @Published public private(set) var statusDescription: String = "Đang kiểm tra kết nối..."
+    @Published public private(set) var statusDescription: String = String(localized: "netmonitor.checking", defaultValue: "Đang kiểm tra kết nối...")
     
     private let monitor: NWPathMonitor
     private let queue = DispatchQueue(label: "com.networkanalyst.networkmonitor", qos: .utility)
@@ -59,20 +59,20 @@ public final class NetworkMonitor: ObservableObject {
         switch path.status {
         case .satisfied:
             if isWiFi {
-                self.statusDescription = "Đã kết nối Wi-Fi"
+                self.statusDescription = String(localized: "netmonitor.connected_wifi", defaultValue: "Đã kết nối Wi-Fi")
             } else if isCellular {
-                self.statusDescription = "Đã kết nối Mạng di động (Cellular)"
+                self.statusDescription = String(localized: "netmonitor.connected_cellular", defaultValue: "Đã kết nối Mạng di động (Cellular)")
             } else if isEthernet {
-                self.statusDescription = "Đã kết nối Cáp mạng (Ethernet)"
+                self.statusDescription = String(localized: "netmonitor.connected_ethernet", defaultValue: "Đã kết nối Cáp mạng (Ethernet)")
             } else {
-                self.statusDescription = "Đã kết nối Internet"
+                self.statusDescription = String(localized: "netmonitor.connected_internet", defaultValue: "Đã kết nối Internet")
             }
         case .unsatisfied:
-            self.statusDescription = "Không có kết nối mạng"
+            self.statusDescription = String(localized: "netmonitor.no_connection", defaultValue: "Không có kết nối mạng")
         case .requiresConnection:
-            self.statusDescription = "Đang chờ thiết lập kết nối..."
+            self.statusDescription = String(localized: "netmonitor.waiting_connection", defaultValue: "Đang chờ thiết lập kết nối...")
         @unknown default:
-            self.statusDescription = "Trạng thái không xác định"
+            self.statusDescription = String(localized: "netmonitor.unknown_status", defaultValue: "Trạng thái không xác định")
         }
     }
 }

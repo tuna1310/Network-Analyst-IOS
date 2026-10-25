@@ -23,6 +23,12 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>vi</string>
+		<string>en</string>
+	</array>
+	
 	<!-- Quyền truy cập Mạng cục bộ (Local Network Usage) -->
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Network Analyst cần quyền truy cập Mạng cục bộ để quét tìm các thiết bị trong Wi-Fi, kiểm tra cổng mở và phân tích cấu hình mạng LAN.</string>

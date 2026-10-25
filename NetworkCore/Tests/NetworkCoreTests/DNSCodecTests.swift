@@ -41,7 +41,7 @@ final class DNSCodecTests: XCTestCase {
         // Gói giả lập:
         // Offset 0: nhãn "example" (7), "com" (3), root (0)
         // Offset 13: con trỏ 0xC0 0x00 (trỏ về offset 0)
-        var packet: [UInt8] = [
+        let packet: [UInt8] = [
             7, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, // "example"
             3, 0x63, 0x6f, 0x6d, 0,                      // "com", 0
             0xC0, 0x00                                   // Pointer -> offset 0
@@ -57,7 +57,7 @@ final class DNSCodecTests: XCTestCase {
         // Offset 0: "com", 0
         // Offset 5: "example", con trỏ trỏ về offset 0 (0xC0 0x00) -> "example.com"
         // Offset 15: "www", con trỏ trỏ về offset 5 (0xC0 0x05) -> "www.example.com"
-        var packet: [UInt8] = [
+        let packet: [UInt8] = [
             3, 0x63, 0x6f, 0x6d, 0,                                   // offset 0..4
             7, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0xC0, 0x00, // offset 5..14
             3, 0x77, 0x77, 0x77, 0xC0, 0x05                           // offset 15..20

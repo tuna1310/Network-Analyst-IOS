@@ -92,7 +92,7 @@ public final class LocationAndWiFiManager: NSObject, ObservableObject {
             self.currentSSID = nil
             self.currentBSSID = nil
             self.status = .restrictedOrUnavailable(
-                reason: "iOS giới hạn truy cập SSID: Cần bật Entitlement 'Access Wi-Fi Information' trong Apple Developer Portal hoặc đang chạy trên Simulator."
+                reason: String(localized: "wifi.restricted_ssid_reason", defaultValue: "iOS giới hạn truy cập SSID: Cần bật Entitlement 'Access Wi-Fi Information' trong Apple Developer Portal hoặc đang chạy trên Simulator.")
             )
         }
     }

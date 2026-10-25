@@ -22,9 +22,9 @@ public struct DashboardView: View {
                     if viewModel.localNetworkPermissionStatus == .denied {
                         PermissionAlertBanner(
                             icon: "hand.raised.slash.fill",
-                            title: "Quyền Mạng Cục Bộ Bị Chặn",
-                            message: "iOS yêu cầu cấp quyền Mạng cục bộ (Local Network) để tìm thấy các thiết bị khác trong Wi-Fi và đo đạc cổng.",
-                            actionTitle: "Mở Cài đặt hệ thống",
+                            title: String(localized: "permission.alert.title", defaultValue: "Quyền Mạng Cục Bộ Bị Chặn"),
+                            message: String(localized: "permission.alert.message", defaultValue: "iOS yêu cầu cấp quyền Mạng cục bộ (Local Network) để tìm thấy các thiết bị khác trong Wi-Fi và đo đạc cổng."),
+                            actionTitle: String(localized: "permission.alert.action", defaultValue: "Mở Cài đặt hệ thống"),
                             action: { viewModel.localPermissionManager.openSettings() }
                         )
                         .padding(.horizontal)
@@ -47,7 +47,7 @@ public struct DashboardView: View {
                                 .font(.subheadline.bold())
                                 .foregroundColor(.primary)
                             Spacer()
-                            Text("Xem chi tiết")
+                            Text(LocalizedStringKey("dashboard.view_details"))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             Image(systemName: "chevron.right")
@@ -70,13 +70,13 @@ public struct DashboardView: View {
                 }
                 .padding(.vertical)
             }
-            .navigationTitle("Tổng quan mạng")
+            .navigationTitle(LocalizedStringKey("dashboard.nav_title"))
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     NavigationLink(destination: ScanHistoryView()) {
                         HStack(spacing: 4) {
                             Image(systemName: "clock.arrow.circlepath")
-                            Text("Lịch sử")
+                            Text(LocalizedStringKey("dashboard.history_button"))
                                 .font(.caption.bold())
                         }
                     }
@@ -103,7 +103,7 @@ public struct DashboardView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(viewModel.networkMonitor.statusDescription)
                         .font(.headline)
-                    Text(viewModel.networkMonitor.isConnected ? "Trạng thái: Hoạt động bình thường" : "Chưa kết nối Internet")
+                    Text(viewModel.networkMonitor.isConnected ? LocalizedStringKey("dashboard.status_normal") : LocalizedStringKey("dashboard.status_disconnected"))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -125,7 +125,7 @@ public struct DashboardView: View {
                 if let ssid = viewModel.wifiSSID, !ssid.isEmpty {
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("Tên mạng (SSID)")
+                            Text(LocalizedStringKey("dashboard.ssid_label"))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             Text(ssid)
@@ -135,7 +135,8 @@ public struct DashboardView: View {
                         if let bssid = viewModel.wifiBSSID {
                             VStack(alignment: .trailing, spacing: 4) {
                                 let vendor = OUIDatabase.shared.lookup(mac: bssid)
-                                Text(vendor != nil ? "\(vendor!) (BSSID)" : "BSSID (MAC Router)")
+                                let defaultBssidLabel = String(localized: "dashboard.mac_router", defaultValue: "BSSID (MAC Router)")
+                                Text(vendor != nil ? "\(vendor!) (BSSID)" : defaultBssidLabel)
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                                     .lineLimit(1)
@@ -150,20 +151,20 @@ public struct DashboardView: View {
                         HStack(spacing: 6) {
                             Image(systemName: "info.circle.fill")
                                 .foregroundColor(.blue)
-                            Text("Thông tin SSID/BSSID được iOS bảo vệ:")
+                            Text(LocalizedStringKey("dashboard.ssid_protected_title"))
                                 .font(.footnote.bold())
                         }
                         
                         switch viewModel.wifiStatus {
                         case .locationPermissionNeeded, .locationPermissionDenied:
-                            Text("iOS yêu cầu quyền 'Vị trí khi dùng' để hiển thị tên Wi-Fi (SSID).")
+                            Text(LocalizedStringKey("dashboard.location_perm_for_ssid"))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             
                             Button {
                                 viewModel.requestLocationPermission()
                             } label: {
-                                Text("Cấp quyền Vị trí")
+                                Text(LocalizedStringKey("dashboard.grant_location_btn"))
                                     .font(.caption.bold())
                                     .foregroundColor(.white)
                                     .padding(.horizontal, 10)
@@ -177,7 +178,7 @@ public struct DashboardView: View {
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         default:
-                            Text("Đang kiểm tra thông tin điểm truy cập Wi-Fi...")
+                            Text(LocalizedStringKey("dashboard.checking_ap_info"))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
@@ -196,7 +197,7 @@ public struct DashboardView: View {
     // MARK: - Local Network Card
     private var localNetworkCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("CẤU HÌNH MẠNG CỤC BỘ (LAN)")
+            Text(LocalizedStringKey("dashboard.lan_config_title"))
                 .font(.caption.bold())
                 .foregroundColor(.secondary)
             
@@ -206,23 +207,23 @@ public struct DashboardView: View {
                 MetricItemCard(
                     icon: "iphone",
                     iconColor: .blue,
-                    title: "IP Thiết bị",
-                    value: iface?.ipv4Address ?? "Đang tải...",
-                    subtitle: iface != nil ? "Giao diện \(iface!.name)" : nil
+                    title: String(localized: "dashboard.metric_device_ip", defaultValue: "IP Thiết bị"),
+                    value: iface?.ipv4Address ?? String(localized: "common.loading", defaultValue: "Đang tải..."),
+                    subtitle: iface != nil ? String(format: String(localized: "dashboard.interface_name_format", defaultValue: "Giao diện %@"), iface!.name) : nil
                 )
                 
                 MetricItemCard(
                     icon: "wifi.router",
                     iconColor: .green,
-                    title: "Gateway (Router)",
+                    title: String(localized: "dashboard.metric_gateway", defaultValue: "Gateway (Router)"),
                     value: iface?.gateway ?? "192.168.1.1",
-                    subtitle: "Cổng mặc định"
+                    subtitle: String(localized: "dashboard.metric_default_gw", defaultValue: "Cổng mặc định")
                 )
                 
                 MetricItemCard(
                     icon: "square.grid.3x3.fill",
                     iconColor: .purple,
-                    title: "Subnet Mask",
+                    title: String(localized: "dashboard.metric_subnet_mask", defaultValue: "Subnet Mask"),
                     value: iface?.netmask ?? "255.255.255.0",
                     subtitle: iface?.cidrPrefix != nil ? "Prefix: /\(iface!.cidrPrefix!)" : nil
                 )
@@ -230,15 +231,15 @@ public struct DashboardView: View {
                 MetricItemCard(
                     icon: "antenna.radiowaves.left.and.right",
                     iconColor: .orange,
-                    title: "Broadcast IP",
+                    title: String(localized: "dashboard.metric_broadcast", defaultValue: "Broadcast IP"),
                     value: iface?.broadcastAddress ?? "--",
-                    subtitle: "Quảng bá cục bộ"
+                    subtitle: String(localized: "dashboard.metric_broadcast_sub", defaultValue: "Quảng bá cục bộ")
                 )
             }
             
             if let ipv6 = iface?.ipv6Address, !ipv6.isEmpty {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Địa chỉ IPv6 nội bộ:")
+                    Text(LocalizedStringKey("dashboard.local_ipv6_title"))
                         .font(.caption)
                         .foregroundColor(.secondary)
                     Text(ipv6)
@@ -260,7 +261,7 @@ public struct DashboardView: View {
     private var publicNetworkCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("INTERNET & IP CÔNG KHAI")
+                Text(LocalizedStringKey("dashboard.public_network_title"))
                     .font(.caption.bold())
                     .foregroundColor(.secondary)
                 Spacer()
@@ -274,7 +275,7 @@ public struct DashboardView: View {
                 VStack(spacing: 10) {
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("Địa chỉ IP Công khai (Public IP)")
+                            Text(LocalizedStringKey("dashboard.public_ip_title"))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             Text(pub.ip)
@@ -295,16 +296,16 @@ public struct DashboardView: View {
                     
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Nhà mạng (ISP / ASN)")
+                            Text(LocalizedStringKey("dashboard.isp_org_title"))
                                 .font(.caption2)
                                 .foregroundColor(.secondary)
-                            Text(pub.org ?? "Không rõ")
+                            Text(pub.org ?? String(localized: "common.unknown", defaultValue: "Không rõ"))
                                 .font(.caption.bold())
                                 .lineLimit(2)
                         }
                         
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Vị trí địa lý")
+                            Text(LocalizedStringKey("dashboard.geo_location_title"))
                                 .font(.caption2)
                                 .foregroundColor(.secondary)
                             Text("\(pub.city ?? ""), \(pub.country ?? "")")
@@ -315,7 +316,7 @@ public struct DashboardView: View {
                 }
             } else {
                 HStack {
-                    Text("Đang tra cứu thông tin địa chỉ IP công khai...")
+                    Text(LocalizedStringKey("dashboard.looking_up_public_ip"))
                         .font(.footnote)
                         .foregroundColor(.secondary)
                     Spacer()
@@ -330,7 +331,7 @@ public struct DashboardView: View {
     // MARK: - Quick Latency Card
     private var latencyGaugeCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("KIỂM TRA ĐỘ TRỄ NHANH (ICMP)")
+            Text(LocalizedStringKey("dashboard.latency_title"))
                 .font(.caption.bold())
                 .foregroundColor(.secondary)
             
@@ -339,7 +340,7 @@ public struct DashboardView: View {
                     Image(systemName: "wifi.router")
                         .foregroundColor(.green)
                     VStack(alignment: .leading) {
-                        Text("Router Gateway")
+                        Text(LocalizedStringKey("dashboard.router_gateway"))
                             .font(.caption)
                             .foregroundColor(.secondary)
                         Text(viewModel.gatewayPingRTT != nil ? String(format: "%.1f ms", viewModel.gatewayPingRTT!) : "--")

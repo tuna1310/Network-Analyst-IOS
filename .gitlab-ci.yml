@@ -1,0 +1,53 @@
+# GitLab CI/CD Pipeline for Network Analyst iOS
+#
+# LƯU Ý QUAN TRỌNG:
+# 1. Pipeline này yêu cầu macOS Runner để thực thi xcodebuild và xcodegen.
+#    - Trên GitLab SaaS (gitlab.com), macOS runners là tính năng có phí (yêu cầu compute minutes gói trả phí)
+#      với tag ví dụ: `saas-macos-medium-m1`.
+#    - Trên GitLab tự host (Self-hosted), bạn cần đăng ký một máy Mac với gitlab-runner và gán tag `macos`.
+# 2. Tệp này được tạo trên môi trường Windows và CHƯA TỪNG ĐƯỢC CHẠY trên máy này.
+
+stages:
+  - test
+
+variables:
+  DEVELOPER_DIR: "/Applications/Xcode.app/Contents/Developer"
+
+# Job 1: Kiểm thử NetworkCore Swift Package độc lập
+test_network_core:
+  stage: test
+  tags:
+    - macos
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "main"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  script:
+    - echo "=== KIỂM THỬ THƯ VIỆN NETWORKCORE ==="
+    - swift --version
+    - swift test --package-path NetworkCore
+
+# Job 2: Sinh Xcode Project qua XcodeGen và chạy Unit Test trên iOS Simulator
+test_ios_app:
+  stage: test
+  tags:
+    - macos
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "main"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  before_script:
+    - echo "=== KIỂM TRA MÔI TRƯỜNG BUILD ==="
+    - xcodebuild -version
+    - which xcodegen || brew install xcodegen
+    - xcodegen --version
+  script:
+    - echo "=== TẠO PROJECT BẰNG XCODEGEN ==="
+    - xcodegen generate
+    - ls -la NetworkAnalyst.xcodeproj
+    - echo "=== CHẠY SUITE TEST TRÊN IOS SIMULATOR ==="
+    - set -o pipefail
+    - >
+      xcodebuild clean test
+      -project NetworkAnalyst.xcodeproj
+      -scheme NetworkAnalystTests
+      -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest'
+      CODE_SIGNING_ALLOWED=NO

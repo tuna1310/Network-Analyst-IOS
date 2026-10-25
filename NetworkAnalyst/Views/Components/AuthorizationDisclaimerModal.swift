@@ -25,7 +25,7 @@ public struct AuthorizationDisclaimerModal: View {
                 .foregroundColor(.orange)
                 .padding(.top, 24)
             
-            Text("Cam kết quét mạng được ủy quyền")
+            Text(LocalizedStringKey("disclaimer.title"))
                 .font(.title2.bold())
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
@@ -34,7 +34,7 @@ public struct AuthorizationDisclaimerModal: View {
                 HStack(alignment: .top, spacing: 10) {
                     Image(systemName: "exclamationmark.triangle.fill")
                         .foregroundColor(.orange)
-                    Text("Bạn chỉ được phép quét cổng, phân tích mạng và thăm dò dịch vụ trên những thiết bị hoặc mạng mà bạn sở hữu hoặc đã được ủy quyền hợp pháp.")
+                    Text(LocalizedStringKey("disclaimer.rule1"))
                         .font(.footnote)
                         .foregroundColor(.primary)
                 }
@@ -42,7 +42,7 @@ public struct AuthorizationDisclaimerModal: View {
                 HStack(alignment: .top, spacing: 10) {
                     Image(systemName: "hand.raised.fill")
                         .foregroundColor(.red)
-                    Text("Hành vi quét mạng không có thẩm quyền có thể kích hoạt hệ thống phát hiện xâm nhập (IDS/IPS), bị chặn kết nối, hoặc vi phạm pháp luật an toàn thông tin.")
+                    Text(LocalizedStringKey("disclaimer.rule2"))
                         .font(.footnote)
                         .foregroundColor(.primary)
                 }
@@ -50,7 +50,7 @@ public struct AuthorizationDisclaimerModal: View {
                 HStack(alignment: .top, spacing: 10) {
                     Image(systemName: "lock.shield.fill")
                         .foregroundColor(.blue)
-                    Text("Toàn bộ tiến trình quét được xử lý trực tiếp trên thiết bị (On-Device), bảo mật và không truyền dữ liệu nội bộ tới bất kỳ máy chủ nào.")
+                    Text(LocalizedStringKey("disclaimer.rule3"))
                         .font(.footnote)
                         .foregroundColor(.secondary)
                 }
@@ -67,7 +67,7 @@ public struct AuthorizationDisclaimerModal: View {
                 dismiss()
                 onProceed()
             } label: {
-                Text("Tôi đã hiểu và cam kết tuân thủ")
+                Text(LocalizedStringKey("disclaimer.agree"))
                     .font(.headline)
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)

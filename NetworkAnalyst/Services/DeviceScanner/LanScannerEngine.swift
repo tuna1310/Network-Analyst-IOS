@@ -26,21 +26,21 @@ public final class LanScannerEngine: ObservableObject {
     /// Bắt đầu phiên quét toàn bộ dải mạng LAN hiện tại
     public func startScan() {
         guard AppConfigManager.shared.config.hasAcceptedScanDisclaimer else {
-            self.errorMessage = "Yêu cầu xác nhận cam kết chỉ quét mạng được ủy quyền trước khi thực hiện."
+            self.errorMessage = String(localized: "lan.error.disclaimer_required", defaultValue: "Yêu cầu xác nhận cam kết chỉ quét mạng được ủy quyền trước khi thực hiện.")
             self.isScanning = false
             return
         }
         guard !isScanning else { return }
         isScanning = true
         progress = 0.0
-        currentHost = "Đang khởi tạo cấu hình giao diện mạng..."
+        currentHost = String(localized: "lan.status.initializing", defaultValue: "Đang khởi tạo cấu hình giao diện mạng...")
         discoveredDevices.removeAll()
         errorMessage = nil
         
         // 1. Lấy thông tin interface Wi-Fi hiện tại
         guard let wifi = NetworkInterfaceProvider.getPrimaryWiFiInterface(),
               let localIP = wifi.ipv4Address else {
-            self.errorMessage = "Không tìm thấy giao diện Wi-Fi đang hoạt động. Vui lòng kết nối Wi-Fi để quét mạng LAN."
+            self.errorMessage = String(localized: "lan.error.no_wifi", defaultValue: "Không tìm thấy giao diện Wi-Fi đang hoạt động. Vui lòng kết nối Wi-Fi để quét mạng LAN.")
             self.isScanning = false
             return
         }
@@ -49,7 +49,7 @@ public final class LanScannerEngine: ObservableObject {
         let hostRange = wifi.subnetHostRange
         
         guard !hostRange.isEmpty else {
-            self.errorMessage = "Không thể xác định dải địa chỉ IP của mạng nội bộ (Subnet)."
+            self.errorMessage = String(localized: "lan.error.no_subnet", defaultValue: "Không thể xác định dải địa chỉ IP của mạng nội bộ (Subnet).")
             self.isScanning = false
             return
         }
@@ -60,7 +60,7 @@ public final class LanScannerEngine: ObservableObject {
         let selfDevice = DiscoveredDevice(
             ipAddress: localIP,
             ipv6Address: wifi.ipv6Address,
-            ipv6StatusExplanation: wifi.ipv6Address == nil ? "Thiết bị chưa được cấp địa chỉ IPv6" : nil,
+            ipv6StatusExplanation: wifi.ipv6Address == nil ? String(localized: "lan.self_no_ipv6", defaultValue: "Thiết bị chưa được cấp địa chỉ IPv6") : nil,
             hostname: HostNameResolver.getDeviceName(),
             hostnameSource: .mDNS,
             macAddress: "iOS Sandbox (Protected)",
@@ -146,7 +146,8 @@ public final class LanScannerEngine: ObservableObject {
                     }
                     
                     if let nextIP = hostIterator.next() {
-                        self.currentHost = "Đang kiểm tra \(nextIP)..."
+                        let checkingFormat = String(localized: "lan.status.checking_host", defaultValue: "Đang kiểm tra %@...")
+                        self.currentHost = String(format: checkingFormat, nextIP)
                         let isGw = (nextIP == gatewayIP)
                         let isMe = (nextIP == localIP)
                         group.addTask {
@@ -197,7 +198,7 @@ public final class LanScannerEngine: ObservableObject {
             
             self.discoveredDevices = results
             self.progress = 1.0
-            self.currentHost = "Hoàn tất quét. Tìm thấy \(results.count) thiết bị."
+            self.currentHost = String(format: String(localized: "lan.status.completed_format", defaultValue: "Hoàn tất quét. Tìm thấy %d thiết bị."), results.count)
             self.isScanning = false
             
             // Ghi nhận vào lịch sử quét cục bộ
@@ -205,9 +206,11 @@ public final class LanScannerEngine: ObservableObject {
             ScanHistoryManager.shared.addEntry(
                 type: .lan,
                 target: targetRange,
-                summary: "Tìm thấy \(results.count) thiết bị trong mạng nội bộ",
+                summary: String(format: String(localized: "lan.history.summary_format", defaultValue: "Tìm thấy %d thiết bị trong mạng nội bộ"), results.count),
                 details: results.map { d in
-                    "\(d.ipAddress) | \(d.displayName) | \(d.vendor ?? "Chưa rõ") | IPv6: \(d.ipv6Address ?? "Không có")"
+                    let vendorStr = d.vendor ?? String(localized: "lan.vendor_unknown", defaultValue: "Chưa rõ")
+                    let ipv6Str = d.ipv6Address ?? String(localized: "lan.ipv6_none", defaultValue: "Không có")
+                    return "\(d.ipAddress) | \(d.displayName) | \(vendorStr) | IPv6: \(ipv6Str)"
                 }.joined(separator: "\n")
             )
         }
@@ -218,6 +221,6 @@ public final class LanScannerEngine: ObservableObject {
         scanTask?.cancel()
         scanTask = nil
         isScanning = false
-        currentHost = "Đã dừng quét."
+        currentHost = String(localized: "lan.status.stopped", defaultValue: "Đã dừng quét.")
     }
 }

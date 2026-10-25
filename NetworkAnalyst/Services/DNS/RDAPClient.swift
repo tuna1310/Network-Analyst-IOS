@@ -25,7 +25,7 @@ public actor RDAPClient {
     public func lookup(query: String, explicitType: RDAPQueryType? = nil) async -> Result<ParsedRDAPRecord, Error> {
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else {
-            return .failure(NSError(domain: "RDAPClient", code: -1, userInfo: [NSLocalizedDescriptionKey: "Chuỗi tra cứu không được để trống"]))
+            return .failure(NSError(domain: "RDAPClient", code: -1, userInfo: [NSLocalizedDescriptionKey: String(localized: "rdap.error.empty_query", defaultValue: "Chuỗi tra cứu không được để trống")]))
         }
         
         let (cleanQuery, detectedType) = RDAPBootstrap.detectQueryType(from: trimmed)
@@ -35,7 +35,7 @@ public actor RDAPClient {
         await RDAPBootstrapManager.shared.ensureBootstrapLoaded()
         
         guard let url = RDAPBootstrap.resolveQueryURL(for: cleanQuery, type: finalType) else {
-            return .failure(NSError(domain: "RDAPClient", code: -2, userInfo: [NSLocalizedDescriptionKey: "Không thể tạo URL RDAP hợp lệ"]))
+            return .failure(NSError(domain: "RDAPClient", code: -2, userInfo: [NSLocalizedDescriptionKey: String(localized: "rdap.error.invalid_url", defaultValue: "Không thể tạo URL RDAP hợp lệ")]))
         }
         
         var request = URLRequest(url: url)
@@ -45,7 +45,7 @@ public actor RDAPClient {
         do {
             let (data, response) = try await session.data(for: request)
             guard let httpResp = response as? HTTPURLResponse else {
-                return .failure(NSError(domain: "RDAPClient", code: -3, userInfo: [NSLocalizedDescriptionKey: "Không nhận được phản hồi HTTP từ máy chủ"]))
+                return .failure(NSError(domain: "RDAPClient", code: -3, userInfo: [NSLocalizedDescriptionKey: String(localized: "rdap.error.no_http_response", defaultValue: "Không nhận được phản hồi HTTP từ máy chủ")]))
             }
             
             if httpResp.statusCode == 404 {
@@ -59,7 +59,8 @@ public actor RDAPClient {
             }
             
             guard httpResp.statusCode == 200 else {
-                return .failure(NSError(domain: "RDAPClient", code: httpResp.statusCode, userInfo: [NSLocalizedDescriptionKey: "Máy chủ RDAP trả về mã HTTP \(httpResp.statusCode)"]))
+                let httpCodeFormat = String(localized: "rdap.error.http_code", defaultValue: "Máy chủ RDAP trả về mã HTTP %d")
+                return .failure(NSError(domain: "RDAPClient", code: httpResp.statusCode, userInfo: [NSLocalizedDescriptionKey: String(format: httpCodeFormat, httpResp.statusCode)]))
             }
             
             let parsed = try RDAPParser.parse(data: data, query: cleanQuery, queryType: finalType)

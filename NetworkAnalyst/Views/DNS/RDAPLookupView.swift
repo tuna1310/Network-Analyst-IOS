@@ -29,7 +29,7 @@ public struct RDAPLookupView: View {
                         
                         // Nội dung hiển thị
                         if viewModel.isLoading {
-                            ProgressView("Đang tra cứu dữ liệu...")
+                            ProgressView(LocalizedStringKey("common.loading_data"))
                                 .padding(.vertical, 36)
                         } else if let error = viewModel.errorMessage, viewModel.rdapRecord == nil && (viewModel.whoisResult == nil || viewModel.whoisResult!.rawText.isEmpty) {
                             errorCard(error: error)
@@ -81,11 +81,11 @@ public struct RDAPLookupView: View {
             
             // Bộ chọn loại đối tượng truy vấn
             HStack {
-                Text("Loại truy vấn:")
+                Text(LocalizedStringKey("rdap.query_type_label"))
                     .font(.caption)
                     .foregroundColor(.secondary)
                 
-                Picker("Loại", selection: $viewModel.typeOption) {
+                Picker(LocalizedStringKey("rdap.query_type_picker"), selection: $viewModel.typeOption) {
                     ForEach(RDAPTypeOption.allCases) { opt in
                         Text(LocalizedStringKey(opt.rawValue)).tag(opt)
                     }
@@ -126,7 +126,7 @@ public struct RDAPLookupView: View {
                 HStack {
                     Spacer()
                     Image(systemName: "arrow.triangle.2.circlepath.circle.fill")
-                    Text("Tra cứu thông tin")
+                    Text(LocalizedStringKey("rdap.lookup_button"))
                         .bold()
                     Spacer()
                 }
@@ -143,7 +143,7 @@ public struct RDAPLookupView: View {
     
     // MARK: - Mode Picker
     private var modePicker: some View {
-        Picker("Chế độ hiển thị", selection: $viewModel.displayMode) {
+        Picker(LocalizedStringKey("rdap.display_mode_picker"), selection: $viewModel.displayMode) {
             ForEach(RDAPDisplayMode.allCases) { mode in
                 Text(LocalizedStringKey(mode.rawValue)).tag(mode)
             }
@@ -174,7 +174,7 @@ public struct RDAPLookupView: View {
                 whoisCard(whois: whois)
             } else {
                 VStack(spacing: 12) {
-                    Text("Bấm nút bên dưới để truy vấn máy chủ WHOIS qua cổng TCP 43 truyền thống:")
+                    Text(LocalizedStringKey("rdap.whois_hint"))
                         .font(.caption)
                         .foregroundColor(.secondary)
                     
@@ -354,7 +354,7 @@ public struct RDAPLookupView: View {
     private func rawJSONCard(jsonString: String) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text("PHẢN HỒI GỐC RDAP (RFC 7483 JSON)")
+                Text(LocalizedStringKey("rdap.raw_json_header"))
                     .font(.caption.bold())
                     .foregroundColor(.secondary)
                 
@@ -388,7 +388,7 @@ public struct RDAPLookupView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("PHẢN HỒI WHOIS CỔ ĐIỂN (TCP PORT 43)")
+                    Text(LocalizedStringKey("rdap.whois_classic_header"))
                         .font(.caption.bold())
                         .foregroundColor(.secondary)
                     
@@ -431,7 +431,7 @@ public struct RDAPLookupView: View {
             }
             
             ScrollView(.horizontal, showsIndicators: true) {
-                Text(whois.rawText.isEmpty ? "Không nhận được nội dung phản hồi." : whois.rawText)
+                Text(whois.rawText.isEmpty ? String(localized: "rdap.no_response_content", defaultValue: "Không nhận được nội dung phản hồi.") : whois.rawText)
                     .font(.system(size: 11, design: .monospaced))
                     .textSelection(.enabled)
                     .padding(10)
@@ -452,7 +452,7 @@ public struct RDAPLookupView: View {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .foregroundColor(.orange)
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Thông Báo RDAP")
+                    Text(LocalizedStringKey("rdap.error_notice_title"))
                         .font(.subheadline.bold())
                     Text(error)
                         .font(.caption)
@@ -487,7 +487,7 @@ public struct RDAPLookupView: View {
             Image(systemName: "globe.asia.australia.fill")
                 .font(.system(size: 36))
                 .foregroundColor(.secondary.opacity(0.6))
-            Text("Nhập tên miền, IP hoặc ASN và bấm 'Tra cứu thông tin'")
+            Text(LocalizedStringKey("rdap.empty_hint"))
                 .font(.footnote)
                 .foregroundColor(.secondary)
         }

@@ -194,12 +194,7 @@ public enum ICMPv6Codec {
         }
         pseudoHeader.append(contentsOf: packetZeroChecksum)
         
-        return ICMPChecksum.calculate(data: pseudoHeader)
-    }
-            packet[8 + i] = UInt8((i + 65) % 256)
-        }
-        
-        return packet
+        return InternetChecksum.compute(pseudoHeader)
     }
     
     /// Phân giải phản hồi byte nhận được từ socket ICMPv6

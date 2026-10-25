@@ -33,8 +33,8 @@ public struct LanScannerView: View {
                     deviceListView
                 }
             }
-            .searchable(text: $viewModel.searchText, prompt: "Tìm theo IP, tên máy, nhà sản xuất...")
-            .navigationTitle("Quét mạng LAN")
+            .searchable(text: $viewModel.searchText, prompt: Text(LocalizedStringKey("lan.search_prompt")))
+            .navigationTitle(LocalizedStringKey("lan.title"))
             .sheet(item: $viewModel.selectedDeviceForDetail) { device in
                 DeviceDetailSheet(device: device) { ip in
                     onSelectDeviceForPortScan(ip)
@@ -53,9 +53,9 @@ public struct LanScannerView: View {
         VStack(spacing: 8) {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(viewModel.engine.isScanning ? "Đang quét mạng nội bộ..." : "Sẵn sàng quét")
+                    Text(viewModel.engine.isScanning ? LocalizedStringKey("lan.status.scanning") : LocalizedStringKey("lan.status.ready"))
                         .font(.headline)
-                    Text(viewModel.engine.isScanning ? viewModel.engine.currentHost : "Tìm thấy \(viewModel.engine.discoveredDevices.count) thiết bị")
+                    Text(viewModel.engine.isScanning ? viewModel.engine.currentHost : String(format: String(localized: "lan.devices_found_count", defaultValue: "Tìm thấy %d thiết bị"), viewModel.engine.discoveredDevices.count))
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .lineLimit(1)
@@ -72,7 +72,7 @@ public struct LanScannerView: View {
                 } label: {
                     HStack(spacing: 6) {
                         Image(systemName: viewModel.engine.isScanning ? "stop.fill" : "play.fill")
-                        Text(viewModel.engine.isScanning ? "Dừng" : "Bắt đầu quét")
+                        Text(viewModel.engine.isScanning ? LocalizedStringKey("lan.btn.stop") : LocalizedStringKey("lan.btn.start"))
                     }
                     .font(.subheadline.bold())
                     .foregroundColor(.white)
@@ -110,7 +110,7 @@ public struct LanScannerView: View {
                 Button {
                     viewModel.selectedFilter = nil
                 } label: {
-                    Text("Tất cả (\(viewModel.engine.discoveredDevices.count))")
+                    Text(String(format: String(localized: "lan.all_filter_format", defaultValue: "Tất cả (%d)"), viewModel.engine.discoveredDevices.count))
                         .font(.caption.bold())
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
@@ -127,7 +127,7 @@ public struct LanScannerView: View {
                         } label: {
                             HStack(spacing: 4) {
                                 Image(systemName: type.iconName)
-                                Text("\(type.rawValue) (\(count))")
+                                Text("\(type.displayName) (\(count))")
                             }
                             .font(.caption.bold())
                             .padding(.horizontal, 10)
@@ -176,7 +176,7 @@ public struct LanScannerView: View {
                                 }
                                 
                                 if device.isSelf {
-                                    Text("BẠN")
+                                    Text(LocalizedStringKey("lan.badge.you"))
                                         .font(.system(size: 9, weight: .bold))
                                         .padding(.horizontal, 4)
                                         .padding(.vertical, 1)
@@ -237,10 +237,10 @@ public struct LanScannerView: View {
                 .font(.system(size: 64))
                 .foregroundColor(.secondary)
             
-            Text("Chưa có thiết bị nào được quét")
+            Text(LocalizedStringKey("lan.empty_title"))
                 .font(.headline)
             
-            Text("Nhấn 'Bắt đầu quét' để phát hiện các thiết bị kết nối trong mạng Wi-Fi cục bộ qua ICMP, TCP/UDP, NetBIOS, mDNS và Bonjour.")
+            Text(LocalizedStringKey("lan.empty_desc"))
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -249,7 +249,7 @@ public struct LanScannerView: View {
             Button {
                 viewModel.startScan()
             } label: {
-                Text("Bắt đầu quét mạng")
+                Text(LocalizedStringKey("lan.start_scan_btn"))
                     .bold()
                     .foregroundColor(.white)
                     .padding(.horizontal, 24)

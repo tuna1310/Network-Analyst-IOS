@@ -7,6 +7,9 @@
 
 import Foundation
 import Network
+#if canImport(Darwin)
+import Darwin
+#endif
 
 /// Đại diện cho thông tin cấu hình giao diện mạng (IPv4, IPv6, Subnet, Gateway)
 public struct NetworkInterfaceDetails: Sendable, Identifiable {
@@ -14,6 +17,7 @@ public struct NetworkInterfaceDetails: Sendable, Identifiable {
     public let name: String
     public let ipv4Address: String?
     public let netmask: String?
+    public var subnetMask: String? { netmask }
     public let broadcastAddress: String?
     public let ipv6Address: String?
     public let gateway: String?
@@ -123,11 +127,13 @@ public struct IPv4Address: Sendable {
 }
 
 /// Utility lấy thông tin mạng POSIX (getifaddrs) và Default Gateway
+public typealias NetworkInterfaceInfo = NetworkInterfaceProvider
+
 public enum NetworkInterfaceProvider {
     
     /// Lấy danh sách toàn bộ các interface đang hoạt động
     public static func getAllInterfaces() -> [NetworkInterfaceDetails] {
-        var interfacesDict: [String: (ipv4: String?, mask: String?, bcast: String?, ipv6: String?, flags: Int32)] = [:]
+        var interfacesDict: [String: (ipv4: String?, mask: String?, bcast: String?, ipv6: String?, flags: UInt32)] = [:]
         
         var ifaddr: UnsafeMutablePointer<ifaddrs>?
         guard getifaddrs(&ifaddr) == 0, let firstAddr = ifaddr else {
@@ -177,13 +183,24 @@ public enum NetworkInterfaceProvider {
             interfacesDict[name] = entry
         }
         
-        let defaultGateway = getDefaultGateway()
+        // Heuristic default gateway derived directly from Wi-Fi entry in interfacesDict
+        var defaultGateway: String? = nil
+        for (name, data) in interfacesDict {
+            let isLoopback = (data.flags & UInt32(IFF_LOOPBACK)) != 0
+            if name.hasPrefix("en") && !isLoopback, let ip = data.ipv4 {
+                let parts = ip.split(separator: ".")
+                if parts.count == 4 {
+                    defaultGateway = "\(parts[0]).\(parts[1]).\(parts[2]).1"
+                    break
+                }
+            }
+        }
         
         var result: [NetworkInterfaceDetails] = []
         for (name, data) in interfacesDict {
-            let isUp = (data.flags & Int32(IFF_UP)) != 0
-            let isRunning = (data.flags & Int32(IFF_RUNNING)) != 0
-            let isLoopback = (data.flags & Int32(IFF_LOOPBACK)) != 0
+            let isUp = (data.flags & UInt32(IFF_UP)) != 0
+            let isRunning = (data.flags & UInt32(IFF_RUNNING)) != 0
+            let isLoopback = (data.flags & UInt32(IFF_LOOPBACK)) != 0
             let isWiFi = name.hasPrefix("en") && !isLoopback
             let isCellular = name.hasPrefix("pdp_ip")
             
@@ -220,77 +237,8 @@ public enum NetworkInterfaceProvider {
         return all.first { $0.isWiFi && $0.ipv4Address != nil && $0.isUp } ?? all.first { $0.isWiFi }
     }
     
-    /// Tìm Default Gateway IP bằng sysctl bảng định tuyến BSD
+    /// Tìm Default Gateway IP bằng heuristic từ Wi-Fi subnet
     public static func getDefaultGateway() -> String? {
-        // Dự phòng heuristic: hầu hết router cục bộ là x.x.x.1 trong subnet của thiết bị
-        // Đầu tiên thử đọc bảng routing BSD qua sysctl
-        if let gw = getGatewayFromRoutingTable() {
-            return gw
-        }
-        
-        // Heuristic fallback nếu bảng route không đọc được
-        guard let wifi = getAllInterfaces().first(where: { $0.isWiFi && $0.ipv4Address != nil }),
-              let ip = wifi.ipv4Address else {
-            return nil
-        }
-        let parts = ip.split(separator: ".")
-        if parts.count == 4 {
-            return "\(parts[0]).\(parts[1]).\(parts[2]).1"
-        }
-        return nil
-    }
-    
-    private static func getGatewayFromRoutingTable() -> String? {
-        var mib: [Int32] = [CTL_NET, PF_ROUTE, 0, AF_INET, NET_RT_FLAGS, RTF_GATEWAY]
-        var len: size_t = 0
-        guard sysctl(&mib, u_int(mib.count), nil, &len, nil, 0) == 0, len > 0 else {
-            return nil
-        }
-        
-        let buf = UnsafeMutablePointer<UInt8>.allocate(capacity: len)
-        defer { buf.deallocate() }
-        
-        guard sysctl(&mib, u_int(mib.count), buf, &len, nil, 0) == 0 else {
-            return nil
-        }
-        
-        var offset = 0
-        while offset < len {
-            let rt = buf.advanced(by: offset).withMemoryRebound(to: rt_msghdr.self, capacity: 1) { $0.pointee }
-            let msgLen = Int(rt.rtm_msglen)
-            guard msgLen > 0 else { break }
-            
-            var saPtr = buf.advanced(by: offset + MemoryLayout<rt_msghdr>.size)
-            let addrs = rt.rtm_addrs
-            
-            var gatewayIP: String?
-            for i in 0..<RTAX_MAX {
-                if (addrs & (1 << i)) != 0 {
-                    let sa = saPtr.withMemoryRebound(to: sockaddr.self, capacity: 1) { $0.pointee }
-                    let saLen = sa.sa_len > 0 ? Int(sa.sa_len) : MemoryLayout<sockaddr>.size
-                    let alignedLen = (saLen + 3) & ~3
-                    
-                    if i == RTAX_GATEWAY && sa.sa_family == UInt8(AF_INET) {
-                        var host = [CChar](repeating: 0, count: Int(NI_MAXHOST))
-                        if getnameinfo(saPtr.withMemoryRebound(to: sockaddr.self, capacity: 1) { $0 },
-                                       socklen_t(saLen),
-                                       &host,
-                                       socklen_t(host.count),
-                                       nil,
-                                       0,
-                                       NI_NUMERICHOST) == 0 {
-                            gatewayIP = String(cString: host)
-                        }
-                    }
-                    saPtr = saPtr.advanced(by: alignedLen)
-                }
-            }
-            
-            if let gw = gatewayIP, gw != "127.0.0.1" && !gw.isEmpty {
-                return gw
-            }
-            offset += msgLen
-        }
-        return nil
+        return getPrimaryWiFiInterface()?.gateway
     }
 }

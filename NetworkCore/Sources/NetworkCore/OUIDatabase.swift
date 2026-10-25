@@ -16,11 +16,11 @@ public enum MACLookupResult: Sendable, Equatable {
     public var displayName: String {
         switch self {
         case .randomized:
-            return String(localized: "oui.random_mac", defaultValue: "Private / Randomized MAC")
+            return "Private / Randomized MAC"
         case .vendor(let name):
             return name
         case .unknown:
-            return String(localized: "oui.unknown_vendor", defaultValue: "Unknown Vendor")
+            return "Unknown Vendor"
         }
     }
 }
@@ -131,7 +131,7 @@ public final class OUIDatabase: @unchecked Sendable {
         let result = lookupDetail(mac: mac)
         switch result {
         case .randomized:
-            return String(localized: "oui.random_mac", defaultValue: "Private / Randomized MAC")
+            return "Private / Randomized MAC"
         case .vendor(let name):
             return name
         case .unknown:

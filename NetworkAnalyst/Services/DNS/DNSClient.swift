@@ -31,15 +31,15 @@ public actor DNSClient {
     ) async -> DNSQueryResult {
         let cleanDomain = domain.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         guard !cleanDomain.isEmpty else {
-            return DNSQueryResult(domain: domain, recordType: type, provider: provider, error: "Tên miền không hợp lệ")
+            return DNSQueryResult(domain: domain, recordType: type, provider: provider, error: String(localized: "dns.error.invalid_domain", defaultValue: "Tên miền không hợp lệ"))
         }
         
-        let startTime = CFAbsoluteTimeGetCurrent()
+        let startTime = MonotonicClock.now()
         
         // 1. Thử qua DoH nếu nhà cung cấp hỗ trợ
         if let dohURL = provider.dohURL {
             if let dohResult = await queryDoHWire(domain: cleanDomain, type: type, urlString: dohURL) {
-                let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000.0
+                let elapsed = MonotonicClock.elapsedMs(since: startTime)
                 return DNSQueryResult(
                     domain: cleanDomain,
                     recordType: type,
@@ -48,7 +48,7 @@ public actor DNSClient {
                     responseTimeMs: elapsed,
                     isTruncated: false,
                     retriedOverTCP: false,
-                    error: dohResult.isEmpty ? "Không tìm thấy bản ghi nào" : nil
+                    error: dohResult.isEmpty ? String(localized: "dns.error.no_records", defaultValue: "Không tìm thấy bản ghi nào") : nil
                 )
             }
         }
@@ -59,7 +59,7 @@ public actor DNSClient {
         // Nếu gói tin UDP bị cắt ngắn (Truncated bit TC = 1), tự động thử lại qua TCP (RFC 7766)
         if udpResult.isTruncated {
             if let tcpResult = await queryTCPWire(domain: cleanDomain, type: type, serverIP: provider.udpIP) {
-                let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000.0
+                let elapsed = MonotonicClock.elapsedMs(since: startTime)
                 return DNSQueryResult(
                     domain: cleanDomain,
                     recordType: type,
@@ -68,12 +68,12 @@ public actor DNSClient {
                     responseTimeMs: elapsed,
                     isTruncated: false,
                     retriedOverTCP: true,
-                    error: tcpResult.isEmpty ? "Không tìm thấy bản ghi nào qua TCP" : nil
+                    error: tcpResult.isEmpty ? String(localized: "dns.error.no_records_tcp", defaultValue: "Không tìm thấy bản ghi nào qua TCP") : nil
                 )
             }
         }
         
-        let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000.0
+        let elapsed = MonotonicClock.elapsedMs(since: startTime)
         if !udpResult.records.isEmpty {
             return DNSQueryResult(
                 domain: cleanDomain,
@@ -87,11 +87,13 @@ public actor DNSClient {
             )
         }
         
-        var finalError = udpResult.error ?? "Không nhận được phản hồi từ \(provider.rawValue)"
+        let noResponseFormat = String(localized: "dns.error.no_response_from", defaultValue: "Không nhận được phản hồi từ %@")
+        var finalError = udpResult.error ?? String(format: noResponseFormat, provider.rawValue)
         if case .system(let gw) = provider {
             let gwDesc = (gw != nil && !gw!.isEmpty) ? "Gateway: \(gw!)" : "DHCP Gateway"
             if type == .HTTPS || type == .SVCB || type == .SRV || type == .CAA {
-                finalError = "Máy chủ DNS cục bộ (\(gwDesc)) không phản hồi loại bản ghi \(type.rawValue). Router thông thường chỉ hỗ trợ hoặc chuyển tiếp A/AAAA, và không trả lời các bản ghi đặc biệt như HTTPS, SVCB, SRV, CAA. Gợi ý: Hãy chuyển sang Cloudflare (1.1.1.1) hoặc Google (8.8.8.8) qua DoH."
+                let gwTypeFormat = String(localized: "dns.error.gateway_unsupported_types", defaultValue: "Máy chủ DNS cục bộ (%@) không phản hồi loại bản ghi %@. Router thông thường chỉ hỗ trợ hoặc chuyển tiếp A/AAAA, và không trả lời các bản ghi đặc biệt như HTTPS, SVCB, SRV, CAA. Gợi ý: Hãy chuyển sang Cloudflare (1.1.1.1) hoặc Google (8.8.8.8) qua DoH.")
+                finalError = String(format: gwTypeFormat, gwDesc, type.rawValue)
             }
         }
         
@@ -164,7 +166,7 @@ public actor DNSClient {
                 guard !hasResumed else { return }
                 hasResumed = true
                 connection.cancel()
-                continuation.resume(returning: ([], false, "Hết thời gian chờ phản hồi UDP"))
+                continuation.resume(returning: ([], false, String(localized: "dns.error.udp_timeout", defaultValue: "Hết thời gian chờ phản hồi UDP")))
             }
             timer.resume()
             
@@ -194,7 +196,7 @@ public actor DNSClient {
                             }
                             
                             guard let data = content else {
-                                finish([], false, "Phản hồi UDP rỗng")
+                                finish([], false, String(localized: "dns.error.empty_udp_response", defaultValue: "Phản hồi UDP rỗng"))
                                 return
                             }
                             

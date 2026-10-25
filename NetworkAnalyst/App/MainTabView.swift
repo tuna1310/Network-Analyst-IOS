@@ -23,7 +23,7 @@ public struct MainTabView: View {
             TabView(selection: $selectedTab) {
                 DashboardView()
                     .tabItem {
-                        Label("Tổng quan", systemImage: "chart.bar.doc.horizontal")
+                        Label(String(localized: "tab.dashboard", defaultValue: "Tổng quan"), systemImage: "chart.bar.doc.horizontal")
                     }
                     .tag(0)
                 
@@ -33,25 +33,25 @@ public struct MainTabView: View {
                     selectedTab = 2
                 }
                 .tabItem {
-                    Label("Quét LAN", systemImage: "network")
+                    Label(String(localized: "tab.lan_scanner", defaultValue: "Quét LAN"), systemImage: "network")
                 }
                 .tag(1)
                 
                 PortScannerView(viewModel: portViewModel)
                     .tabItem {
-                        Label("Quét cổng", systemImage: "lock.open.trianglebadge.exclamationmark")
+                        Label(String(localized: "tab.port_scanner", defaultValue: "Quét cổng"), systemImage: "lock.open.trianglebadge.exclamationmark")
                     }
                     .tag(2)
                 
                 PingTracerouteView()
                     .tabItem {
-                        Label("Ping ICMP", systemImage: "waveform.path.ecg")
+                        Label(String(localized: "tab.ping_traceroute", defaultValue: "Ping ICMP"), systemImage: "waveform.path.ecg")
                     }
                     .tag(3)
                 
                 DNSLookupView()
                     .tabItem {
-                        Label("DNS & RDAP", systemImage: "globe")
+                        Label(String(localized: "tab.dns_rdap", defaultValue: "DNS & RDAP"), systemImage: "globe")
                     }
                     .tag(4)
             }

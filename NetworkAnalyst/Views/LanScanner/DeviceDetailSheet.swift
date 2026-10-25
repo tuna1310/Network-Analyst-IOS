@@ -41,9 +41,9 @@ public struct DeviceDetailSheet: View {
                     .padding(.vertical, 4)
                 }
                 
-                Section(header: Text("Thông số mạng")) {
+                Section(header: Text(LocalizedStringKey("device.details.network_params"))) {
                     HStack {
-                        Text("Địa chỉ IPv4")
+                        Text(LocalizedStringKey("device.details.ipv4"))
                         Spacer()
                         Text(device.ipAddress)
                             .font(.system(.body, design: .monospaced).bold())
@@ -51,7 +51,7 @@ public struct DeviceDetailSheet: View {
                     
                     VStack(alignment: .leading, spacing: 4) {
                         HStack {
-                            Text("Địa chỉ IPv6")
+                            Text(LocalizedStringKey("device.details.ipv6"))
                             Spacer()
                             if let v6 = device.ipv6Address {
                                 Text(v6)
@@ -60,20 +60,21 @@ public struct DeviceDetailSheet: View {
                             }
                         }
                         if device.ipv6Address == nil {
-                            Text(device.ipv6StatusExplanation ?? "Không có địa chỉ IPv6 (Router hoặc thiết bị không kích hoạt IPv6)")
+                            Text(device.ipv6StatusExplanation ?? String(localized: "lan.no_ipv6_explanation", defaultValue: "Không có địa chỉ IPv6 (Router hoặc thiết bị không kích hoạt IPv6)"))
                                 .font(.caption2)
                                 .foregroundColor(.secondary)
                         }
                     }
                     
                     HStack {
-                        Text("Tên máy (Hostname)")
+                        Text(LocalizedStringKey("device.details.hostname"))
                         Spacer()
                         VStack(alignment: .trailing, spacing: 2) {
-                            Text(device.hostname ?? "Không xác định")
+                            Text(device.hostname ?? String(localized: "common.unknown", defaultValue: "Không xác định"))
                                 .foregroundColor(device.hostname != nil ? .primary : .secondary)
                             if let src = device.hostnameSource {
-                                Text("Nguồn: \(src.rawValue)")
+                                let sourceFormat = String(localized: "device.details.source_format", defaultValue: "Nguồn: %@")
+                                Text(String(format: sourceFormat, src.displayName))
                                     .font(.caption2.bold())
                                     .padding(.horizontal, 6)
                                     .padding(.vertical, 2)
@@ -85,22 +86,22 @@ public struct DeviceDetailSheet: View {
                     }
                     
                     HStack {
-                        Text("Địa chỉ MAC")
+                        Text(LocalizedStringKey("device.details.mac"))
                         Spacer()
-                        Text(device.macAddress ?? "iOS Sandbox (Bị ẩn)")
+                        Text(device.macAddress ?? String(localized: "device.details.mac_hidden", defaultValue: "iOS Sandbox (Bị ẩn)"))
                             .font(.system(.footnote, design: .monospaced))
                             .foregroundColor(.secondary)
                     }
                     
                     HStack {
-                        Text("Nhà sản xuất (Vendor)")
+                        Text(LocalizedStringKey("device.details.vendor"))
                         Spacer()
-                        Text(device.vendor ?? "Chưa rõ")
+                        Text(device.vendor ?? String(localized: "common.unknown", defaultValue: "Chưa rõ"))
                     }
                     
                     if let rtt = device.rttMs {
                         HStack {
-                            Text("Độ trễ phản hồi (RTT)")
+                            Text(LocalizedStringKey("device.details.rtt"))
                             Spacer()
                             Text(String(format: "%.1f ms", rtt))
                                 .font(.system(.body, design: .monospaced))
@@ -109,18 +110,18 @@ public struct DeviceDetailSheet: View {
                     }
                 }
                 
-                Section(header: Text("Phương thức phát hiện")) {
+                Section(header: Text(LocalizedStringKey("device.details.discovery_methods"))) {
                     ForEach(device.discoveryMethods, id: \.self) { method in
                         HStack {
                             Image(systemName: "checkmark.seal.fill")
                                 .foregroundColor(.blue)
-                            Text(method.rawValue)
+                            Text(method.displayName)
                         }
                     }
                 }
                 
                 if !device.bonjourServices.isEmpty {
-                    Section(header: Text("Dịch vụ Bonjour phát hiện")) {
+                    Section(header: Text(LocalizedStringKey("device.details.bonjour_services"))) {
                         ForEach(device.bonjourServices, id: \.self) { service in
                             Text(service)
                                 .font(.caption)
@@ -129,11 +130,12 @@ public struct DeviceDetailSheet: View {
                 }
                 
                 if !device.openPorts.isEmpty {
-                    Section(header: Text("Các cổng mở sơ bộ")) {
+                    Section(header: Text(LocalizedStringKey("device.details.open_ports"))) {
                         ForEach(device.openPorts, id: \.self) { port in
                             let info = PortDatabase.lookup(port: port)
                             HStack {
-                                Text("Cổng \(port)")
+                                let portFormat = String(localized: "port.number_format", defaultValue: "Cổng %d")
+                                Text(String(format: portFormat, port))
                                     .font(.system(.body, design: .monospaced).bold())
                                 Spacer()
                                 Text(info.name)
@@ -152,7 +154,7 @@ public struct DeviceDetailSheet: View {
                         HStack {
                             Spacer()
                             Image(systemName: "magnifyingglass")
-                            Text("Quét toàn bộ cổng của thiết bị này")
+                            Text(LocalizedStringKey("device.details.scan_ports_btn"))
                                 .bold()
                             Spacer()
                         }
@@ -160,11 +162,11 @@ public struct DeviceDetailSheet: View {
                     }
                 }
             }
-            .navigationTitle("Chi tiết thiết bị")
+            .navigationTitle(LocalizedStringKey("device.details.title"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Đóng") {
+                    Button(LocalizedStringKey("common.close")) {
                         dismiss()
                     }
                 }

@@ -35,7 +35,7 @@ public struct ScanHistoryView: View {
                 historyList
             }
         }
-        .navigationTitle("Lịch sử phân tích")
+        .navigationTitle(LocalizedStringKey("history.title"))
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 if !historyManager.entries.isEmpty {
@@ -48,13 +48,13 @@ public struct ScanHistoryView: View {
                 }
             }
         }
-        .alert("Xóa toàn bộ lịch sử?", isPresented: $showClearAllAlert) {
-            Button("Hủy", role: .cancel) {}
-            Button("Xóa tất cả", role: .destructive) {
+        .alert(Text(LocalizedStringKey("history.clear_alert_title")), isPresented: $showClearAllAlert) {
+            Button(LocalizedStringKey("common.cancel"), role: .cancel) {}
+            Button(LocalizedStringKey("history.clear_all"), role: .destructive) {
                 historyManager.clearHistory()
             }
         } message: {
-            Text("Thao tác này sẽ xóa vĩnh viễn toàn bộ nhật ký quét đã lưu trên máy.")
+            Text(LocalizedStringKey("history.clear_alert_message"))
         }
         .sheet(item: $selectedEntryForDetail) { entry in
             entryDetailSheet(entry: entry)
@@ -68,7 +68,8 @@ public struct ScanHistoryView: View {
                 Button {
                     selectedFilter = nil
                 } label: {
-                    Text("Tất cả (\(historyManager.entries.count))")
+                    let allFilterFormat = String(localized: "history.all_filter_format", defaultValue: "Tất cả (%d)")
+                    Text(String(format: allFilterFormat, historyManager.entries.count))
                         .font(.caption.bold())
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
@@ -161,9 +162,9 @@ public struct ScanHistoryView: View {
             Image(systemName: "clock.arrow.circlepath")
                 .font(.system(size: 50))
                 .foregroundColor(.secondary)
-            Text("Chưa có lịch sử quét")
+            Text(LocalizedStringKey("history.empty"))
                 .font(.headline)
-            Text("Kết quả từ các lần quét mạng LAN, kiểm tra cổng, ping và traceroute sẽ tự động được lưu lại tại đây.")
+            Text(LocalizedStringKey("history.empty_description"))
                 .font(.footnote)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -176,41 +177,41 @@ public struct ScanHistoryView: View {
     private func entryDetailSheet(entry: ScanHistoryEntry) -> some View {
         NavigationStack {
             List {
-                Section(header: Text("Tác vụ")) {
+                Section(header: Text(LocalizedStringKey("history.section_task"))) {
                     HStack {
-                        Text("Phân loại")
+                        Text(LocalizedStringKey("history.field_type"))
                         Spacer()
                         Text(entry.type.rawValue)
                             .bold()
                     }
                     HStack {
-                        Text("Mục tiêu")
+                        Text(LocalizedStringKey("history.field_target"))
                         Spacer()
                         Text(entry.target)
                             .font(.system(.body, design: .monospaced))
                     }
                     HStack {
-                        Text("Thời gian")
+                        Text(LocalizedStringKey("history.field_time"))
                         Spacer()
                         Text(entry.timestamp.formatted(date: .abbreviated, time: .standard))
                             .foregroundColor(.secondary)
                     }
                 }
                 
-                Section(header: Text("Tóm tắt kết quả")) {
+                Section(header: Text(LocalizedStringKey("history.section_summary"))) {
                     Text(entry.summary)
                         .font(.body)
                 }
                 
                 if let details = entry.details, !details.isEmpty {
-                    Section(header: Text("Chi tiết kỹ thuật")) {
+                    Section(header: Text(LocalizedStringKey("history.section_details"))) {
                         Text(details)
                             .font(.system(.caption, design: .monospaced))
                             .textSelection(.enabled)
                     }
                 }
             }
-            .navigationTitle("Chi tiết bản ghi")
+            .navigationTitle(LocalizedStringKey("history.detail_title"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

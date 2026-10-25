@@ -105,26 +105,26 @@ public actor TracerouteEngine: TracerouteEngineProtocol {
     private func singleProbe(targetIP: String, hop: Int, sequence: UInt16, timeout: TimeInterval) async -> (rttMs: Double?, routerIP: String?, isDestination: Bool) {
         // Trường hợp mục tiêu là IPv6
         if targetIP.contains(":") {
-            let startTime = CFAbsoluteTimeGetCurrent()
+            let startTime = MonotonicClock.now()
             if let v6Result = await sendICMPv6Probe(targetIP: targetIP, hop: hop, sequence: sequence, timeout: timeout) {
-                let rtt = (CFAbsoluteTimeGetCurrent() - startTime) * 1000.0
+                let rtt = MonotonicClock.elapsedMs(since: startTime)
                 return (rtt, v6Result.routerIP, v6Result.isDestinationReached)
             }
             return (nil, nil, false)
         }
         
         // 1. Thử gửi probe ICMP IPv4 với IP_TTL
-        let startTime = CFAbsoluteTimeGetCurrent()
+        let startTime = MonotonicClock.now()
         if let icmpResult = await sendICMPProbe(targetIP: targetIP, hop: hop, sequence: sequence, timeout: timeout) {
-            let rtt = (CFAbsoluteTimeGetCurrent() - startTime) * 1000.0
+            let rtt = MonotonicClock.elapsedMs(since: startTime)
             return (rtt, icmpResult.routerIP, icmpResult.isDestinationReached)
         }
         
         // 2. Phương án dự phòng IPv4: Gửi gói UDP tới cổng cao với IP_TTL
         if !isCancelled {
-            let udpStart = CFAbsoluteTimeGetCurrent()
+            let udpStart = MonotonicClock.now()
             if let udpResult = await sendUDPProbe(targetIP: targetIP, hop: hop, sequence: sequence, timeout: timeout) {
-                let rtt = (CFAbsoluteTimeGetCurrent() - udpStart) * 1000.0
+                let rtt = MonotonicClock.elapsedMs(since: udpStart)
                 return (rtt, udpResult.routerIP, udpResult.isDestinationReached)
             }
         }

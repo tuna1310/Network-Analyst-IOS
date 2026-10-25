@@ -13,6 +13,9 @@ import NetworkExtension
 import CoreTelephony
 #endif
 import Darwin
+#if canImport(Darwin.resolv)
+import Darwin.resolv
+#endif
 import NetworkCore
 
 /// Thông tin toàn diện về mạng hiện tại phục vụ hiển thị chi tiết
@@ -71,12 +74,12 @@ public actor NetworkDetailsService {
             details.localIPv4 = wifiIface.ipv4Addresses.first
         }
         
-        // 3. Subnet mask và Gateway từ NetworkInterfaceInfo
-        if let primary = NetworkInterfaceInfo.getPrimaryWiFiInterface() {
+        // 3. Subnet mask và Gateway từ NetworkInterfaceProvider
+        if let primary = NetworkInterfaceProvider.getPrimaryWiFiInterface() {
             details.subnetMask = primary.netmask
-            details.defaultGateway = primary.gateway ?? NetworkInterfaceInfo.getDefaultGateway()
+            details.defaultGateway = primary.gateway ?? NetworkInterfaceProvider.getDefaultGateway()
         } else {
-            details.defaultGateway = NetworkInterfaceInfo.getDefaultGateway()
+            details.defaultGateway = NetworkInterfaceProvider.getDefaultGateway()
         }
         
         // 4. Lấy danh sách DNS Resolvers hệ thống (kèm ghi chú deprecation)
@@ -89,7 +92,14 @@ public actor NetworkDetailsService {
         details.wifiSecurity = wifi.security
         if let bssid = wifi.bssid {
             let vendorResult = OUIDatabase.shared.lookupDetail(mac: bssid)
-            details.bssidVendor = vendorResult.displayName
+            switch vendorResult {
+            case .randomized:
+                details.bssidVendor = String(localized: "oui.random_mac", defaultValue: "Private / Randomized MAC")
+            case .vendor(let name):
+                details.bssidVendor = name
+            case .unknown:
+                details.bssidVendor = String(localized: "oui.unknown_vendor", defaultValue: "Unknown Vendor")
+            }
         }
         
         // 6. Thông tin Cellular & Carrier
@@ -208,16 +218,12 @@ public actor NetworkDetailsService {
         var secStr = "Unknown"
         if #available(iOS 15.0, *) {
             switch current.securityType {
-            case .open: secStr = "Open (Không mật khẩu)"
-            case .wep: secStr = "WEP"
-            case .wpaPersonal: secStr = "WPA Personal"
-            case .wpa2Personal: secStr = "WPA2 Personal"
-            case .wpa3Personal: secStr = "WPA3 Personal"
-            case .wpaEnterprise: secStr = "WPA Enterprise"
-            case .wpa2Enterprise: secStr = "WPA2 Enterprise"
-            case .wpa3Enterprise: secStr = "WPA3 Enterprise"
-            case .unknown: secStr = "Không rõ"
-            @unknown default: secStr = "Khác"
+            case .open: secStr = String(localized: "details.sec_open", defaultValue: "Open (Không mật khẩu)")
+            case .WEP: secStr = "WEP"
+            case .personal: secStr = "WPA/WPA2/WPA3 Personal"
+            case .enterprise: secStr = "WPA/WPA2/WPA3 Enterprise"
+            case .unknown: secStr = String(localized: "common.unknown", defaultValue: "Không rõ")
+            @unknown default: secStr = String(localized: "details.sec_other", defaultValue: "Khác")
             }
         }
         
@@ -234,34 +240,14 @@ public actor NetworkDetailsService {
     private func fetchSystemDNSServers(defaultGateway: String?) -> [String] {
         var servers: [String] = []
         
-        #if !targetEnvironment(simulator)
-        var state = __res_9_state()
-        if res_9_ninit(&state) == 0 {
-            let count = Int(state.nscount)
-            for i in 0..<min(count, 3) {
-                var addr = state.nsaddr_list.0
-                if i == 1 { addr = state.nsaddr_list.1 }
-                else if i == 2 { addr = state.nsaddr_list.2 }
-                
-                var buffer = [CChar](repeating: 0, count: Int(INET_ADDRSTRLEN))
-                var sinAddr = addr.sin_addr
-                if inet_ntop(AF_INET, &sinAddr, &buffer, socklen_t(INET_ADDRSTRLEN)) != nil {
-                    let ipStr = String(cString: buffer)
-                    if !ipStr.isEmpty && ipStr != "0.0.0.0" && !servers.contains(ipStr) {
-                        servers.append(ipStr)
-                    }
-                }
-            }
-            res_9_ndestroy(&state)
-        }
-        #endif
-        
-        // Nếu không đọc được từ POSIX state, ghi rõ nhãn ước đoán hoặc không khả dụng
+        // Trên iOS 16+, hàm res_9_ninit bị deprecate và không export trong module Darwin.
+        // Tự động dự phòng ước đoán IP Default Gateway (vốn là local DNS cache router trong 95% mô hình LAN).
         if servers.isEmpty {
             if let gw = defaultGateway, !gw.isEmpty {
-                servers.append("Ước đoán: \(gw) (Router Gateway)")
+                let format = String(localized: "details.estimated_dns", defaultValue: "Ước đoán: %@ (Router Gateway)")
+                servers.append(String(format: format, gw))
             } else {
-                servers.append("Không khả dụng trên iOS")
+                servers.append(String(localized: "details.dns_unavailable_ios", defaultValue: "Không khả dụng trên iOS"))
             }
         }
         
@@ -308,16 +294,19 @@ public actor NetworkDetailsService {
         }
         
         let finalCarrier = validCarriers.isEmpty
-            ? "Không khả dụng (Không có SIM / Deprecated trên iOS 16.4+)"
+            ? String(localized: "details.carrier_unavailable", defaultValue: "Không khả dụng (Không có SIM / Deprecated trên iOS 16.4+)")
             : validCarriers.joined(separator: ", ")
             
         let finalRadio = radioList.isEmpty
-            ? "Không có kết nối mạng di động"
+            ? String(localized: "details.radio_no_connection", defaultValue: "Không có kết nối mạng di động")
             : radioList.joined(separator: ", ")
             
         return (finalCarrier, finalRadio)
         #else
-        return ("Không hỗ trợ CoreTelephony", "Không hỗ trợ")
+        return (
+            String(localized: "details.telephony_unsupported", defaultValue: "Không hỗ trợ CoreTelephony"),
+            String(localized: "details.radio_unsupported", defaultValue: "Không hỗ trợ")
+        )
         #endif
     }
     

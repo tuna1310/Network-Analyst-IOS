@@ -1,0 +1,12 @@
+
+.bsp/
+.build/
+build_output/
+xtool/
+*.ipa
+*.p12
+*.mobileprovision
+
+.DS_Store
+xcuserdata/
+DerivedData/

@@ -9,8 +9,8 @@ import SwiftUI
 
 /// Chế độ kiểm tra mạng: Ping hoặc Traceroute
 public enum DiagnosticToolMode: String, CaseIterable, Identifiable {
-    case ping = "Kiểm tra Ping"
-    case traceroute = "Dò tuyến Traceroute"
+    case ping = "ping"
+    case traceroute = "traceroute"
     public var id: String { rawValue }
     
     public var localizedTitle: LocalizedStringKey {
@@ -37,7 +37,7 @@ public struct PingTracerouteView: View {
             ScrollView {
                 VStack(spacing: 16) {
                     // Segment chuyển đổi Ping / Traceroute
-                    Picker("Chế độ công cụ", selection: $selectedTool) {
+                    Picker(LocalizedStringKey("ping.tool_mode"), selection: $selectedTool) {
                         ForEach(DiagnosticToolMode.allCases) { tool in
                             Text(tool.localizedTitle).tag(tool)
                         }
@@ -53,7 +53,7 @@ public struct PingTracerouteView: View {
                 }
                 .padding(.vertical)
             }
-            .navigationTitle(selectedTool == .ping ? "ICMP Ping" : "Traceroute (IP_TTL)")
+            .navigationTitle(selectedTool == .ping ? LocalizedStringKey("ping.nav_title") : LocalizedStringKey("traceroute.nav_title"))
             .background(Color(uiColor: .systemGroupedBackground))
             .sheet(isPresented: $showDisclaimerModal) {
                 AuthorizationDisclaimerModal {
@@ -125,14 +125,14 @@ public struct PingTracerouteView: View {
             }
             
             HStack {
-                Text("Số gói:")
+                Text(LocalizedStringKey("ping.packets_count"))
                     .font(.caption)
                     .foregroundColor(.secondary)
-                Picker("Số gói", selection: $pingViewModel.packetCount) {
-                    Text("5 gói").tag(5)
-                    Text("10 gói").tag(10)
-                    Text("20 gói").tag(20)
-                    Text("50 gói").tag(50)
+                Picker(LocalizedStringKey("ping.packets_count"), selection: $pingViewModel.packetCount) {
+                    Text(String(format: String(localized: "ping.packets_format", defaultValue: "%d gói"), 5)).tag(5)
+                    Text(String(format: String(localized: "ping.packets_format", defaultValue: "%d gói"), 10)).tag(10)
+                    Text(String(format: String(localized: "ping.packets_format", defaultValue: "%d gói"), 20)).tag(20)
+                    Text(String(format: String(localized: "ping.packets_format", defaultValue: "%d gói"), 50)).tag(50)
                 }
                 .pickerStyle(.segmented)
             }
@@ -147,7 +147,7 @@ public struct PingTracerouteView: View {
                 HStack {
                     Spacer()
                     Image(systemName: pingViewModel.service.isPinging ? "stop.fill" : "play.fill")
-                    Text(pingViewModel.service.isPinging ? "Dừng Ping" : "Bắt đầu Ping")
+                    Text(pingViewModel.service.isPinging ? LocalizedStringKey("ping.btn.stop") : LocalizedStringKey("ping.btn.start"))
                         .bold()
                     Spacer()
                 }
@@ -164,15 +164,15 @@ public struct PingTracerouteView: View {
     
     private func pingStatisticsCard(summary: PingSessionSummary) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("KẾT QUẢ THỐNG KÊ")
+            Text(LocalizedStringKey("ping.stats_title"))
                 .font(.caption.bold())
                 .foregroundColor(.secondary)
             
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
-                metricBox(title: "Đã gửi", value: "\(summary.packetsTransmitted)")
-                metricBox(title: "Đã nhận", value: "\(summary.packetsReceived)")
+                metricBox(title: String(localized: "ping.stats.transmitted", defaultValue: "Đã gửi"), value: "\(summary.packetsTransmitted)")
+                metricBox(title: String(localized: "ping.stats.received", defaultValue: "Đã nhận"), value: "\(summary.packetsReceived)")
                 metricBox(
-                    title: "Mất gói",
+                    title: String(localized: "ping.stats.loss", defaultValue: "Mất gói"),
                     value: String(format: "%.0f%%", summary.packetLossPercent),
                     color: summary.packetLossPercent > 0 ? .red : .green
                 )
@@ -204,14 +204,14 @@ public struct PingTracerouteView: View {
     
     private var pingPacketsTableCard: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("NHẬT KÝ GÓI TIN (ICMP PACKETS)")
+            Text(LocalizedStringKey("ping.packets_log_title"))
                 .font(.caption.bold())
                 .foregroundColor(.secondary)
             
             VStack(spacing: 0) {
                 ForEach(pingViewModel.service.packets.reversed()) { packet in
                     HStack {
-                        Text("#\(packet.sequence)")
+                        Text(verbatim: "#\(packet.sequence)")
                             .font(.caption.monospaced().bold())
                             .frame(width: 36, alignment: .leading)
                         
@@ -226,7 +226,7 @@ public struct PingTracerouteView: View {
                                 .font(.caption.monospaced().bold())
                                 .foregroundColor(.blue)
                         } else {
-                            Text(packet.status == .timeout ? "Timeout" : "Lỗi")
+                            Text(packet.status == .timeout ? LocalizedStringKey("ping.packet.timeout") : LocalizedStringKey("ping.packet.error"))
                                 .font(.caption.bold())
                                 .foregroundColor(.red)
                         }
@@ -278,7 +278,7 @@ public struct PingTracerouteView: View {
                 Text(LocalizedStringKey("traceroute.max_hops"))
                     .font(.caption)
                     .foregroundColor(.secondary)
-                Picker("Max Hops", selection: $tracerouteMaxHops) {
+                Picker(LocalizedStringKey("traceroute.max_hops"), selection: $tracerouteMaxHops) {
                     Text("15").tag(15)
                     Text("30").tag(30)
                 }
@@ -300,7 +300,7 @@ public struct PingTracerouteView: View {
                     .font(.caption2)
                     .foregroundColor(.secondary)
                 
-                Text("Nguồn: \(HTTPSGeoIPProvider.sourceName)")
+                Text(String(format: String(localized: "traceroute.source_format", defaultValue: "Nguồn: %@"), HTTPSGeoIPProvider.sourceName))
                     .font(.system(size: 9))
                     .foregroundColor(.secondary)
             }
@@ -360,7 +360,7 @@ public struct PingTracerouteView: View {
             VStack(spacing: 0) {
                 ForEach(tracerouteService.hops) { hop in
                     HStack(spacing: 10) {
-                        Text("\(hop.hop)")
+                        Text(verbatim: String(hop.hop))
                             .font(.system(size: 13, weight: .bold, design: .monospaced))
                             .frame(width: 28, height: 28)
                             .background(hop.status == .destinationReached ? Color.green.opacity(0.2) : Color.blue.opacity(0.1))

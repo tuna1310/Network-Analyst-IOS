@@ -27,6 +27,16 @@
 				<string>C617.1</string>
 			</array>
 		</dict>
+		<!-- 2. System Boot Time API: Dùng để đo lường khoảng thời gian độ trễ RTT giữa các sự kiện mạng trong ứng dụng -->
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategorySystemBootTime</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<!-- 35F9.1: Đo khoảng thời gian trôi qua giữa các sự kiện trong ứng dụng để hoàn thành tác vụ người dùng yêu cầu (đo RTT ICMP/TCP/DNS/Traceroute) -->
+				<string>35F9.1</string>
+			</array>
+		</dict>
 	</array>
 </dict>
 </plist>

@@ -53,19 +53,19 @@ public enum DNSRecordType: String, CaseIterable, Identifiable, Sendable {
     
     public var explanation: String {
         switch self {
-        case .A: return "Bản ghi IPv4 (Address)"
-        case .AAAA: return "Bản ghi IPv6 (128-bit Address)"
-        case .CNAME: return "Tên miền bí danh (Canonical Name)"
-        case .MX: return "Máy chủ thư điện tử (Mail Exchange)"
-        case .TXT: return "Chuỗi văn bản (SPF, DKIM, DMARC, Xác minh)"
-        case .NS: return "Máy chủ phân giải ủy quyền (Name Server)"
-        case .SOA: return "Thông tin quản trị vùng (Start of Authority)"
-        case .SRV: return "Bản ghi định vị dịch vụ (Service Record)"
-        case .PTR: return "Phân giải ngược địa chỉ IP (Pointer)"
-        case .CAA: return "Chính sách cấp chứng chỉ số SSL/TLS"
-        case .SVCB: return "Cấu hình dịch vụ chung (RFC 9460 Service Binding)"
-        case .HTTPS: return "Cấu hình HTTPS chuyên dụng (RFC 9460 HTTPSSVC)"
-        case .ANY: return "Tất cả các bản ghi khả dụng"
+        case .A: return String(localized: "dns.record.a", defaultValue: "Bản ghi IPv4 (Address)")
+        case .AAAA: return String(localized: "dns.record.aaaa", defaultValue: "Bản ghi IPv6 (128-bit Address)")
+        case .CNAME: return String(localized: "dns.record.cname", defaultValue: "Tên miền bí danh (Canonical Name)")
+        case .MX: return String(localized: "dns.record.mx", defaultValue: "Máy chủ thư điện tử (Mail Exchange)")
+        case .TXT: return String(localized: "dns.record.txt", defaultValue: "Chuỗi văn bản (SPF, DKIM, DMARC, Xác minh)")
+        case .NS: return String(localized: "dns.record.ns", defaultValue: "Máy chủ phân giải ủy quyền (Name Server)")
+        case .SOA: return String(localized: "dns.record.soa", defaultValue: "Thông tin quản trị vùng (Start of Authority)")
+        case .SRV: return String(localized: "dns.record.srv", defaultValue: "Bản ghi định vị dịch vụ (Service Record)")
+        case .PTR: return String(localized: "dns.record.ptr", defaultValue: "Phân giải ngược địa chỉ IP (Pointer)")
+        case .CAA: return String(localized: "dns.record.caa", defaultValue: "Chính sách cấp chứng chỉ số SSL/TLS")
+        case .SVCB: return String(localized: "dns.record.svcb", defaultValue: "Cấu hình dịch vụ chung (RFC 9460 Service Binding)")
+        case .HTTPS: return String(localized: "dns.record.https", defaultValue: "Cấu hình HTTPS chuyên dụng (RFC 9460 HTTPSSVC)")
+        case .ANY: return String(localized: "dns.record.any", defaultValue: "Tất cả các bản ghi khả dụng")
         }
     }
     
@@ -107,12 +107,15 @@ public enum DNSProvider: Hashable, Identifiable, Sendable {
         case .cloudflare: return "Cloudflare (1.1.1.1)"
         case .google: return "Google (8.8.8.8)"
         case .quad9: return "Quad9 (9.9.9.9)"
-        case .custom(let ip): return "Tùy chỉnh (\(ip))"
+        case .custom(let ip):
+            let format = String(localized: "dns.provider.custom_format", defaultValue: "Tùy chỉnh (%@)")
+            return String(format: format, ip)
         case .system(let gw):
             if let g = gw, !g.isEmpty {
-                return "Mạng hiện tại (Gateway: \(g))"
+                let format = String(localized: "dns.provider.system_gateway_format", defaultValue: "Mạng hiện tại (Gateway: %@)")
+                return String(format: format, g)
             }
-            return "Mạng hiện tại (DHCP Router)"
+            return String(localized: "dns.provider.system_dhcp", defaultValue: "Mạng hiện tại (DHCP Router)")
         }
     }
     

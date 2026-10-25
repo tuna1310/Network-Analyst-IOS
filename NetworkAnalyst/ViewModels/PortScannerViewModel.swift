@@ -14,18 +14,27 @@ import UIKit
 
 /// Bộ lọc trạng thái hiển thị danh sách cổng
 public enum PortFilterOption: String, CaseIterable, Identifiable {
-    case openOnly = "Chỉ cổng mở"
-    case all = "Tất cả"
-    case closed = "Đóng"
-    case filtered = "Bị chặn"
+    case openOnly
+    case all
+    case closed
+    case filtered
     
     public var id: String { rawValue }
+    
+    public var title: String {
+        switch self {
+        case .openOnly: return String(localized: "port.filter.open_only", defaultValue: "Chỉ cổng mở")
+        case .all: return String(localized: "port.filter.all", defaultValue: "Tất cả")
+        case .closed: return String(localized: "port.filter.closed", defaultValue: "Đóng")
+        case .filtered: return String(localized: "port.filter.filtered", defaultValue: "Bị chặn")
+        }
+    }
 }
 
 /// ViewModel điều khiển màn hình Quét cổng Port Scanner với 3 chế độ (Phổ biến, Tùy chọn, Toàn dải)
 @MainActor
 public final class PortScannerViewModel: ObservableObject {
-    public let engine = PortScannerEngine()
+    public var engine = PortScannerEngine()
     
     @Published public var targetHost: String = ""
     @Published public var scanMode: PortScanMode = .popular
@@ -166,17 +175,17 @@ public final class PortScannerViewModel: ObservableObject {
     }
     
     public func exportSummary() -> String {
-        var text = "=== BÁO CÁO QUÉT CỔNG MẠNG (NETWORK ANALYST) ===\n"
-        text += "Mục tiêu: \(targetHost)\n"
-        text += "Chế độ: \(scanMode.title)\n"
-        text += "Thời gian: \(Date())\n"
-        text += "Tổng số cổng đã quét: \(engine.scannedCount)/\(engine.totalCount)\n"
-        text += "Số cổng mở: \(engine.openPorts.count)\n\n"
-        text += "DANH SÁCH CỔNG MỞ:\n"
+        var text = String(localized: "portscan.export.header", defaultValue: "=== BÁO CÁO QUÉT CỔNG MẠNG (NETWORK ANALYST) ===\n")
+        text += String(format: String(localized: "portscan.export.target_format", defaultValue: "Mục tiêu: %@\n"), targetHost)
+        text += String(format: String(localized: "portscan.export.mode_format", defaultValue: "Chế độ: %@\n"), scanMode.title)
+        text += String(format: String(localized: "portscan.export.time_format", defaultValue: "Thời gian: %@\n"), "\(Date())")
+        text += String(format: String(localized: "portscan.export.total_format", defaultValue: "Tổng số cổng đã quét: %d/%d\n"), engine.scannedCount, engine.totalCount)
+        text += String(format: String(localized: "portscan.export.open_format", defaultValue: "Số cổng mở: %d\n\n"), engine.openPorts.count)
+        text += String(localized: "portscan.export.open_list_header", defaultValue: "DANH SÁCH CỔNG MỞ:\n")
         for p in engine.openPorts {
             let rttStr = p.rttMs != nil ? String(format: "%.1f ms", p.rttMs!) : "--"
             let bannerStr = p.banner != nil ? " | Banner: \(p.banner!)" : ""
-            text += "- Cổng \(p.port) [\(p.serviceName)]: \(p.serviceDescription) (RTT: \(rttStr))\(bannerStr)\n"
+            text += String(format: String(localized: "portscan.export.port_row_format", defaultValue: "- Cổng %d [%@]: %@ (RTT: %@)%@\n"), p.port, p.serviceName, p.serviceDescription, rttStr, bannerStr)
         }
         return text
     }

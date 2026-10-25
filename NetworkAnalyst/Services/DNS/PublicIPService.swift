@@ -63,7 +63,7 @@ public actor PublicIPService {
     
     /// Lấy thông tin IP công khai hiện tại cùng vị trí địa lý và ISP
     public func fetchPublicIP() async throws -> PublicIPDetails {
-        let startTime = CFAbsoluteTimeGetCurrent()
+        let startTime = MonotonicClock.now()
         
         // Thử ipinfo.io trước để lấy đầy đủ ISP và vị trí
         if let details = await queryIPInfo(startTime: startTime) {
@@ -72,14 +72,14 @@ public actor PublicIPService {
         
         // Dự phòng ipify.org nếu ipinfo bị rate-limit
         if let ip = await queryIpify() {
-            let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000.0
+            let elapsed = MonotonicClock.elapsedMs(since: startTime)
             return PublicIPDetails(ip: ip, queryTimeMs: elapsed)
         }
         
         throw URLError(.cannotFindHost)
     }
     
-    private func queryIPInfo(startTime: Double) async -> PublicIPDetails? {
+    private func queryIPInfo(startTime: ContinuousClock.Instant) async -> PublicIPDetails? {
         guard let url = URL(string: "https://ipinfo.io/json") else { return nil }
         
         do {
@@ -104,7 +104,7 @@ public actor PublicIPService {
             }
             
             let decoded = try JSONDecoder().decode(IPInfoResponse.self, from: data)
-            let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000.0
+            let elapsed = MonotonicClock.elapsedMs(since: startTime)
             
             return PublicIPDetails(
                 ip: decoded.ip,

@@ -8,6 +8,9 @@
 import Foundation
 import Network
 import NetworkCore
+#if canImport(Darwin)
+import Darwin
+#endif
 
 /// Kết quả thăm dò Unicast một IP
 public struct HostProbeResult: Sendable {
@@ -166,7 +169,7 @@ public actor UnicastProber {
             discoveredVendor = discoveredVendor ?? "Network Gateway"
         }
         
-        let v6Explanation = (discoveredIpv6 == nil) ? "Không có địa chỉ IPv6 (Router hoặc thiết bị không kích hoạt IPv6)" : nil
+        let v6Explanation = (discoveredIpv6 == nil) ? String(localized: "lan.no_ipv6_router_explanation", defaultValue: "Không có địa chỉ IPv6 (Router hoặc thiết bị không kích hoạt IPv6)") : nil
         
         return HostProbeResult(
             isAlive: true,
@@ -181,7 +184,6 @@ public actor UnicastProber {
             rttMs: bestRTT,
             methods: Array(Set(methods))
         )
-    }
     }
     
     // MARK: - NetBIOS Name Query (RFC 1002) qua UDP 137
@@ -321,9 +323,9 @@ public actor UnicastProber {
         if let (_, answers) = try? DNSCodec.parseResponse(bytes: Array(buffer[0..<readLen])) {
             for ans in answers {
                 if ans.type == .PTR && foundName == nil {
-                    foundName = ans.value
+                    foundName = ans.displayValue
                 } else if ans.type == .AAAA && foundIpv6 == nil {
-                    foundIpv6 = ans.value
+                    foundIpv6 = ans.displayValue
                 }
             }
         }
@@ -380,7 +382,7 @@ public actor UnicastProber {
         
         if let (_, answers) = try? DNSCodec.parseResponse(bytes: Array(buffer[0..<readLen])) {
             for ans in answers where ans.type == .PTR {
-                return ans.value
+                return ans.displayValue
             }
         }
         return nil
@@ -427,7 +429,7 @@ public actor UnicastProber {
         
         if let (_, answers) = try? DNSCodec.parseResponse(bytes: Array(buffer[0..<readLen])) {
             for ans in answers where ans.type == .PTR {
-                return ans.value
+                return ans.displayValue
             }
         }
         
@@ -491,7 +493,7 @@ public actor UnicastProber {
     
     // MARK: - TCP Port Probe
     private func probeTCPPort(ipAddress: String, port: Int, timeout: TimeInterval) async -> (isOpen: Bool, rttMs: Double?) {
-        let startTime = CFAbsoluteTimeGetCurrent()
+        let startTime = MonotonicClock.now()
         guard let nwPort = NWEndpoint.Port(rawValue: UInt16(port)) else {
             return (false, nil)
         }
@@ -519,7 +521,7 @@ public actor UnicastProber {
                 case .ready:
                     hasResumed = true
                     timer.cancel()
-                    let rtt = (CFAbsoluteTimeGetCurrent() - startTime) * 1000.0
+                    let rtt = MonotonicClock.elapsedMs(since: startTime)
                     connection.cancel()
                     continuation.resume(returning: (true, rtt))
                 case .failed:

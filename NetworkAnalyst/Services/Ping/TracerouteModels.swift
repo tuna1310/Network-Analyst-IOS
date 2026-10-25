@@ -16,10 +16,12 @@ public enum HopStatus: Sendable, Equatable {
     
     public var displayText: String {
         switch self {
-        case .responding: return "Phản hồi"
-        case .timeout: return "* (Timeout)"
-        case .destinationReached: return "Đã tới đích"
-        case .error(let msg): return "Lỗi: \(msg)"
+        case .responding: return String(localized: "traceroute.hop.responding", defaultValue: "Phản hồi")
+        case .timeout: return String(localized: "traceroute.hop.timeout", defaultValue: "* (Timeout)")
+        case .destinationReached: return String(localized: "traceroute.hop.reached", defaultValue: "Đã tới đích")
+        case .error(let msg):
+            let format = String(localized: "traceroute.hop.error_format", defaultValue: "Lỗi: %@")
+            return String(format: format, msg)
         }
     }
 }
@@ -92,5 +94,9 @@ public struct TracerouteHop: Identifiable, Sendable, Equatable {
                 return "*"
             }
         }.joined(separator: "  ")
+    }
+    
+    public var formattedRTT: String {
+        return probesDisplayString
     }
 }

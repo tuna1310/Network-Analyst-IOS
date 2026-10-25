@@ -17,13 +17,15 @@ public protocol GeoIPProvider: Sendable {
 public actor HTTPSGeoIPProvider: GeoIPProvider {
     public static let shared = HTTPSGeoIPProvider()
     
-    public static let sourceName = "ipwho.is (HTTPS, miễn phí ~10,000 lượt/tháng, không cần API Key)"
+    public static var sourceName: String {
+        String(localized: "traceroute.geoip_source_desc", defaultValue: "ipwho.is (HTTPS, miễn phí ~10,000 lượt/tháng, không cần API Key)")
+    }
     
     private var cache: [String: HopGeoIPInfo] = [:]
     private let urlSession: URLSession
     private var requestCountThisSession: Int = 0
     private let maxRequestsPerSession: Int = 30
-    private var lastRequestTime: CFAbsoluteTime = 0
+    private var lastRequestTime: ContinuousClock.Instant? = nil
     
     public init() {
         let config = URLSessionConfiguration.ephemeral
@@ -57,13 +59,14 @@ public actor HTTPSGeoIPProvider: GeoIPProvider {
         }
         
         // Đảm bảo giãn cách tối thiểu 250ms giữa các request để bảo vệ quota
-        let now = CFAbsoluteTimeGetCurrent()
-        let elapsed = now - lastRequestTime
-        if elapsed < 0.25 {
-            let waitNanos = UInt64((0.25 - elapsed) * 1_000_000_000)
-            try? await Task.sleep(nanoseconds: waitNanos)
+        if let last = lastRequestTime {
+            let elapsedMs = MonotonicClock.elapsedMs(since: last)
+            if elapsedMs < 250.0 {
+                let waitNanos = UInt64((250.0 - elapsedMs) * 1_000_000)
+                try? await Task.sleep(nanoseconds: waitNanos)
+            }
         }
-        lastRequestTime = CFAbsoluteTimeGetCurrent()
+        lastRequestTime = MonotonicClock.now()
         requestCountThisSession += 1
         
         guard let url = URL(string: "https://ipwho.is/\(cleanIP)") else { return nil }

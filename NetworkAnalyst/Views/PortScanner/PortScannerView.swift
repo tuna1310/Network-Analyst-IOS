@@ -28,11 +28,11 @@ public struct PortScannerView: View {
                     HStack(spacing: 8) {
                         Image(systemName: "pause.circle.fill")
                             .foregroundColor(.orange)
-                        Text("Ứng dụng đã tạm dừng khi xuống nền để bảo toàn tài nguyên. Bấm Tiếp tục để tiếp tục quét.")
+                        Text(LocalizedStringKey("portscan.background_paused_warning"))
                             .font(.caption)
                             .foregroundColor(.primary)
                         Spacer()
-                        Button("Đóng") {
+                        Button(LocalizedStringKey("common.close")) {
                             viewModel.backgroundPausedWarning = false
                         }
                         .font(.caption.bold())
@@ -55,7 +55,7 @@ public struct PortScannerView: View {
                 // Danh sách kết quả cổng
                 portResultsList
             }
-            .navigationTitle("Quét cổng TCP")
+            .navigationTitle(LocalizedStringKey("portscan.title"))
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     if !viewModel.engine.openPorts.isEmpty {
@@ -65,13 +65,13 @@ public struct PortScannerView: View {
                     }
                 }
             }
-            .alert("Xác nhận quét toàn dải 1 - 65535", isPresented: $viewModel.showFullScanAlert) {
-                Button("Hủy", role: .cancel) {}
-                Button("Bắt đầu quét", role: .destructive) {
+            .alert(Text(LocalizedStringKey("portscan.full_scan_title")), isPresented: $viewModel.showFullScanAlert) {
+                Button(LocalizedStringKey("common.cancel"), role: .cancel) {}
+                Button(LocalizedStringKey("portscan.start_scan_btn"), role: .destructive) {
                     viewModel.confirmAndStartFullScan()
                 }
             } message: {
-                Text("Quét toàn bộ 65,535 cổng có thể mất \(viewModel.estimatedDurationText) và tiêu tốn pin cũng như băng thông mạng. Bạn có chắc chắn muốn tiếp tục?")
+                Text(String(format: String(localized: "portscan.full_scan_confirm_msg", defaultValue: "Quét toàn bộ 65,535 cổng có thể mất %@ và tiêu tốn pin cũng như băng thông mạng. Bạn có chắc chắn muốn tiếp tục?"), viewModel.estimatedDurationText))
             }
             .sheet(isPresented: $viewModel.showDisclaimerModal) {
                 AuthorizationDisclaimerModal {
@@ -88,7 +88,7 @@ public struct PortScannerView: View {
             HStack {
                 Image(systemName: "server.rack")
                     .foregroundColor(.blue)
-                TextField("Nhập IP hoặc tên miền (vd: 192.168.1.1, apple.com)", text: $viewModel.targetHost)
+                TextField(String(localized: "portscan.target_placeholder", defaultValue: "Nhập IP hoặc tên miền (vd: 192.168.1.1, apple.com)"), text: $viewModel.targetHost)
                     .textFieldStyle(.plain)
                     .autocorrectionDisabled()
                     .textInputAutocapitalization(.never)
@@ -107,7 +107,7 @@ public struct PortScannerView: View {
             .cornerRadius(10)
             
             // Bộ chọn 3 chế độ quét
-            Picker("Chế độ quét", selection: $viewModel.scanMode) {
+            Picker(LocalizedStringKey("portscan.mode_picker"), selection: $viewModel.scanMode) {
                 ForEach(PortScanMode.allCases) { mode in
                     Text(mode.title).tag(mode)
                 }
@@ -117,7 +117,7 @@ public struct PortScannerView: View {
             // Cấu hình con tùy theo chế độ đã chọn
             switch viewModel.scanMode {
             case .popular:
-                Picker("Preset phổ biến", selection: $viewModel.selectedPreset) {
+                Picker(LocalizedStringKey("portscan.preset_picker"), selection: $viewModel.selectedPreset) {
                     Text(PortScanPreset.top20.title).tag(PortScanPreset.top20)
                     Text(PortScanPreset.top100.title).tag(PortScanPreset.top100)
                 }
@@ -128,7 +128,7 @@ public struct PortScannerView: View {
                     HStack {
                         Image(systemName: "slider.horizontal.3")
                             .foregroundColor(.secondary)
-                        TextField("Cú pháp: 80, 443, 8000-8100", text: $viewModel.customRangeInput)
+                        TextField(String(localized: "portscan.custom_range_placeholder", defaultValue: "Cú pháp: 80, 443, 8000-8100"), text: $viewModel.customRangeInput)
                             .font(.system(.subheadline, design: .monospaced))
                             .textFieldStyle(.plain)
                     }
@@ -141,7 +141,7 @@ public struct PortScannerView: View {
                             .font(.caption2)
                             .foregroundColor(.red)
                     } else {
-                        Text("Nhập các cổng cách nhau bằng dấu phẩy hoặc dấu gạch nối cho dải (1-65535).")
+                        Text(LocalizedStringKey("portscan.custom_range_hint"))
                             .font(.caption2)
                             .foregroundColor(.secondary)
                     }
@@ -152,7 +152,7 @@ public struct PortScannerView: View {
                     HStack(spacing: 8) {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .foregroundColor(.orange)
-                        Text("Quét toàn dải 1 đến 65535. Màn hình tự động giữ sáng. Vui lòng giữ ứng dụng ở màn hình chính (foreground) để tránh bị iOS ngắt kết nối mạng nền.")
+                        Text(LocalizedStringKey("portscan.full_scan_hint"))
                             .font(.caption2)
                             .foregroundColor(.secondary)
                     }
@@ -168,7 +168,7 @@ public struct PortScannerView: View {
                 HStack(spacing: 6) {
                     Image(systemName: "text.bubble")
                         .foregroundColor(.purple)
-                    Text("Thăm dò banner dịch vụ (Banner Grabbing)")
+                    Text(LocalizedStringKey("portscan.banner_grabbing"))
                         .font(.caption)
                 }
             }
@@ -188,7 +188,7 @@ public struct PortScannerView: View {
                         HStack {
                             Spacer()
                             Image(systemName: viewModel.engine.isPaused ? "play.fill" : "pause.fill")
-                            Text(viewModel.engine.isPaused ? "Tiếp tục" : "Tạm dừng")
+                            Text(viewModel.engine.isPaused ? LocalizedStringKey("portscan.btn.resume") : LocalizedStringKey("portscan.btn.pause"))
                                 .bold()
                             Spacer()
                         }
@@ -205,7 +205,7 @@ public struct PortScannerView: View {
                         HStack {
                             Spacer()
                             Image(systemName: "stop.fill")
-                            Text("Dừng")
+                            Text(LocalizedStringKey("portscan.btn.stop"))
                                 .bold()
                             Spacer()
                         }
@@ -222,7 +222,7 @@ public struct PortScannerView: View {
                         HStack {
                             Spacer()
                             Image(systemName: "play.fill")
-                            Text("Bắt đầu quét cổng")
+                            Text(LocalizedStringKey("portscan.btn.start"))
                                 .bold()
                             Spacer()
                         }
@@ -251,7 +251,7 @@ public struct PortScannerView: View {
                 
                 Spacer()
                 
-                Text(String(format: "%.0f cổng/giây", viewModel.engine.scanRate))
+                Text(String(format: String(localized: "portscan.rate_format", defaultValue: "%.0f cổng/giây"), viewModel.engine.scanRate))
                     .font(.caption.monospaced())
                     .foregroundColor(.secondary)
             }
@@ -264,15 +264,15 @@ public struct PortScannerView: View {
     // MARK: - Filter Picker Bar
     private var filterPickerBar: some View {
         HStack {
-            Text("Hiển thị:")
+            Text(LocalizedStringKey("portscan.filter_label"))
                 .font(.caption)
                 .foregroundColor(.secondary)
             
             Spacer()
             
-            Picker("Bộ lọc", selection: $viewModel.filterOption) {
+            Picker(LocalizedStringKey("portscan.filter_picker"), selection: $viewModel.filterOption) {
                 ForEach(PortFilterOption.allCases) { opt in
-                    Text(opt.rawValue).tag(opt)
+                    Text(opt.title).tag(opt)
                 }
             }
             .pickerStyle(.segmented)
@@ -291,7 +291,7 @@ public struct PortScannerView: View {
                     Image(systemName: "magnifyingglass")
                         .font(.title2)
                         .foregroundColor(.secondary)
-                    Text(viewModel.engine.isScanning ? "Đang quét các cổng..." : "Chưa có cổng nào phù hợp bộ lọc.")
+                    Text(viewModel.engine.isScanning ? LocalizedStringKey("portscan.empty_scanning") : LocalizedStringKey("portscan.empty_filtered"))
                         .font(.footnote)
                         .foregroundColor(.secondary)
                 }
@@ -312,7 +312,7 @@ public struct PortScannerView: View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 12) {
                 // Số hiệu cổng
-                Text("\(item.port)")
+                Text(verbatim: String(item.port))
                     .font(.system(.headline, design: .monospaced).bold())
                     .frame(width: 60, alignment: .leading)
                 
@@ -358,7 +358,7 @@ public struct PortScannerView: View {
     private func statusBadge(_ status: PortStatus) -> some View {
         switch status {
         case .open:
-            Text("MỞ")
+            Text(LocalizedStringKey("portscan.badge_open"))
                 .font(.system(size: 10, weight: .bold))
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
@@ -366,7 +366,7 @@ public struct PortScannerView: View {
                 .foregroundColor(.green)
                 .cornerRadius(4)
         case .closed:
-            Text("ĐÓNG")
+            Text(LocalizedStringKey("portscan.badge_closed"))
                 .font(.system(size: 10, weight: .bold))
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
@@ -374,7 +374,7 @@ public struct PortScannerView: View {
                 .foregroundColor(.gray)
                 .cornerRadius(4)
         case .filtered:
-            Text("BỊ CHẶN")
+            Text(LocalizedStringKey("portscan.badge_filtered"))
                 .font(.system(size: 10, weight: .bold))
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
@@ -382,7 +382,7 @@ public struct PortScannerView: View {
                 .foregroundColor(.orange)
                 .cornerRadius(4)
         case .error(let reason):
-            Text("LỖI: \(reason)")
+            Text(String(format: String(localized: "portscan.badge_error_format", defaultValue: "LỖI: %@"), reason))
                 .font(.system(size: 9, weight: .bold))
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)

@@ -1,0 +1,87 @@
+name: Build NetworkAnalyst iOS (.ipa)
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-ios-ipa:
+    name: Build, Test & Package NetworkAnalyst Unsigned IPA
+    runs-on: macos-15
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Select Xcode & Install XcodeGen
+        run: |
+          if [ -d "/Applications/Xcode.app/Contents/Developer" ]; then
+            sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+          elif [ -d "/Applications/Xcode_16.4.app/Contents/Developer" ]; then
+            sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer
+          fi
+          xcodebuild -version
+          if ! command -v xcodegen >/dev/null 2>&1; then
+            brew install xcodegen
+          fi
+          xcodegen generate
+          xcodebuild -list -project NetworkAnalyst.xcodeproj
+
+      - name: Run NetworkCore Swift Tests
+        run: swift test --package-path NetworkCore
+
+      - name: Build for iOS Simulator
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project NetworkAnalyst.xcodeproj \
+            -scheme NetworkAnalyst \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -configuration Debug \
+            -derivedDataPath build_sim \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY=""
+
+      - name: Archive Release Device App (Unsigned arm64)
+        run: |
+          set -o pipefail
+          xcodebuild archive \
+            -project NetworkAnalyst.xcodeproj \
+            -scheme NetworkAnalyst \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -configuration Release \
+            -archivePath build_archive/NetworkAnalyst.xcarchive \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            AD_HOC_CODE_SIGNING_ALLOWED=YES \
+            DEVELOPMENT_TEAM=""
+
+      - name: Package & Ad-Hoc Sign Unsigned IPA
+        run: |
+          APP_PATH="build_archive/NetworkAnalyst.xcarchive/Products/Applications/NetworkAnalyst.app"
+          if [ ! -d "$APP_PATH" ]; then
+            echo "::error::NetworkAnalyst.app not found at $APP_PATH"
+            exit 1
+          fi
+          mkdir -p Payload
+          cp -R "$APP_PATH" Payload/NetworkAnalyst.app
+          codesign --force --deep --sign - --timestamp=none Payload/NetworkAnalyst.app || true
+          zip -qry NetworkAnalyst-unsigned.ipa Payload
+          ls -lh NetworkAnalyst-unsigned.ipa
+
+      - name: Upload NetworkAnalyst Unsigned IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: NetworkAnalyst-unsigned-IPA
+          path: NetworkAnalyst-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 30

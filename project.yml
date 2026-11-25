@@ -23,6 +23,8 @@ targets:
     deploymentTarget: "16.0"
     sources:
       - path: NetworkAnalyst
+        excludes:
+          - "Resources/*.lproj/Localizable.strings"
     dependencies:
       - package: NetworkCore
     settings:

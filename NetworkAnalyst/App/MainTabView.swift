@@ -7,9 +7,10 @@
 
 import SwiftUI
 
-/// TabView chính chứa 5 chức năng cốt lõi và thanh Banner quảng cáo cố định ở chân trang
+/// Main 4-tab layout matching Techet Network Analyzer (Info, LAN, Tools, History)
 public struct MainTabView: View {
     @State private var selectedTab: Int = 0
+    @State private var selectedToolTab: Int = 0
     @StateObject private var lanViewModel = LanScannerViewModel()
     @StateObject private var portViewModel = PortScannerViewModel()
     @ObservedObject public var adService: MockAdService
@@ -19,48 +20,78 @@ public struct MainTabView: View {
     }
     
     public var body: some View {
-        VStack(spacing: 0) {
-            TabView(selection: $selectedTab) {
-                DashboardView()
-                    .tabItem {
-                        Label(String(localized: "tab.dashboard", defaultValue: "Tổng quan"), systemImage: "chart.bar.doc.horizontal")
-                    }
-                    .tag(0)
-                
-                LanScannerView(viewModel: lanViewModel) { targetIP in
-                    // Chuyển sang Tab Quét cổng với IP được chọn
-                    portViewModel.targetHost = targetIP
-                    selectedTab = 2
-                }
+        TabView(selection: $selectedTab) {
+            DashboardView()
                 .tabItem {
-                    Label(String(localized: "tab.lan_scanner", defaultValue: "Quét LAN"), systemImage: "network")
+                    Label("Info", systemImage: "info.circle.fill")
                 }
-                .tag(1)
-                
-                PortScannerView(viewModel: portViewModel)
-                    .tabItem {
-                        Label(String(localized: "tab.port_scanner", defaultValue: "Quét cổng"), systemImage: "lock.open.trianglebadge.exclamationmark")
-                    }
-                    .tag(2)
-                
-                PingTracerouteView()
-                    .tabItem {
-                        Label(String(localized: "tab.ping_traceroute", defaultValue: "Ping ICMP"), systemImage: "waveform.path.ecg")
-                    }
-                    .tag(3)
-                
-                DNSLookupView()
-                    .tabItem {
-                        Label(String(localized: "tab.dns_rdap", defaultValue: "DNS & RDAP"), systemImage: "globe")
-                    }
-                    .tag(4)
-            }
+                .tag(0)
             
-            // Khung Banner quảng cáo ở chân trang (MockAdView hoặc Google Mobile Ads Banner)
-            AdBannerContainerView(adService: adService)
+            LanScannerView(viewModel: lanViewModel) { targetIP in
+                portViewModel.targetHost = targetIP
+                selectedToolTab = 1
+                selectedTab = 2
+            }
+            .tabItem {
+                Label("LAN", systemImage: "network")
+            }
+            .tag(1)
+            
+            ToolsHubView(selectedToolTab: $selectedToolTab, portViewModel: portViewModel)
+                .tabItem {
+                    Label("Tools", systemImage: "wrench.and.screwdriver.fill")
+                }
+                .tag(2)
+            
+            NavigationStack {
+                ScanHistoryView()
+            }
+            .tabItem {
+                Label("History", systemImage: "clock.arrow.circlepath")
+            }
+            .tag(3)
         }
-        .fullScreenCover(isPresented: $adService.showInterstitialModal) {
-            MockInterstitialView(adService: adService)
+    }
+}
+
+private struct ToolsHubView: View {
+    @Binding var selectedToolTab: Int
+    @ObservedObject var portViewModel: PortScannerViewModel
+
+    private let toolTabs = [
+        (0, "Ping / Trace"),
+        (1, "Port Scan"),
+        (2, "DNS"),
+        (3, "Whois")
+    ]
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Picker("Tool", selection: $selectedToolTab) {
+                ForEach(toolTabs, id: \.0) { index, title in
+                    Text(title).tag(index)
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(Color(uiColor: .systemBackground))
+
+            Divider()
+
+            Group {
+                switch selectedToolTab {
+                case 0:
+                    PingTracerouteView()
+                case 1:
+                    PortScannerView(viewModel: portViewModel)
+                case 2:
+                    DNSLookupView()
+                default:
+                    RDAPLookupView()
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 }
